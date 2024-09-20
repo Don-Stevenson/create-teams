@@ -37,4 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## File structure
 
-nextjs-team-creator/ │ ├── pages/ │ ├── index.js │ ├── players.js │ └── balance-teams.js │ ├── components/ │ ├── Layout.js │ ├── PlayerList.js │ ├── AddPlayerForm.js │ └── BalanceTeams.js │ ├── styles/ │ └── globals.css │ ├── utils/ │ └── api.js │ ├── server/ │ ├── models/ │ │ └── Player.js │ ├── routes/ │ │ └── api.js │ └── middleware/ │ ├── errorHandler.js │ └── validate.js │ └── utils/ └── teamBalancer.js │ ├── next.config.js ├── tailwind.config.js └── package.json
+nextjs-team-creator/ | |-- pages/ | |-- index.js | |-- players.js | -- balance-teams.js | |-- components/ | |-- Layout.js | |-- PlayerList.js | |-- AddPlayerForm.js | -- BalanceTeams.js | |-- styles/ | -- globals.css | |-- utils/ | -- api.js | |-- server/ | |-- models/ | | -- Player.js | |-- routes/ | | -- api.js | -- middleware/ | |-- errorHandler.js | -- validate.js | |-- utils/ | -- teamBalancer.js | |-- next.config.js |-- tailwind.config.js -- package.json

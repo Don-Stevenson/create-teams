@@ -14,27 +14,29 @@ pnpm dev
 bun dev
 ```
 
+#### Start server
+
+`npm run server`
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
+you will require at `config.env`: ATLAS_URI=mongodb+srv://username:password@cluster0.pczcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+PORT=5050
+
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## About Loons Team Balancer
 
-To learn more about Next.js, take a look at the following resources:
+Loons Team Balancer is a Next.js-based solution designed to create fair and well-balanced soccer teams each week. The app takes into account player skills, gender, and other attributes to ensure a fun and competitive experience for everyone. It is ideal for recurring games with a mix of players of different abilities and positions, making it easy to shuffle teams fairly every time.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+At the core of the app is an advanced team balancing algorithm. It evaluates the players available each week based on their attack, defense, and fitness scores. Players are sorted primarily by gender and then by overall score. Using a modified serpentine draft method, the algorithm distributes players across teams while keeping the overall skill levels balanced. It even introduces slight randomness to ensure that teams vary week to week.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+The app also tracks the ratio of players by gender to ensure inclusivity. Whether the group has an even or odd number of players, or an unbalanced mix of skillsets, the Loons Team Balancer aims for fairness in team distribution, fostering an enjoyable game for all participants.
 
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-## File structure
-
-![Screenshot 2024-09-20 at 12 02 55 AM](https://github.com/user-attachments/assets/eefee285-b04a-4f69-a7c8-5d9725d2edd1)

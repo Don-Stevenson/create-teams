@@ -1,18 +1,17 @@
-// server/routes/api.js
 import express from 'express'
 const router = express.Router()
 import { check } from 'express-validator'
 import Player from '../models/Player.js'
-import balanceTeams from '../utils/teamBalancer.js'
+import balanceTeams from '../utils/balanceTeams.js'
 import validate from '../middleware/validate.js'
 
 // Validation rules
 const playerValidationRules = [
   check('name').trim().isLength({ min: 2, max: 50 }).escape(),
-  check('attackScore').isInt({ min: 0, max: 100 }),
-  check('defenseScore').isInt({ min: 0, max: 100 }),
-  check('fitnessScore').isInt({ min: 0, max: 100 }),
-  check('gender').isIn(['male', 'female', 'other']),
+  check('attackScore').isInt({ min: 0, max: 50 }),
+  check('defenseScore').isInt({ min: 0, max: 50 }),
+  check('fitnessScore').isInt({ min: 0, max: 50 }),
+  check('gender').isIn(['male', 'female', 'nonBinary']),
 ]
 
 // GET all players
@@ -61,6 +60,79 @@ router.put(
     }
   }
 )
+
+router.put(
+  '/players/:id/playerInfo',
+  validate([
+    check('name').trim().isLength({ min: 2, max: 50 }).escape(),
+    check('attackScore').isInt({ min: 0, max: 50 }),
+    check('defenseScore').isInt({ min: 0, max: 50 }),
+    check('fitnessScore').isInt({ min: 0, max: 50 }),
+    check('isPlayingThisWeek').custom(value => {
+      if (value === 'true' || value === 'false' || typeof value === 'boolean') {
+        return true
+      }
+      throw new Error('isPlayingThisWeek must be a boolean or "true"/"false"')
+    }),
+    check('gender').isIn(['male', 'female', 'nonBinary']),
+  ]),
+  async (req, res, next) => {
+    try {
+      const {
+        name,
+        attackScore,
+        defenseScore,
+        fitnessScore,
+        isPlayingThisWeek,
+        gender,
+      } = req.body
+
+      // Convert isPlayingThisWeek to boolean
+      const isPlaying =
+        isPlayingThisWeek === 'true' || isPlayingThisWeek === true
+
+      const updatedPlayer = await Player.findByIdAndUpdate(
+        req.params.id,
+        {
+          name,
+          attackScore: Number(attackScore),
+          defenseScore: Number(defenseScore),
+          fitnessScore: Number(fitnessScore),
+          isPlayingThisWeek: isPlaying,
+          gender,
+        },
+        { new: true, runValidators: true }
+      )
+
+      if (!updatedPlayer) {
+        return res.status(404).json({ message: 'Player not found' })
+      }
+
+      res.json(updatedPlayer)
+    } catch (err) {
+      console.error('Error updating player:', err)
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        return res
+          .status(400)
+          .json({ message: 'Invalid data format', error: err.message })
+      }
+      next(err)
+    }
+  }
+)
+
+// DELETE a player
+router.delete('/players/:id', async (req, res, next) => {
+  try {
+    const deletedPlayer = await Player.findByIdAndDelete(req.params.id)
+    if (!deletedPlayer) {
+      return res.status(404).json({ message: 'Player not found' })
+    }
+    res.json({ message: 'Player deleted successfully' })
+  } catch (err) {
+    next(err)
+  }
+})
 
 // POST balance teams
 router.post(

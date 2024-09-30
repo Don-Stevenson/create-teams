@@ -1,21 +1,45 @@
-// components/PlayerList.js
-export default function PlayerList({ players }) {
+import React, { useEffect } from 'react'
+
+const PlayerList = ({
+  players,
+  onEditPlayer,
+  onDeletePlayer,
+  fetchPlayers,
+}) => {
+  useEffect(() => {
+    fetchPlayers()
+  }, [])
   return (
-    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      <ul className="divide-y divide-gray-200">
-        {players.map(player => (
-          <li key={player._id} className="py-4">
-            <div className="flex justify-between">
-              <span className="font-semibold">{player.name}</span>
-              <span className="text-gray-500">{player.gender}</span>
+    <div className="grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-2 w-full p-2">
+      {players.map(player => (
+        <div key={player._id}>
+          <div className="flex justify-between mb-2 p-2 w-[350px] h-[75px] border border-gray-300 rounded hover:bg-gray-200 ">
+            <div className="flex gap-2 p-2 items-center">
+              <div>{player.name} </div>
+              <div className="text-gray-400 text-xs">
+                A:{player.attackScore} D:{player.defenseScore} F:
+                {player.fitnessScore}
+              </div>
             </div>
-            <div className="mt-2 text-sm text-gray-500">
-              Attack: {player.attackScore} | Defense: {player.defenseScore} |
-              Fitness: {player.fitnessScore}
+            <div className="flex gap-3 items-center">
+              <button
+                onClick={() => onEditPlayer(player._id)}
+                className="border border-gray-300 text-black text-sm font-bold py-1 px-2 rounded h-[45px] w-[60px]"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => onDeletePlayer(player._id)}
+                className="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-2 h-[45px] rounded w-[60px]"
+              >
+                Delete
+              </button>
             </div>
-          </li>
-        ))}
-      </ul>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
+
+export default PlayerList

@@ -1,40 +1,32 @@
-import { MongoClient, ServerApiVersion } from 'mongodb'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+dotenv.config()
 
-// Define the URI for MongoDB from environment variables or fallback to an empty string
 const uri = process.env.ATLAS_URI || ''
 
-// Create a MongoClient instance with the necessary options
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-})
-
-let db
-
-// Define a function to establish a connection to MongoDB
 const connectDB = async () => {
   try {
-    // Connect the client to the server
-    await client.connect()
-
-    // Ping the MongoDB deployment to confirm a successful connection
-    await client.db('admin').command({ ping: 1 })
-    console.log(
-      'Pinged your deployment. You successfully connected to MongoDB!'
-    )
-
-    // Set the database instance to a specific database (e.g., 'employees')
-    db = client.db('employees')
-
-    return db // Optionally return the db instance
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    })
+    console.log('Connected to MongoDB successfully!')
   } catch (err) {
     console.error('Failed to connect to MongoDB:', err)
-    throw err
+    process.exit(1)
   }
 }
 
-// Optionally, you can also export the `db` variable separately if needed
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', async () => {
+  try {
+    await mongoose.connection.close()
+    console.log('Mongoose connection disconnected through app termination')
+    process.exit(0)
+  } catch (err) {
+    console.error('Error during Mongoose connection closure:', err)
+    process.exit(1)
+  }
+})
+
 export default connectDB

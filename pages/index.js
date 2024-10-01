@@ -1,8 +1,9 @@
 // pages/balance-teams.js
 import Layout from '../src/app/components/Layout.js'
 import CreateTeams from '../src/app/components/CreateTeams.js'
+import withAuth from '@/app/components/withAuth.js'
 
-export default function BalanceTeamsPage() {
+function BalanceTeamsPage() {
   return (
     <Layout>
       <div className="flex-col mx-auto px-4 py-8">
@@ -12,3 +13,5 @@ export default function BalanceTeamsPage() {
     </Layout>
   )
 }
+
+export default withAuth(BalanceTeamsPage)

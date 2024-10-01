@@ -6,8 +6,9 @@ import PlayerList from '../src/app/components/PlayerList'
 import AddPlayerForm from '../src/app/components/AddPlayer.js'
 import EditPlayerModal from '../src/app/components/EditPlayerModal.js'
 import api from '../utils/api'
+import withAuth from '@/app/components/withAuth.js'
 
-export default function Players() {
+function Players() {
   const [players, setPlayers] = useState([])
   const [playerToEdit, setPlayerToEdit] = useState(null)
   const [playerToDelete, setPlayerToDelete] = useState(null)
@@ -172,3 +173,5 @@ export default function Players() {
     </Layout>
   )
 }
+
+export default withAuth(Players)

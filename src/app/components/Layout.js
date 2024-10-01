@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import Logout from './Logout'
 
 export default function Layout({ children }) {
   return (
@@ -29,6 +30,7 @@ export default function Layout({ children }) {
           >
             About
           </Link>
+          <Logout />
         </div>
       </nav>
       <main className="flex-grow">{children}</main>

@@ -1,23 +1,28 @@
-// server/server.js
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
 import hpp from 'hpp'
+import cookieParser from 'cookie-parser'
+import 'dotenv/config'
 import connectDB from './db/connection.js'
 import errorHandler from './middleware/errorHandler.js'
 import xss from 'xss'
-import apiRoutes from './routes/api.js' // Import the routes
+import apiRoutes from './routes/api.js'
 
 const app = express()
 
-// Connect to database
-connectDB()
-
-// Security middlewares
+// Middleware
+app.use(express.json({ limit: '10kb' }))
+app.use(cookieParser())
 app.use(helmet())
-app.use(cors())
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+)
 app.use(mongoSanitize())
 app.use(hpp())
 
@@ -25,7 +30,7 @@ app.use(hpp())
 const sanitizeInput = (req, res, next) => {
   if (req.body) {
     for (const key in req.body) {
-      if (req.body.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(req.body, key)) {
         req.body[key] = xss(req.body[key])
       }
     }
@@ -33,19 +38,20 @@ const sanitizeInput = (req, res, next) => {
   next()
 }
 
-// Use the sanitizeInput middleware
-app.use(express.json({ limit: '10kb' })) // Body parser, reading data from body into req.body
-app.use(sanitizeInput) // Apply XSS sanitization middleware
+app.use(sanitizeInput)
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // increase this number
 })
 app.use('/api/', limiter)
 
+// Connect to database
+connectDB()
+
 // Routes
-app.use('/api', apiRoutes) // Use the imported routes
+app.use('/api', apiRoutes)
 
 // Error handling middleware
 app.use(errorHandler)

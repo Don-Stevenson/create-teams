@@ -1,4 +1,5 @@
 import Layout from '@/app/components/Layout'
+import withAuth from '@/app/components/withAuth'
 import React from 'react'
 
 const About = () => {
@@ -35,4 +36,4 @@ const About = () => {
   )
 }
 
-export default About
+export default withAuth(About)

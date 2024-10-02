@@ -22,8 +22,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-you will require at `config.env`: ATLAS_URI=mongodb+srv://username:password@cluster0.pczcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+You will require a`config.env` at root level:
+ATLAS_URI=mongodb+srv://username:password@cluster0.pczcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 PORT=5050
+JWT_SECRET=\***\*\*\*\*\*\***
+
+to generate the JWT_SECRET use: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 

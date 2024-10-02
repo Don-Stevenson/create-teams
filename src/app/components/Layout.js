@@ -37,7 +37,8 @@ export default function Layout({ children }) {
       </div>
       <main className="flex-grow">{children}</main>
       <div className="text-center items-center text-xs p-4">
-        © {new Date(Date.now()).getFullYear().toString()} Loons Team Balancer
+        © {new Date(Date.now()).getFullYear().toString()} Loons Team Balancer.
+        All rights reserved.
       </div>
     </div>
   )

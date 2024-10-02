@@ -14,7 +14,7 @@ module.exports = {
         loonsRed: '#C42728',
         loonsBrown: '#613A14',
         loonsDarkBrown: '#411B0C',
-        loonsBeige: '#BEB88F',
+        loonsBeige: '#C4B098',
       },
       screens: {
         print: { raw: 'print' },

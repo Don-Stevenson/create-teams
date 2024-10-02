@@ -6,12 +6,12 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
   )
 
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-1 w-full p-2">
+    <ul className="grid grid-cols-[repeat(auto-fill,_minmax(320px,_1fr))] gap-1 w-full p-2 m-2 print:hidden flex-shrink">
       {sortedPlayers.map((player, index) => (
         <li
           key={player._id}
           onClick={() => onTogglePlayingThisWeek(player._id)}
-          className={`flex items-center justify-between w-[350px] p-[10px] border border-gray-300 rounded m-1 ${
+          className={`flex items-center justify-around max-w-[350px] p-[10px] border border-gray-300 rounded m-1 ${
             player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-300'
           }`}
         >
@@ -29,7 +29,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
               onChange={() => onTogglePlayingThisWeek(player._id)}
               className="mr-2 bg-gray-500"
             />
-            <span className="text-sm">Playing this week</span>
+            <span className="text-sm">Playing?</span>
           </label>
         </li>
       ))}

@@ -111,7 +111,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
             </button>
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded"
+              className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 text-sm font-bold py-1 px-2 h-[45px] w-[130px] rounded"
             >
               Save Changes
             </button>

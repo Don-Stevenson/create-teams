@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import api from '../../../utils/api'
 
-export default function AddPlayerForm({ onAddPlayer, setShowAddPlayer }) {
+export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
   const [playerData, setPlayerData] = useState({
     name: '',
     attackScore: '',
@@ -139,7 +139,7 @@ export default function AddPlayerForm({ onAddPlayer, setShowAddPlayer }) {
           cancel
         </div>
         <button
-          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
           Add Player

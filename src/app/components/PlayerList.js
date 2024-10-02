@@ -30,7 +30,7 @@ const PlayerList = ({
               </button>
               <button
                 onClick={() => onDeletePlayer(player._id)}
-                className="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-2 h-[45px] rounded w-[60px]"
+                className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 text-sm font-bold py-1 px-2 h-[45px] rounded w-[60px]"
               >
                 Delete
               </button>

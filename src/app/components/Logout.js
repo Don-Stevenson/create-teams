@@ -27,9 +27,9 @@ export default function Logout() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="flex flex-wrap print:hidden" onSubmit={handleSubmit}>
       <button
-        className="bg-red-600 hover:bg-red-700 text-white border border-red-400 font-semibold py-1 px-2 w-full sm:w-auto min-w-[150px] rounded text-center items-center md:h-[35px] flex justify-center "
+        className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-semibold py-1 px-2 min-w-[150px] rounded text-center items-center h-[35px] flex justify-center"
         type="submit"
       >
         Logout

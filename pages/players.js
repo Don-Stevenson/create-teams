@@ -118,9 +118,11 @@ function Players() {
   return (
     <Layout>
       <div className="flex-col px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-red-600">Manage Players</h1>
+        <h1 className="text-3xl font-bold mb-8 text-loonsRed">
+          Manage Players
+        </h1>
         <h2
-          className="text-lg font-semibold mb-4 bg-green-600 hover:bg-green-800 text-white border rounded border-gray-300 w-[200px] h-18 p-3 text-center"
+          className="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center"
           onClick={() => setShowAddPlayer(!showAddPlayer)}
         >
           Add A New Player
@@ -162,7 +164,7 @@ function Players() {
               </button>
               <button
                 onClick={() => onDeletePlayer(playerToDelete._id)}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded"
               >
                 Delete
               </button>

@@ -7,7 +7,9 @@ function BalanceTeamsPage() {
   return (
     <Layout>
       <div className="flex-col mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-red-600">Create Teams</h1>
+        <h1 className="text-3xl font-bold mb-8 text-loonsRed print:hidden">
+          Create Teams
+        </h1>
         <CreateTeams />
       </div>
     </Layout>

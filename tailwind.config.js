@@ -9,7 +9,18 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        loonsRed: '#C42728',
+        loonsBrown: '#613A14',
+        loonsDarkBrown: '#411B0C',
+        loonsBeige: '#BEB88F',
+      },
+      screens: {
+        print: { raw: 'print' },
+        screen: { raw: 'screen' },
+      },
+    },
   },
   plugins: [],
 }

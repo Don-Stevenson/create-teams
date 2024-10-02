@@ -11,7 +11,9 @@ export default function Layout({ children }) {
       </Head>
       <div className="flex z-0 bg-loonsDarkBrown items-center justify-center min-w-[382px]">
         <nav className="flex justify-between border-[5px] m-2 w-full border-loonsRed rounded bg-loonsBrown text-loonsBeige p-4 print:hidden items-center">
+update-nav-bar-styles
           <div className="flex bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-semibold py-1 px-2 md:w-[350px] rounded text-center md:h-[45px] justify-center items-center mr-2 ">
+
             <h1 className="text-2xl font-bold">Loons Team Balancer</h1>
           </div>
           <div className="flex flex-wrap gap-2 justify-center">

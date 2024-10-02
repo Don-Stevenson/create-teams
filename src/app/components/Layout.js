@@ -10,8 +10,10 @@ export default function Layout({ children }) {
         <link rel="icon" href="/TWSC_Badge.webp" type="image/webp" />
       </Head>
       <div className="flex z-0 bg-loonsDarkBrown items-center justify-center min-w-[382px]">
-        <nav className="flex justify-between border-[7px] m-2 w-full border-loonsRed rounded bg-loonsBrown text-loonsBeige p-4 print:hidden items-center">
-          <h1 className="text-2xl font-bold mb-4">Loons Team Balancer</h1>
+        <nav className="flex justify-between border-[5px] m-2 w-full border-loonsRed rounded bg-loonsBrown text-loonsBeige p-4 print:hidden items-center">
+          <div className="flex bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-semibold py-1 px-2 w-[350px] rounded text-center h-[45px] justify-center items-center">
+            <h1 className="text-2xl font-bold">Loons Team Balancer</h1>
+          </div>
           <div className="flex flex-wrap gap-2 justify-center">
             <Link
               href="/"

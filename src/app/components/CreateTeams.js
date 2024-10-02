@@ -62,7 +62,7 @@ export default function CreateTeams() {
   }
 
   return (
-    <div className="flex flex-col bg-white rounded justify-center px-8 pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
+    <div className="flex flex-col bg-white rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
       <div className="flex-col flex-wrap">
         <h2 className="text-2xl font-semibold mb-4 print:hidden">
           Player List
@@ -137,7 +137,7 @@ export default function CreateTeams() {
                   </p>
                   <p className="print:hidden text-wrap">
                     Gender Distribution: Male - {team.genderCount.male}, Female
-                    - {team.genderCount.female}, Non Binary -
+                    - {team.genderCount.female}, Non Binary -{' '}
                     {team.genderCount.nonBinary}
                   </p>
                   <h4 className="font-semibold mt-2 print:hidden">

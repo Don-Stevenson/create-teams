@@ -40,7 +40,8 @@ const About = () => {
         <p className="text-lg leading-relaxed">
           Simply choose who's playing, select how many teams you'd like to
           create, re-generate the teams again if you're not quite happy with the
-          results, and then print the results in a printer friendly format.
+          results, and then print the created teams in the default, printer
+          friendly format.
         </p>
       </div>
     </Layout>

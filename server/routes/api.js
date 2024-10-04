@@ -204,6 +204,48 @@ router.post(
   }
 )
 
+// Route for bulk updating players is playing this week
+router.put(
+  '/players-bulk-update',
+  [
+    body('isPlayingThisWeek')
+      .isBoolean()
+      .withMessage('isPlayingThisWeek must be a boolean value'),
+  ],
+  async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array())
+      console.log('Request body:', req.body)
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    try {
+      const { isPlayingThisWeek } = req.body
+      console.log(
+        'Received isPlayingThisWeek:',
+        isPlayingThisWeek,
+        typeof isPlayingThisWeek
+      )
+
+      const result = await Player.updateMany(
+        {},
+        { $set: { isPlayingThisWeek: isPlayingThisWeek } }
+      )
+
+      res.status(200).json({
+        success: true,
+        message: 'All players updated successfully',
+        modifiedCount: result.modifiedCount,
+        isPlayingThisWeek: isPlayingThisWeek,
+      })
+    } catch (error) {
+      console.error('Error updating players:', error)
+      res.status(500).json({ success: false, error: error.message })
+    }
+  }
+)
+
 // Check if user is authenticated
 router.get('/auth/check', auth, (req, res) => {
   res

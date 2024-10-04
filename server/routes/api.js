@@ -35,29 +35,25 @@ const router = express.Router()
 //   }
 // )
 
-// login route
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body
     const user = await User.findOne({ username })
-
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
-
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
-
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
-
     res.cookie('token', token, {
       httpOnly: true,
-      maxAge: 3600000,
-      sameSite: 'strict',
+      secure: true, // Always use secure cookies in production
+      sameSite: 'none', // Required for cross-site cookie setting
+      maxAge: 3600000, // 1 hour
     })
     res.status(200).json({ success: true })
   } catch (error) {
@@ -217,8 +213,8 @@ router.post(
 
 // Check if user is authenticated
 router.get('/auth/check', auth, (req, res) => {
-  // If the user reaches here, the auth middleware has validated the JWT
-  res.status(200).json({ success: true, message: 'Authenticated' })
+  res
+    .status(200)
+    .json({ success: true, message: 'Authenticated', userId: req.userId })
 })
-
 export default router

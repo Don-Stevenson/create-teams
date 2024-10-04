@@ -8,9 +8,12 @@ export default function withAuth(WrappedComponent) {
 
     useEffect(() => {
       const checkAuth = async () => {
-        const res = await fetch('http://localhost:5050/api/auth/check', {
-          credentials: 'include',
-        })
+        const res = await fetch(
+          'https://loons-team-balancer.onrender.com/api/auth/check',
+          {
+            credentials: 'include',
+          }
+        )
         if (!res.ok) {
           router.replace('/login')
         }

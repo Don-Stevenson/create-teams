@@ -14,14 +14,17 @@ export default function LoginForm() {
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      const response = await fetch('http://localhost:5050/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include',
-      })
+      const response = await fetch(
+        'https://loons-team-balancer.onrender.com/api/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+          credentials: 'include',
+        }
+      )
       if (!response.ok) {
         throw new Error('Login failed')
         setError(true)

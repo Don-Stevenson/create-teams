@@ -20,6 +20,7 @@ export default function withAuth(WrappedComponent) {
           }
         } catch (error) {
           console.error('Auth check failed:', error)
+
           router.replace('/login')
         }
       }

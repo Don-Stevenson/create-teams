@@ -127,9 +127,9 @@ export default function CreateTeams() {
   }
 
   return (
-    <div className="flex flex-col bg-white rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
+    <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
       <div className="flex-col flex-wrap">
-        <h2 className="text-2xl font-semibold mb-4 print:hidden">
+        <h2 className="text-2xl font-semibold mb-4 print:hidden text-loonsDarkBrown">
           Player List
         </h2>
         <PlayerListToggleIsPlaying
@@ -157,7 +157,7 @@ export default function CreateTeams() {
         </div>
         <div className="flex items-center justify-between print:hidden">
           <button
-            className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden"
+            className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden mb-4"
             onClick={handleBalanceTeams}
           >
             Create Balanced Teams
@@ -166,14 +166,14 @@ export default function CreateTeams() {
         {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
         {balancedTeams && (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex justify-center gap-5 m-2 flex-wrap print:m-1 print:gap-1">
+            <div className="flex justify-center gap-5 flex-wrap print:m-1 print:gap-1">
               {balancedTeams.map((team, index) => (
                 <Droppable key={index} droppableId={index.toString()}>
                   {provided => (
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={`flex flex-col mb-6 p-4 rounded max-w-[600px] border-4 print:max-w-[400px] print:m-1 print:p-1 print:text-sm print:max-h-[900px] print:mb-0 ${
+                      className={`flex flex-col p-4 rounded max-w-[600px] border-4 print:max-w-[400px] print:m-2 print:p-2 print:text-sm print:max-h-[900px] print:mb-0 ${
                         index % 2 === 0
                           ? 'border-loonsRed bg-red-200'
                           : 'border-gray-500 bg-gray-200'
@@ -226,7 +226,7 @@ export default function CreateTeams() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="hover:bg-blue-300 max-w-[190px] rounded"
+                                  className="border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1"
                                 >
                                   {player.name}
                                 </li>

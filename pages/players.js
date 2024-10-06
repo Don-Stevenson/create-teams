@@ -118,7 +118,7 @@ function Players() {
   return (
     <Layout>
       <div className="flex-col px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-loonsRed">
+        <h1 className="text-3xl font-bold mb-8 text-loonsDarkBrown">
           Manage Players
         </h1>
         <h2
@@ -134,7 +134,9 @@ function Players() {
           />
         )}
         <div>
-          <h2 className="text-2xl font-semibold mb-4">List of Players</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-loonsDarkBrown">
+            List of Players
+          </h2>
           <PlayerList
             fetchPlayers={fetchPlayers}
             players={sortedPlayers}
@@ -152,7 +154,7 @@ function Players() {
       )}
       {playerToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg">
+          <div className="p-6 rounded-lg">
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
             <p>Are you sure you want to delete {playerToDelete.name}?</p>
             <div className="flex justify-end mt-4">

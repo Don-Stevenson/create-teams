@@ -30,18 +30,12 @@ const About = () => {
           levels balanced. It even introduces slight randomness to ensure that
           teams vary week to week.
         </p>
-        <p className="text-lg leading-relaxed mb-4">
-          The app also tracks the ratio of players by gender to ensure
-          inclusivity. Whether the group has an even or odd number of players,
-          or an unbalanced mix of skillsets, the Loons Team Balancer aims for
-          fairness in team distribution, fostering an enjoyable game for all
-          participants.
-        </p>
         <p className="text-lg leading-relaxed">
-          Simply choose who's playing, select how many teams you'd like to
-          create, re-generate the teams again if you're not quite happy with the
-          results, and then print the created teams in the default, printer
-          friendly format.
+          Simply select who's playing and choose how many teams you'd like to
+          create. If you're not quite happy with the results, you can click
+          `create teams` again to re-generate the teams and or manually drag and
+          drop players. When you're happy with the teams, you can print the
+          teams in the default, printer friendly format.
         </p>
       </div>
     </Layout>

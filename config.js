@@ -1,5 +1,7 @@
 const config = {
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050',
+  apiUrl:
+    process.env.NEXT_PUBLIC_API_URL ||
+    'https://loons-team-balancer.onrender.com/',
 }
 
 export default config

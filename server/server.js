@@ -18,6 +18,13 @@ app.use(express.json({ limit: '10kb' }))
 app.use(cookieParser())
 app.use(helmet())
 
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+)
+
+
 const corsOptions = {
   origin: process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')

@@ -25,5 +25,10 @@
     "mongodb": "^6.9.0",
     "mongoose": "^8.6.3",
     "xss": "^1.0.15"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/hpp": "^0.2.6"
   }
 }

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import LoonsBadge from '../assets/img/TWSC.webp'
 import Image from 'next/image'
+import config from '../../../config'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')
@@ -14,7 +15,8 @@ export default function LoginForm() {
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      const response = await fetch('http://localhost:5050/api/login', {
+      const response = await fetch(`${config.apiUrl}/api/login`, {
+        mode: 'no-cors',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,14 +24,18 @@ export default function LoginForm() {
         body: JSON.stringify({ username, password }),
         credentials: 'include',
       })
+
       if (!response.ok) {
-        throw new Error('Login failed')
-        setError(true)
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Login failed')
       }
 
-      if (response.ok) {
+      const data = await response.json()
+      if (data.success) {
         setError(false)
         router.push('/')
+      } else {
+        setError(true)
       }
     } catch (error) {
       setError(true)

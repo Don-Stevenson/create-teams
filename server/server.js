@@ -17,12 +17,24 @@ const app = express()
 app.use(express.json({ limit: '10kb' }))
 app.use(cookieParser())
 app.use(helmet())
+
 app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: false,
   })
 )
+
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}
+
+app.use(cors(corsOptions))
+
 app.use(mongoSanitize())
 app.use(hpp())
 

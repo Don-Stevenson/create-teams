@@ -12,7 +12,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
           key={player._id}
           onClick={() => onTogglePlayingThisWeek(player._id)}
           className={`flex items-center justify-around max-w-[350px] p-[10px] border border-gray-300 rounded m-1 ${
-            player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-300'
+            player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-200'
           }`}
         >
           <span
@@ -29,7 +29,15 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
               onChange={() => onTogglePlayingThisWeek(player._id)}
               className="mr-2 bg-gray-500"
             />
-            <span className="text-sm">Playing?</span>
+            <span
+              className={`
+              ${
+                player.isPlayingThisWeek ? 'text-black' : 'text-gray-400'
+              } text-sm
+            `}
+            >
+              Playing
+            </span>
           </label>
         </li>
       ))}

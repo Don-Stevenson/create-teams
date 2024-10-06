@@ -24,20 +24,29 @@ app.use(
   })
 )
 
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // Frontend origin
+    credentials: true, // Allow sending cookies and credentials
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  })
+)
 
-const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',')
-    : 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}
+// const corsOptions = {
+//   origin: process.env.ALLOWED_ORIGINS
+//     ? process.env.ALLOWED_ORIGINS.split(',')
+//     : 'http://localhost:3000',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 
 app.use(mongoSanitize())
 app.use(hpp())
+app.options('*', cors()) // Allow preflight requests for all routes
 
 // XSS sanitization middleware
 const sanitizeInput = (req, res, next) => {

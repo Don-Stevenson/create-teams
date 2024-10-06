@@ -16,7 +16,6 @@ export default function LoginForm() {
     e.preventDefault()
     try {
       const response = await fetch(`${config.apiUrl}/api/login`, {
-        mode: 'no-cors',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,7 +23,6 @@ export default function LoginForm() {
         body: JSON.stringify({ username, password }),
         credentials: 'include',
       })
-
 
       if (!response.ok) {
         const errorData = await response.json()

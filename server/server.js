@@ -33,17 +33,6 @@ app.use(
   })
 )
 
-// const corsOptions = {
-//   origin: process.env.ALLOWED_ORIGINS
-//     ? process.env.ALLOWED_ORIGINS.split(',')
-//     : 'http://localhost:3000',
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }
-
-// app.use(cors(corsOptions))
-
 app.use(mongoSanitize())
 app.use(hpp())
 app.options('*', cors()) // Allow preflight requests for all routes

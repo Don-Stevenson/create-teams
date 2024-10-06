@@ -4,6 +4,4 @@ const config = {
     'https://loons-team-balancer.onrender.com/',
 }
 
-console.log(config.apiUrl)
-
 export default config

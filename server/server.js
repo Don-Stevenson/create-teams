@@ -24,6 +24,7 @@ app.use(
   })
 )
 
+
 const corsOptions = {
   origin: process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')

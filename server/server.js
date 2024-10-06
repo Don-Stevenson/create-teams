@@ -26,7 +26,7 @@ app.use(
 
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Frontend origin
+    origin: 'https://create-teams.vercel.app', // Frontend origin
     credentials: true, // Allow sending cookies and credentials
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers

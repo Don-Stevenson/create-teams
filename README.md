@@ -4,27 +4,27 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 #### Start server
 
-`npm run server`
+```bash
+npm run server
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-You will require a`config.env` at root level:
+You will require a`.env` at root level:
 
-`ATLAS_URI=mongodb+srv://username:password@cluster0.pczcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0\
-PORT=5050\
-JWT_SECRET=\***\*\*\*\*\*\***`
+```
+ATLAS_URI=mongodb+srv://user:pass@cluster0.pczcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+PORT=5050
+JWT_SECRET=SECRET
+NEXT_PUBLIC_API_URL=http://localhost:5050
+ORIGIN_URL=http://localhost:3000
+```
 
 to generate the JWT_SECRET use:
 <nobr>`node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`</nobr>

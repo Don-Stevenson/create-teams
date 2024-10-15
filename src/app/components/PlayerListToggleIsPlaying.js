@@ -7,10 +7,9 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
 
   return (
     <ul className="grid grid-cols-[repeat(auto-fill,_minmax(320px,_1fr))] gap-1 w-full p-2 m-2 print:hidden flex-shrink">
-      {sortedPlayers.map((player, index) => (
+      {sortedPlayers.map(player => (
         <li
           key={player._id}
-          onClick={() => onTogglePlayingThisWeek(player._id)}
           className={`flex items-center justify-around max-w-[350px] p-[10px] border border-gray-300 rounded m-1 ${
             player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-200'
           }`}

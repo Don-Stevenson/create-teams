@@ -107,7 +107,7 @@ router.post(
 // PUT update player's weekly status
 router.put(
   '/players/:id',
-  validate([body('isPlayingThisWeek').isBoolean()]),
+  validate(playerValidationRules),
   async (req, res, next) => {
     try {
       const updatedPlayer = await Player.findByIdAndUpdate(
@@ -200,6 +200,38 @@ router.post(
       res.json(balancedTeams)
     } catch (err) {
       next(err)
+    }
+  }
+)
+
+// Route for bulk updating players is playing this week
+router.put(
+  '/players-bulk-update',
+  [
+    body('isPlayingThisWeek')
+      .isBoolean()
+      .withMessage('isPlayingThisWeek must be a boolean value'),
+  ],
+  async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    try {
+      const { isPlayingThisWeek } = req.body
+      const result = await Player.updateMany(
+        {},
+        { $set: { isPlayingThisWeek: isPlayingThisWeek } }
+      )
+
+      res.status(200).json({
+        success: true,
+        message: 'All players updated successfully',
+      })
+    } catch (error) {
+      console.error('Error updating players:', error)
+      res.status(500).json({ success: false, error: error.message })
     }
   }
 )

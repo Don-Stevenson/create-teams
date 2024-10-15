@@ -147,10 +147,10 @@ function Players() {
       )}
       {playerToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="p-6 rounded-lg">
+          <div className="p-6 rounded-lg bg-white w-[260px] sm:w-[350px]">
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
             <p>Are you sure you want to delete {playerToDelete.name}?</p>
-            <div className="flex justify-end mt-4">
+            <div className="flex sm:justify-end justify-between mt-4">
               <button
                 onClick={cancelDelete}
                 className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"

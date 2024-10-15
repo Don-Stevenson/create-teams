@@ -30,39 +30,33 @@ export default function CreateTeams() {
 
   const handleTogglePlayingThisWeek = async playerId => {
     try {
-      const playerToUpdate = players.find(p => p._id === playerId)
-      const updatedPlayer = {
-        ...playerToUpdate,
-        isPlayingThisWeek: !playerToUpdate.isPlayingThisWeek,
-      }
+      const updatedPlayers = players.map(player => {
+        if (player._id === playerId) {
+          const updatedPlayer = {
+            ...player,
+            isPlayingThisWeek: !player.isPlayingThisWeek,
+          }
+          api
+            .put(`/players/${playerId}`, {
+              ...updatedPlayer,
+              isPlayingThisWeek: updatedPlayer.isPlayingThisWeek.toString(),
+            })
+            .catch(error => {
+              console.error('Failed to update player:', error)
+              throw error
+            })
 
-      await api.put(`/players/${playerId}`, {
-        ...updatedPlayer,
-        isPlayingThisWeek: updatedPlayer.isPlayingThisWeek.toString(),
+          return updatedPlayer
+        }
+        return player
       })
-      setPlayers(
-        players.map(player =>
-          player._id === playerId
-            ? { ...player, isPlayingThisWeek: !player.isPlayingThisWeek }
-            : player
-        )
-      )
-      const updatedPlayers = players.map(player =>
-        player._id === playerId
-          ? { ...player, isPlayingThisWeek: !player.isPlayingThisWeek }
-          : player
-      )
+
       setPlayers(updatedPlayers)
-      setSelectAll(updatedPlayers.every(player => player.isPlayingThisWeek))
-
-      await api.put(`/players/${playerId}`, {
-        ...playerToUpdate,
-        isPlayingThisWeek: playerToUpdate.isPlayingThisWeek.toString(),
-      })
     } catch (error) {
       console.error('Failed to update player:', error)
     }
   }
+
   const handleSelectAll = async () => {
     const newSelectAllState = !selectAll
     setSelectAll(newSelectAllState)
@@ -74,11 +68,9 @@ export default function CreateTeams() {
       }))
       setPlayers(updatedPlayers)
 
-      // Send a single API call to update all players
       const response = await api.put('/players-bulk-update', {
-        isPlayingThisWeek: newSelectAllState,
+        isPlayingThisWeek: newSelectAllState.toString(),
       })
-      console.log('Bulk update response:', response.data)
     } catch (error) {
       console.error(
         'Failed to update all players:',
@@ -176,7 +168,9 @@ export default function CreateTeams() {
               checked={selectAll}
               onChange={handleSelectAll}
             />
-            <span className="ml-2 text-gray-700">Select All Players</span>
+            <span className="ml-2 text-gray-700 text-sm">
+              Toogle All Players Playing / Not Playing
+            </span>
           </label>
         </div>
         <PlayerListToggleIsPlaying

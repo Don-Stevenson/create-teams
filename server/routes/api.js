@@ -215,19 +215,11 @@ router.put(
   async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      console.log('Validation errors:', errors.array())
-      console.log('Request body:', req.body)
       return res.status(400).json({ errors: errors.array() })
     }
 
     try {
       const { isPlayingThisWeek } = req.body
-      console.log(
-        'Received isPlayingThisWeek:',
-        isPlayingThisWeek,
-        typeof isPlayingThisWeek
-      )
-
       const result = await Player.updateMany(
         {},
         { $set: { isPlayingThisWeek: isPlayingThisWeek } }
@@ -236,8 +228,6 @@ router.put(
       res.status(200).json({
         success: true,
         message: 'All players updated successfully',
-        modifiedCount: result.modifiedCount,
-        isPlayingThisWeek: isPlayingThisWeek,
       })
     } catch (error) {
       console.error('Error updating players:', error)

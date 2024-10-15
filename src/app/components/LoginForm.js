@@ -23,7 +23,6 @@ export default function LoginForm() {
         body: JSON.stringify({ username, password }),
         credentials: 'include',
       })
-      console.log({ response })
 
       if (!response.ok) {
         const errorData = await response.json()

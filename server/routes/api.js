@@ -75,6 +75,7 @@ const playerValidationRules = [
   body('defenseScore').isInt({ min: 0, max: 50 }),
   body('fitnessScore').isInt({ min: 0, max: 50 }),
   body('gender').isIn(['male', 'female', 'nonBinary']),
+  body('isPlayingThisWeek').isBoolean(),
 ]
 
 // GET all players
@@ -97,6 +98,7 @@ router.post(
       const newPlayer = await player.save()
       res.status(201).json(newPlayer)
     } catch (err) {
+      console.error(err)
       next(err)
     }
   }
@@ -130,12 +132,7 @@ router.put(
     body('attackScore').isInt({ min: 0, max: 50 }),
     body('defenseScore').isInt({ min: 0, max: 50 }),
     body('fitnessScore').isInt({ min: 0, max: 50 }),
-    body('isPlayingThisWeek').custom(value => {
-      if (value === 'true' || value === 'false' || typeof value === 'boolean') {
-        return true
-      }
-      throw new Error('isPlayingThisWeek must be a boolean or "true"/"false"')
-    }),
+    body('isPlayingThisWeek').isBoolean(),
     body('gender').isIn(['male', 'female', 'nonBinary']),
   ]),
   async (req, res, next) => {
@@ -150,8 +147,8 @@ router.put(
       } = req.body
 
       // Convert isPlayingThisWeek to boolean
-      const isPlaying =
-        isPlayingThisWeek === 'true' || isPlayingThisWeek === true
+      // const isPlaying =
+      //   isPlayingThisWeek === 'true' || isPlayingThisWeek === true
 
       const updatedPlayer = await Player.findByIdAndUpdate(
         req.params.id,
@@ -160,7 +157,7 @@ router.put(
           attackScore: Number(attackScore),
           defenseScore: Number(defenseScore),
           fitnessScore: Number(fitnessScore),
-          isPlayingThisWeek: isPlaying,
+          isPlayingThisWeek: Boolean(isPlayingThisWeek),
           gender,
         },
         { new: true, runValidators: true }

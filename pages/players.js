@@ -35,14 +35,7 @@ function Players() {
 
   const addPlayer = async newPlayer => {
     try {
-      const res = await api.post('/players', newPlayer)
-      setPlayers(prevPlayers => [
-        ...prevPlayers,
-        {
-          ...res.data,
-          isPlayingThisWeek: Boolean(res.data.isPlayingThisWeek),
-        },
-      ])
+      setPlayers(prevPlayers => [...prevPlayers, newPlayer])
       setShowAddPlayer(false)
     } catch (error) {
       console.error('Failed to add player:', error)

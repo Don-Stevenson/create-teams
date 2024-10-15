@@ -1,6 +1,7 @@
 // components/Logout.js
-import api from '../../../utils/api'
+
 import { useRouter } from 'next/router'
+import config_url from '../../../config'
 
 export default function Logout() {
   const router = useRouter()
@@ -8,16 +9,13 @@ export default function Logout() {
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      const response = await fetch(
-        'https://loons-team-balancer.onrender.com/api/logout',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        }
-      )
+      const response = await fetch(`${config_url}/api/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      })
       if (!response.ok) {
         throw new Error('Logout failed')
       }

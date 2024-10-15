@@ -1,8 +1,9 @@
 // utils/api.js
 import axios from 'axios'
+import config_url from '../config'
 
 const api = axios.create({
-  baseURL: 'https://loons-team-balancer.onrender.com/api/',
+  baseURL: `${config_url}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },

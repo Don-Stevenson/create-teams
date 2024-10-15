@@ -13,6 +13,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
           className={`flex items-center justify-around max-w-[350px] p-[10px] border border-gray-300 rounded m-1 ${
             player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-200'
           }`}
+          onClick={() => onTogglePlayingThisWeek(player._id)}
         >
           <span
             className={
@@ -25,8 +26,8 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
             <input
               type="checkbox"
               checked={player.isPlayingThisWeek}
-              onChange={() => onTogglePlayingThisWeek(player._id)}
               className="mr-2 bg-gray-500"
+              readOnly
             />
             <span
               className={`

@@ -107,7 +107,7 @@ router.post(
 // PUT update player's weekly status
 router.put(
   '/players/:id',
-  validate([body('isPlayingThisWeek').isBoolean()]),
+  validate(playerValidationRules),
   async (req, res, next) => {
     try {
       const updatedPlayer = await Player.findByIdAndUpdate(

@@ -52,6 +52,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           id="name"
           type="text"
           name="name"
+          placeholder="name"
           value={playerData.name}
           onChange={handleChange}
           required
@@ -68,7 +69,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="attackScore"
           type="number"
-          placeholder="1-50"
+          placeholder="5-50"
           name="attackScore"
           value={playerData.attackScore}
           onChange={handleChange}
@@ -86,7 +87,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="defenseScore"
           type="number"
-          placeholder="1-50"
+          placeholder="5-50"
           name="defenseScore"
           value={playerData.defenseScore}
           onChange={handleChange}
@@ -104,7 +105,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="fitnessScore"
           type="number"
-          placeholder="1-50"
+          placeholder="5-50"
           name="fitnessScore"
           value={playerData.fitnessScore}
           onChange={handleChange}

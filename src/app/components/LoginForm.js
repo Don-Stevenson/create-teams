@@ -49,7 +49,12 @@ export default function LoginForm() {
         <link rel="icon" href="/TWSC_Badge.webp" type="image/webp" />
       </Head>
       <div className="flex flex-col items-center justify-center mt-20 gap-2">
-        <Image width={100} height={125} src={LoonsBadge} />
+        <Image
+          width={100}
+          height={125}
+          src={LoonsBadge}
+          alt="Toronto Walking Soccer Loons Club Logo"
+        />
         <div className="flex bg-loonsDarkBrown z-0 w-[248px] justify-center h-[168px] items-center rounded mb-4">
           <div className="flex items-center justify-center text-3xl font-bold border-[8px] border-loonsRed rounded bg-loonsBrown w-60 text-loonsBeige text-center h-40 z-10">
             Loons Team Balancer

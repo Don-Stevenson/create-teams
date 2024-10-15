@@ -186,16 +186,16 @@ export default function CreateTeams() {
                         {Math.floor(index / 2) + 1}
                       </h3>
                       <p className="text-lg print:hidden">
-                        Team Total Score: {team.totalScore.toFixed(2)}
+                        Team Total Score: {Math.round(team.totalScore)}
                       </p>
                       <p className="text-sm print:hidden">
-                        Total Attack: {team.totalAttackScore.toFixed(2)}
+                        Total Attack: {Math.round(team.totalAttackScore)}
                       </p>
                       <p className="text-sm print:hidden">
-                        Total Defense: {team.totalDefenseScore.toFixed(2)}
+                        Total Defense: {Math.round(team.totalDefenseScore)}
                       </p>
                       <p className="text-sm print:hidden">
-                        Total Fitness: {team.fitnessScore.toFixed(2)}
+                        Total Fitness: {Math.round(team.fitnessScore)}
                       </p>
                       <p>
                         Total No of Players:{' '}

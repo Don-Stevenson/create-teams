@@ -35,11 +35,10 @@ export default function CreateTeams() {
         isPlayingThisWeek: !playerToUpdate.isPlayingThisWeek,
       }
 
-      const res = await api.put(`/players/${playerId}/playerInfo`, {
+      await api.put(`/players/${playerId}`, {
         ...updatedPlayer,
         isPlayingThisWeek: updatedPlayer.isPlayingThisWeek.toString(),
       })
-
       setPlayers(
         players.map(player =>
           player._id === playerId

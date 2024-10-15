@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import LoonsBadge from '../assets/img/TWSC.webp'
 import Image from 'next/image'
-import config from '../../../config'
+import config_url from '../../../config'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')
@@ -15,7 +15,7 @@ export default function LoginForm() {
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      const response = await fetch(`${config.apiUrl}/api/login`, {
+      const response = await fetch(`${config_url}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

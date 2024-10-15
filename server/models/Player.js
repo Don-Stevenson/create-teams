@@ -41,7 +41,4 @@ const PlayerSchema = new mongoose.Schema(
   }
 )
 
-PlayerSchema.index({ name: 1 })
-PlayerSchema.index({ isPlayingThisWeek: 1 })
-
 export default mongoose.model('Player', PlayerSchema)

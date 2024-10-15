@@ -8,6 +8,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
     defenseScore: '',
     fitnessScore: '',
     gender: '',
+    isPlayingThisWeek: true,
   })
   const [error, setError] = useState(null)
 
@@ -23,6 +24,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
         defenseScore: '',
         fitnessScore: '',
         gender: '',
+        isPlayingThisWeek: true,
       })
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred')

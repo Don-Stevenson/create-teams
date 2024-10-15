@@ -1,7 +1,3 @@
-const config = {
-  apiUrl:
-    process.env.NEXT_PUBLIC_API_URL ||
-    'https://loons-team-balancer.onrender.com',
-}
+const config_url = process.env.NEXT_PUBLIC_API_URL
 
-export default config
+export default config_url

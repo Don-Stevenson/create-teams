@@ -6,6 +6,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 export default function CreateTeams() {
   const [numTeams, setNumTeams] = useState(2)
   const [balancedTeams, setBalancedTeams] = useState(null)
+  const [totalPlayers, setTotalPlayers] = useState(0)
   const [error, setError] = useState(null)
   const [players, setPlayers] = useState([])
   const [selectAll, setSelectAll] = useState(false)
@@ -84,7 +85,8 @@ export default function CreateTeams() {
     setError(null)
     try {
       const res = await api.post('/balance-teams', { numTeams })
-      setBalancedTeams(res.data)
+      setTotalPlayers(res.data.totalPlayersPlaying)
+      setBalancedTeams(res.data.teams)
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred')
     }
@@ -160,7 +162,7 @@ export default function CreateTeams() {
         <h2 className="text-2xl font-semibold mb-4 print:hidden text-loonsDarkBrown">
           Player List
         </h2>
-        <div className="mb-4 print:hidden">
+        <div className="flex justify-start md:justify-center mb-4 print:hidden">
           <label className="inline-flex items-center">
             <input
               type="checkbox"
@@ -207,6 +209,9 @@ export default function CreateTeams() {
         {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
         {balancedTeams && (
           <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex justify-center mb-4 flex-wrap text-xlprint:m-1 print:gap-1">
+              Total Number of People Playing: {totalPlayers}
+            </div>
             <div className="flex justify-center gap-5 flex-wrap print:m-1 print:gap-1">
               {balancedTeams.map((team, index) => (
                 <Droppable key={index} droppableId={index.toString()}>

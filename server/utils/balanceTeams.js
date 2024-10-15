@@ -3,6 +3,8 @@ function balanceTeams(players, numTeams) {
     ...players.filter(player => player.isPlayingThisWeek),
   ]
 
+  const totalPlayersPlaying = playersThisWeek.length
+
   const teams = Array.from({ length: numTeams }, () => ({
     players: [],
     totalScore: 0,
@@ -51,7 +53,7 @@ function balanceTeams(players, numTeams) {
     team.fitnessScore += player.fitnessScore
     team.genderCount[player.gender]++
   }
-  return teams
-}
 
+  return { teams, totalPlayersPlaying }
+}
 export default balanceTeams

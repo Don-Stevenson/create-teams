@@ -192,7 +192,7 @@ router.delete('/players/:id', async (req, res, next) => {
 // POST balance teams
 router.post(
   '/balance-teams',
-  validate([body('numTeams').isInt({ min: 2, max: 10 })]),
+  validate([body('numTeams').isInt({ min: 2 })]),
   async (req, res, next) => {
     try {
       const playingPlayers = await Player.find({ isPlayingThisWeek: true })

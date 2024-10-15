@@ -27,7 +27,10 @@ ORIGIN_URL=http://localhost:3000
 ```
 
 to generate the JWT_SECRET use:
-<nobr>`node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`</nobr>
+
+```
+node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"
+```
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 

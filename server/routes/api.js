@@ -51,9 +51,9 @@ router.post('/login', async (req, res) => {
     })
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true, // Always use secure cookies in production
-      sameSite: 'none', // Required for cross-site cookie setting
-      maxAge: 3600000, // 1 hour
+      secure: true,
+      sameSite: 'none',
+      maxAge: 3600000,
     })
     res.status(200).json({ success: true })
   } catch (error) {
@@ -145,10 +145,6 @@ router.put(
         isPlayingThisWeek,
         gender,
       } = req.body
-
-      // Convert isPlayingThisWeek to boolean
-      // const isPlaying =
-      //   isPlayingThisWeek === 'true' || isPlayingThisWeek === true
 
       const updatedPlayer = await Player.findByIdAndUpdate(
         req.params.id,

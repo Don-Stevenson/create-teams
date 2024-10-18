@@ -25,13 +25,13 @@ const PlayerList = ({
               <button
                 onClick={() => onEditPlayer(player._id)}
                 className="border border-gray-300 text-black text-sm font-bold py-1 px-2 rounded h-[45px] w-[60px]"
-                data-testId="edit-player"
+                data-testid="edit-player"
               >
                 Edit
               </button>
               <button
                 onClick={() => onDeletePlayer(player._id)}
-                data-testId="delete-player"
+                data-testid="delete-player"
                 className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 text-sm font-bold py-1 px-2 h-[45px] rounded w-[60px]"
               >
                 Delete

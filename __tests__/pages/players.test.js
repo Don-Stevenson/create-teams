@@ -1,4 +1,3 @@
-// __tests__/pages/players.test.js
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
@@ -6,12 +5,6 @@ import Players from '../../pages/players'
 import api from '../../utils/api'
 import PlayerList from '../../src/app/components/PlayerList'
 
-// Mock the dependencies
-
-// jest.mock('../../utils/api', () => ({
-//   get: jest.fn(),
-//   put: jest.fn(),
-// }))
 jest.mock('../../utils/api')
 jest.mock('../../src/app/components/withAuth', () => {
   return jest.fn(Component => {
@@ -26,7 +19,6 @@ jest.mock('../../src/app/components/Layout', () => {
   ))
 })
 
-// Mock player data
 const mockPlayers = [
   {
     _id: '1',
@@ -54,7 +46,7 @@ describe('Players Page', () => {
 
   describe('Rendering', () => {
     it('renders the page with correct headings', async () => {
-      render(<Players />)
+      await act(async () => render(<Players />))
 
       expect(screen.getByText('Manage Players')).toBeInTheDocument()
       expect(screen.getByText('Add A New Player')).toBeInTheDocument()
@@ -122,19 +114,17 @@ describe('Players Page', () => {
       const submitButton = screen.getByRole('button', { name: /add player/i })
       await user.click(submitButton)
 
-      await waitFor(() => {
-        expect(api.post).toHaveBeenCalledWith(
-          '/players',
-          expect.objectContaining({
-            name: newPlayer.name,
-            attackScore: newPlayer.attackScore,
-            defenseScore: newPlayer.defenseScore,
-            fitnessScore: newPlayer.fitnessScore,
-            gender: newPlayer.gender,
-            isPlayingThisWeek: newPlayer.isPlayingThisWeek,
-          })
-        )
-      })
+      expect(api.post).toHaveBeenCalledWith(
+        '/players',
+        expect.objectContaining({
+          name: newPlayer.name,
+          attackScore: newPlayer.attackScore,
+          defenseScore: newPlayer.defenseScore,
+          fitnessScore: newPlayer.fitnessScore,
+          gender: newPlayer.gender,
+          isPlayingThisWeek: newPlayer.isPlayingThisWeek,
+        })
+      )
     })
   })
 
@@ -145,8 +135,8 @@ describe('Players Page', () => {
       await waitFor(() => {
         const editButton = screen.getAllByTestId('edit-player')[0]
         fireEvent.click(editButton)
-        expect(screen.getByTestId('edit-player-modal')).toBeInTheDocument()
       })
+      expect(screen.getByTestId('edit-player-modal')).toBeInTheDocument()
     })
 
     describe('PlayerList', () => {
@@ -234,6 +224,7 @@ describe('Players Page', () => {
 
       consoleSpy.mockRestore()
     })
+
     it('handles update error gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
@@ -271,12 +262,10 @@ describe('Players Page', () => {
         fireEvent.submit(saveChangesButton)
       })
 
-      await waitFor(() => {
-        expect(console.error).toHaveBeenCalledWith(
-          'Failed to update player:',
-          mockError
-        )
-      })
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to update player:',
+        mockError
+      )
 
       expect(modal).toBeInTheDocument()
       expect(nameInput.value).toBe('John Doe Updated')

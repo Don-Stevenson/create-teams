@@ -1,10 +1,8 @@
-// __tests__/pages/index.js
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Layout from '../../src/app/components/Layout'
 import BalanceTeamsPage from '../../pages/index'
 
-// Mock the child components
 jest.mock('../../src/app/components/Layout', () => {
   return jest.fn(({ children }) => (
     <div data-testid="mock-layout">{children}</div>
@@ -17,7 +15,6 @@ jest.mock('../../src/app/components/CreateTeams', () => {
   ))
 })
 
-// Mock the authentication HOC
 jest.mock('../../src/app/components/withAuth', () => {
   return jest.fn(Component => {
     const WithAuthComponent = props => <Component {...props} />
@@ -28,7 +25,6 @@ jest.mock('../../src/app/components/withAuth', () => {
 
 describe('Home Page / balance teams', () => {
   beforeEach(() => {
-    // Clear all mocks before each test
     jest.clearAllMocks()
   })
 

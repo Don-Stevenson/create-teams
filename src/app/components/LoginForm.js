@@ -43,7 +43,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} data-testid="login-form">
       <Head>
         <title>Loons Team Balancer App</title>
         <link rel="icon" href="/TWSC_Badge.webp" type="image/webp" />

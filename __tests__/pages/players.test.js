@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-// __tests__/pages/players.test.js
->>>>>>> 6beb046 (WIP: Add jest set up, players and index test)
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
@@ -9,15 +5,6 @@ import Players from '../../pages/players'
 import api from '../../utils/api'
 import PlayerList from '../../src/app/components/PlayerList'
 
-<<<<<<< HEAD
-=======
-// Mock the dependencies
-
-// jest.mock('../../utils/api', () => ({
-//   get: jest.fn(),
-//   put: jest.fn(),
-// }))
->>>>>>> 6beb046 (WIP: Add jest set up, players and index test)
 jest.mock('../../utils/api')
 jest.mock('../../src/app/components/withAuth', () => {
   return jest.fn(Component => {
@@ -32,10 +19,6 @@ jest.mock('../../src/app/components/Layout', () => {
   ))
 })
 
-<<<<<<< HEAD
-=======
-// Mock player data
->>>>>>> 6beb046 (WIP: Add jest set up, players and index test)
 const mockPlayers = [
   {
     _id: '1',
@@ -63,11 +46,7 @@ describe('Players Page', () => {
 
   describe('Rendering', () => {
     it('renders the page with correct headings', async () => {
-<<<<<<< HEAD
       await act(async () => render(<Players />))
-=======
-      render(<Players />)
->>>>>>> 6beb046 (WIP: Add jest set up, players and index test)
 
       expect(screen.getByText('Manage Players')).toBeInTheDocument()
       expect(screen.getByText('Add A New Player')).toBeInTheDocument()
@@ -135,7 +114,6 @@ describe('Players Page', () => {
       const submitButton = screen.getByRole('button', { name: /add player/i })
       await user.click(submitButton)
 
-<<<<<<< HEAD
       expect(api.post).toHaveBeenCalledWith(
         '/players',
         expect.objectContaining({
@@ -147,21 +125,6 @@ describe('Players Page', () => {
           isPlayingThisWeek: newPlayer.isPlayingThisWeek,
         })
       )
-=======
-      await waitFor(() => {
-        expect(api.post).toHaveBeenCalledWith(
-          '/players',
-          expect.objectContaining({
-            name: newPlayer.name,
-            attackScore: newPlayer.attackScore,
-            defenseScore: newPlayer.defenseScore,
-            fitnessScore: newPlayer.fitnessScore,
-            gender: newPlayer.gender,
-            isPlayingThisWeek: newPlayer.isPlayingThisWeek,
-          })
-        )
-      })
->>>>>>> 6beb046 (WIP: Add jest set up, players and index test)
     })
   })
 
@@ -261,6 +224,7 @@ describe('Players Page', () => {
 
       consoleSpy.mockRestore()
     })
+
     it('handles update error gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 

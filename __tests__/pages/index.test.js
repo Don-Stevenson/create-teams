@@ -69,4 +69,8 @@ describe('Home Page / balance teams', () => {
       )
     })
   })
+  it('matches snapshot', () => {
+    const { container } = render(<BalanceTeamsPage />)
+    expect(container).toMatchSnapshot()
+  })
 })

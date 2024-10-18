@@ -273,4 +273,9 @@ describe('Players Page', () => {
       consoleSpy.mockRestore()
     })
   })
+
+  it('matches snapshot', () => {
+    const { container } = render(<Players />)
+    expect(container).toMatchSnapshot()
+  })
 })

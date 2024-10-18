@@ -39,6 +39,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
     <form
       onSubmit={handleSubmit}
       className="bg-white rounded px-8 pt-6 pb-8 mb-4 w-[400px]"
+      data-testid="add-player-form"
     >
       <div className="mb-4">
         <label

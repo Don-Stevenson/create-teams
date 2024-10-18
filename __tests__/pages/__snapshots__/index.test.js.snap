@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Home Page / balance teams matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+  >
+    <div
+      class="flex-col mx-auto px-4 py-8"
+    >
+      <h1
+        class="text-3xl font-bold mb-8 text-loonsRed print:hidden"
+      >
+        Create Teams
+      </h1>
+      <div
+        data-testid="mock-create-teams"
+      >
+        CreateTeams Component
+      </div>
+    </div>
+  </div>
+</div>
+`;

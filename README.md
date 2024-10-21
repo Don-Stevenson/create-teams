@@ -36,7 +36,13 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ### Testing:
 
-`npm test` or `npm run test:coverage` or `npm run test:watch`
+##### FE
+
+`npm run test:FE` or `npm run test:FE:coverage` or `npm run test:FE:watch`
+
+##### FE
+
+`cd server` then `npm run test:BE` or `npm run test:BE:coverage` or `npm run test:BE:watch`
 
 ### Deployment:
 

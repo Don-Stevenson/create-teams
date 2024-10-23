@@ -171,7 +171,7 @@ export default function CreateTeams() {
               onChange={handleSelectAll}
             />
             <span className="ml-2 text-gray-700 text-sm">
-              Toogle All Players Playing / Not Playing
+              Toggle All Players Playing / Not Playing
             </span>
           </label>
         </div>

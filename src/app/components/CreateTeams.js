@@ -251,8 +251,10 @@ export default function CreateTeams() {
                       </p>
                       <p className="print:hidden text-wrap">
                         Gender Distribution: Male - {team.genderCount.male},
-                        Female - {team.genderCount.female}, Non Binary -{' '}
-                        {team.genderCount.nonBinary}
+                        Female - {team.genderCount.female}
+                        {team.genderCount.nonBinary
+                          ? `, Non Binary - ${team.genderCount.nonBinary} `
+                          : ''}
                       </p>
                       <h4 className="font-semibold mt-2 print:hidden">
                         {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}

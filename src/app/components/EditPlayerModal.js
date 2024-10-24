@@ -51,7 +51,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="attackScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Attack Score (1-50)
+              Attack Score (5-50)
             </label>
             <input
               type="number"
@@ -70,7 +70,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="defenseScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Defense Score (1-50)
+              Defense Score (5-50)
             </label>
             <input
               type="number"
@@ -89,7 +89,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="fitnessScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Fitness Score (1-50)
+              Fitness Score (5-50)
             </label>
             <input
               type="number"

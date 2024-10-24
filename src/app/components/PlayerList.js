@@ -13,7 +13,7 @@ const PlayerList = ({
     <div className="grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-2 w-full p-2">
       {players.map(player => (
         <div key={player._id}>
-          <div className="flex justify-between mb-2 p-2 w-[350px] h-[75px] border border-gray-300 rounded hover:bg-gray-200 ">
+          <div className="flex justify-between mb-2 p-2 w-80 h-[75px] border border-gray-300 rounded hover:bg-gray-200 ">
             <div className="flex gap-2 p-2 items-center">
               <div>{player.name} </div>
               <div className="text-gray-400 text-xs">

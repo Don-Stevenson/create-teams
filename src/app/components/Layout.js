@@ -9,7 +9,7 @@ export default function Layout({ children }) {
         <title>Loons Team Balancer App</title>
         <link rel="icon" href="/TWSC_Badge.webp" type="image/webp" />
       </Head>
-      <div className="flex z-0 bg-loonsDarkBrown items-center justify-center min-w-[382px]">
+      <div className="flex z-0 bg-loonsDarkBrown items-center justify-center min-w-[10rem]">
         <nav className="flex justify-between border-[5px] m-2 w-full border-loonsRed rounded bg-loonsBrown text-loonsBeige p-4 print:hidden items-center">
           <div className="flex bg-loonsRed text-loonsBeige border border-red-900 font-semibold py-1 px-2 md:w-[350px] rounded text-center md:h-[45px] justify-center items-center mr-2 ">
             <h1 className="text-2xl font-bold">Loons Team Balancer</h1>

@@ -6,35 +6,36 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
   )
 
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,_minmax(320px,_1fr))] gap-1 w-full p-2 m-2 print:hidden flex-shrink">
+    <ul className="grid grid-cols-[repeat(auto-fill,_minmax(15.5rem,_1fr))] gap-4 w-full p-2 print:hidden">
       {sortedPlayers.map(player => (
         <li
           key={player._id}
-          className={`flex items-center justify-around max-w-[350px] p-[10px] border border-gray-300 rounded m-1 ${
+          className={`flex items-center gap-4 p-3 border border-gray-300 rounded ${
             player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-200'
           }`}
           onClick={() => onTogglePlayingThisWeek(player._id)}
         >
-          <span
-            className={
-              player.isPlayingThisWeek ? 'text-black' : 'text-gray-500'
-            }
-          >
-            {player.name}
-          </span>
-          <label className="flex items-center">
+          <div className="flex-1 min-w-0">
+            <span
+              className={`block truncate ${
+                player.isPlayingThisWeek ? 'text-black' : 'text-gray-400'
+              } hover:`}
+              title={player.name}
+            >
+              {player.name}
+            </span>
+          </div>
+          <label className="flex items-center gap-2 flex-shrink-0">
             <input
               type="checkbox"
               checked={player.isPlayingThisWeek}
-              className="mr-2 bg-gray-500"
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               readOnly
             />
             <span
-              className={`
-              ${
+              className={`text-xs whitespace-nowrap ${
                 player.isPlayingThisWeek ? 'text-black' : 'text-gray-400'
-              } text-sm
-            `}
+              }`}
             >
               Playing
             </span>
@@ -44,5 +45,4 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
     </ul>
   )
 }
-
 export default PlayerListToggleIsPlaying

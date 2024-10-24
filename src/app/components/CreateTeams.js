@@ -10,6 +10,7 @@ export default function CreateTeams() {
   const [error, setError] = useState(null)
   const [players, setPlayers] = useState([])
   const [selectAll, setSelectAll] = useState(false)
+  const [selectedPlayerCount, setSelectedPlayerCount] = useState(0)
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -21,6 +22,9 @@ export default function CreateTeams() {
         }))
         setPlayers(fetchedPlayers)
         setSelectAll(fetchedPlayers.every(player => player.isPlayingThisWeek))
+        setSelectedPlayerCount(
+          fetchedPlayers.filter(player => player.isPlayingThisWeek).length
+        )
       } catch (error) {
         console.error('Failed to fetch players:', error)
         setError('Failed to fetch players')
@@ -30,57 +34,72 @@ export default function CreateTeams() {
   }, [])
 
   const handleTogglePlayingThisWeek = async playerId => {
+    const playerToUpdate = players.find(player => player._id === playerId)
+    const newPlayingState = !playerToUpdate.isPlayingThisWeek
+
+    const updatedPlayers = players.map(player =>
+      player._id === playerId
+        ? { ...player, isPlayingThisWeek: newPlayingState }
+        : player
+    )
+
+    setPlayers(updatedPlayers)
+    setSelectedPlayerCount(
+      updatedPlayers.filter(p => p.isPlayingThisWeek).length
+    )
+    setSelectAll(updatedPlayers.every(player => player.isPlayingThisWeek))
+
     try {
-      const updatedPlayers = players.map(player => {
-        if (player._id === playerId) {
-          const updatedPlayer = {
-            ...player,
-            isPlayingThisWeek: !player.isPlayingThisWeek,
-          }
-          api
-            .put(`/players/${playerId}`, {
-              ...updatedPlayer,
-              isPlayingThisWeek: updatedPlayer.isPlayingThisWeek.toString(),
-            })
-            .catch(error => {
-              console.error('Failed to update player:', error)
-              throw error
-            })
-
-          return updatedPlayer
-        }
-        return player
+      await api.put(`/players/${playerId}`, {
+        ...playerToUpdate,
+        isPlayingThisWeek: newPlayingState.toString(),
       })
-
-      setPlayers(updatedPlayers)
     } catch (error) {
       console.error('Failed to update player:', error)
+
+      const revertedPlayers = players.map(player =>
+        player._id === playerId
+          ? { ...player, isPlayingThisWeek: !newPlayingState }
+          : player
+      )
+      setPlayers(revertedPlayers)
+      setSelectedPlayerCount(
+        revertedPlayers.filter(p => p.isPlayingThisWeek).length
+      )
+      setSelectAll(revertedPlayers.every(player => player.isPlayingThisWeek))
+      setError('Failed to update player status')
     }
   }
 
   const handleSelectAll = async () => {
     const newSelectAllState = !selectAll
+
+    const updatedPlayers = players.map(player => ({
+      ...player,
+      isPlayingThisWeek: newSelectAllState,
+    }))
+
+    setPlayers(updatedPlayers)
     setSelectAll(newSelectAllState)
+    setSelectedPlayerCount(newSelectAllState ? players.length : 0)
 
     try {
-      const updatedPlayers = players.map(player => ({
-        ...player,
-        isPlayingThisWeek: newSelectAllState,
-      }))
-      setPlayers(updatedPlayers)
-
-      const response = await api.put('/players-bulk-update', {
+      await api.put('/players-bulk-update', {
         isPlayingThisWeek: newSelectAllState.toString(),
       })
     } catch (error) {
-      console.error(
-        'Failed to update all players:',
-        error.response?.data || error.message
-      )
+      console.error('Failed to update all players:', error)
+
+      const revertedPlayers = players.map(player => ({
+        ...player,
+        isPlayingThisWeek: !newSelectAllState,
+      }))
+      setPlayers(revertedPlayers)
+      setSelectAll(!newSelectAllState)
+      setSelectedPlayerCount(!newSelectAllState ? players.length : 0)
       setError('Failed to update all players')
     }
   }
-
   const handleBalanceTeams = async () => {
     setError(null)
     try {
@@ -159,10 +178,17 @@ export default function CreateTeams() {
   return (
     <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
       <div className="flex-col flex-wrap">
-        <h2 className="text-2xl font-semibold mb-4 print:hidden text-loonsDarkBrown">
+        <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
           Player List
         </h2>
-        <div className="flex justify-start md:justify-center mb-4 print:hidden">
+        <p className="flex text-center md:justify-center text-xl font-medium text-gray-800 mb-4 print:hidden">
+          Total Players Selected:
+          <span className="font-bold  text-gray-800 text-xl">
+            {selectedPlayerCount}
+          </span>
+        </p>
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        <div className="flex md:justify-center mb-4 print:hidden">
           <label className="inline-flex items-center">
             <input
               type="checkbox"

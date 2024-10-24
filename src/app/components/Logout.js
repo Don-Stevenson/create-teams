@@ -28,14 +28,13 @@ export default function Logout() {
   }
 
   return (
-    <div className="flex flex-wrap print:hidden">
+    <>
       <button
-        className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-semibold py-1 px-2 min-w-[150px] rounded text-center items-center h-[35px] flex justify-center"
+        className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-semibold py-1 px-2 w-full sm:w-auto min-w-[150px] rounded text-center items-center h-[35px] flex justify-center"
         onClick={() => setShowModal(true)}
       >
         Logout
       </button>
-
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg sm:w-[350px] w-[280px]">
@@ -62,6 +61,6 @@ export default function Logout() {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }

@@ -10,7 +10,10 @@
     "lint": "next lint",
     "test:FE": "jest",
     "test:FE:watch": "jest --watch",
-    "test:FE:coverage": "npm run test:FE -- --coverage"
+    "test:FE:coverage": "npm run test:FE -- --coverage",
+    "test:BE": "cd server && node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:BE:watch": "cd server && node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:BE:coverage": "cd server && node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",

@@ -50,7 +50,7 @@ export default function Logout() {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-loonsRed text-loonsDarkBrown text-xs sm:text-sm rounded hover:bg-red-900"
+                className="px-4 py-2 bg-loonsRed text-loonsBeige text-xs sm:text-sm rounded hover:bg-red-900"
                 onClick={() => {
                   setShowModal(false)
                   handleLogout()

@@ -234,7 +234,7 @@ export default function CreateTeams() {
         {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
         {balancedTeams && (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex justify-center mb-4 flex-wrap text-xlprint:m-1 print:gap-1">
+            <div className="flex justify-center mb-4 flex-wrap text-xl print:m-1 print:gap-1 print:hidden">
               Total Number of People Playing: {totalPlayers}
             </div>
             <div className="flex justify-center gap-5 flex-wrap print:m-1 print:gap-1">
@@ -257,16 +257,16 @@ export default function CreateTeams() {
                         {Math.floor(index / 2) + 1}
                       </h3>
                       <p className="text-lg print:hidden">
-                        Team Total Score: {Math.round(team.totalScore)}
+                        Team Total Score: {team.totalScore.toFixed(1)}
                       </p>
                       <p className="text-sm print:hidden">
-                        Total Attack: {Math.round(team.totalAttackScore)}
+                        Total Attack: {team.totalAttackScore}
                       </p>
                       <p className="text-sm print:hidden">
-                        Total Defense: {Math.round(team.totalDefenseScore)}
+                        Total Defense: {team.totalDefenseScore}
                       </p>
                       <p className="text-sm print:hidden">
-                        Total Fitness: {Math.round(team.fitnessScore)}
+                        Total Fitness: {team.fitnessScore}
                       </p>
                       <p>
                         Total No of Players:{' '}

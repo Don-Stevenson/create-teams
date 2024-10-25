@@ -51,7 +51,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="attackScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Attack Score (5-50)
+              Attack Score (1-10)
             </label>
             <input
               type="number"
@@ -60,7 +60,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               value={editedPlayer.attackScore}
               onChange={handleInputChange}
               min="1"
-              max="50"
+              max="10"
               className="w-full px-3 py-2 border rounded-lg"
               required
             />
@@ -70,7 +70,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="defenseScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Defense Score (5-50)
+              Defense Score (1-10)
             </label>
             <input
               type="number"
@@ -79,7 +79,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               value={editedPlayer.defenseScore}
               onChange={handleInputChange}
               min="1"
-              max="50"
+              max="10"
               className="w-full px-3 py-2 border rounded-lg"
               required
             />
@@ -89,7 +89,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="fitnessScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Fitness Score (5-50)
+              Fitness Score (1-10)
             </label>
             <input
               type="number"
@@ -98,12 +98,11 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               value={editedPlayer.fitnessScore}
               onChange={handleInputChange}
               min="1"
-              max="50"
+              max="10"
               className="w-full px-3 py-2 border rounded-lg"
               required
             />
           </div>
-
           <div className="flex justify-between">
             <button
               type="button"

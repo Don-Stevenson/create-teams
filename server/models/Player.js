@@ -11,20 +11,20 @@ const PlayerSchema = new mongoose.Schema(
     attackScore: {
       type: Number,
       required: [true, 'Please add an attack score'],
-      min: [0, 'Attack score must be at least 0'],
-      max: [50, 'Attack score cannot be more than 50'],
+      min: [1, 'score must be at least 1'],
+      max: [10, 'score cannot be more than 10'],
     },
     defenseScore: {
       type: Number,
       required: [true, 'Please add a defense score'],
-      min: [0, 'Defense score must be at least 0'],
-      max: [50, 'Defense score cannot be more than 50'],
+      min: [1, 'score must be at least 1'],
+      max: [10, 'score cannot be more than 10'],
     },
     fitnessScore: {
       type: Number,
       required: [true, 'Please add a fitness score'],
-      min: [0, 'Fitness score must be at least 0'],
-      max: [50, 'Fitness score cannot be more than 50'],
+      min: [1, 'score must be at least 1'],
+      max: [10, 'score cannot be more than 10'],
     },
     gender: {
       type: String,

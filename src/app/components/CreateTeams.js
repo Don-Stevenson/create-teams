@@ -181,10 +181,9 @@ export default function CreateTeams() {
         <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
           Player List
         </h2>
-        <p className="flex text-center md:justify-center text-xl font-medium text-gray-800 mb-4 print:hidden">
-          Total Players Selected:
-          <span className="font-bold  text-gray-800 text-xl">
-            {selectedPlayerCount}
+        <p className="flex text-center md:justify-center mb-4 print:hidden">
+          <span className="font-bold text-xl text-gray-800 ">
+            {`Total Players Selected: ${selectedPlayerCount}`}
           </span>
         </p>
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

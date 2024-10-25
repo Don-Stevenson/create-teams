@@ -38,7 +38,7 @@ function balanceTeams(players, numTeams) {
 
     const team = teams[teamIndex]
     // add a small amount of noise to help make the teams are not identical each time when calculating the team score
-    const fudge = score => Math.random() * 3 + score - 1.5
+    const fudge = score => Math.random() * 0.3 + score - 0.15
 
     // Calculate player's weighted total score
     player.totalScore =

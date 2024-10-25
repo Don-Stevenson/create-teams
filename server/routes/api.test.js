@@ -69,9 +69,9 @@ describe('Player Routes', () => {
   beforeEach(async () => {
     testPlayer = await Player.create({
       name: 'Test Player',
-      attackScore: 30,
-      defenseScore: 30,
-      fitnessScore: 30,
+      attackScore: 4,
+      defenseScore: 4,
+      fitnessScore: 4,
       gender: 'male',
       isPlayingThisWeek: true,
     })
@@ -92,9 +92,9 @@ describe('Player Routes', () => {
     it('should create a new player with valid data', async () => {
       const newPlayer = {
         name: 'New Player',
-        attackScore: 40,
-        defenseScore: 40,
-        fitnessScore: 40,
+        attackScore: 4,
+        defenseScore: 5,
+        fitnessScore: 6,
         gender: 'female',
         isPlayingThisWeek: true,
       }
@@ -158,9 +158,9 @@ describe('Player Routes', () => {
     it('should update all player information', async () => {
       const updatedInfo = {
         name: 'Updated Player',
-        attackScore: 45,
-        defenseScore: 45,
-        fitnessScore: 45,
+        attackScore: 4,
+        defenseScore: 5,
+        fitnessScore: 4,
         gender: 'female',
         isPlayingThisWeek: false,
       }

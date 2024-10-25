@@ -27,7 +27,13 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
         isPlayingThisWeek: true,
       })
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred')
+      console.log({ err })
+
+      setError(
+        err.response?.data?.message ||
+          err.response.data.error ||
+          'Error. Please double check your input values'
+      )
     }
   }
 
@@ -70,7 +76,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="attackScore"
           type="number"
-          placeholder="5-50"
+          placeholder="1-10"
           name="attackScore"
           value={playerData.attackScore}
           onChange={handleChange}
@@ -88,7 +94,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="defenseScore"
           type="number"
-          placeholder="5-50"
+          placeholder="1-10"
           name="defenseScore"
           value={playerData.defenseScore}
           onChange={handleChange}
@@ -106,7 +112,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="fitnessScore"
           type="number"
-          placeholder="5-50"
+          placeholder="1-10"
           name="fitnessScore"
           value={playerData.fitnessScore}
           onChange={handleChange}

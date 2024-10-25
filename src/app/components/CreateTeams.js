@@ -112,7 +112,7 @@ export default function CreateTeams() {
   }
 
   const calculatePlayerScore = player => {
-    const fudge = score => Math.random() * 3 + score - 1.5
+    const fudge = score => Math.random() * 0.3 + score - 0.15
     return (
       fudge(player.attackScore) * 0.4 +
       fudge(player.defenseScore) * 0.4 +

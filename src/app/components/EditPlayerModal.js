@@ -28,7 +28,11 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
     >
       <div className="bg-white p-6 rounded-lg w-96">
         <h2 className="text-2xl font-bold mb-4">Edit Player</h2>
-        <form onSubmit={handleSubmit} data-testid="edit-player-form">
+        <form
+          onSubmit={handleSubmit}
+          data-testid="edit-player-form"
+          className="text-xs"
+        >
           <div className="mb-4">
             <label
               htmlFor="name"
@@ -48,6 +52,44 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
           </div>
           <div className="mb-4">
             <label
+              htmlFor="gameKnowledgeScore"
+              className="block text-gray-700 font-bold mb-2"
+            >
+              Game Knowledge Score Score (1-10)
+            </label>
+            <input
+              type="number"
+              id="gameKnowledgeScore"
+              name="gameKnowledgeScore"
+              value={editedPlayer.gameKnowledgeScore}
+              onChange={handleInputChange}
+              min="1"
+              max="10"
+              className="w-full px-3 py-2 border rounded-lg"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="goalScoringScore"
+              className="block text-gray-700 font-bold mb-2"
+            >
+              Goal Scoring Score (1-10)
+            </label>
+            <input
+              type="number"
+              id="goalScoringScore"
+              name="goalScoringScore"
+              value={editedPlayer.goalScoringScore}
+              onChange={handleInputChange}
+              min="1"
+              max="10"
+              className="w-full px-3 py-2 border rounded-lg"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
               htmlFor="attackScore"
               className="block text-gray-700 font-bold mb-2"
             >
@@ -58,6 +100,25 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               id="attackScore"
               name="attackScore"
               value={editedPlayer.attackScore}
+              onChange={handleInputChange}
+              min="1"
+              max="10"
+              className="w-full px-3 py-2 border rounded-lg"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="midfieldScore"
+              className="block text-gray-700 font-bold mb-2"
+            >
+              Midfield Score (1-10)
+            </label>
+            <input
+              type="number"
+              id="midfieldScore"
+              name="midfieldScore"
+              value={editedPlayer.midfieldScore}
               onChange={handleInputChange}
               min="1"
               max="10"
@@ -89,7 +150,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               htmlFor="fitnessScore"
               className="block text-gray-700 font-bold mb-2"
             >
-              Fitness Score (1-10)
+              Mobility/Stamina Score (1-10)
             </label>
             <input
               type="number"

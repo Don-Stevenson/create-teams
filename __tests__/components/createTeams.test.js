@@ -11,7 +11,10 @@ const mockPlayers = [
     _id: '1',
     name: 'John Doe',
     isPlayingThisWeek: true,
+    goalScoringScore: 5,
+    gameKnowledgeScore: 4,
     attackScore: 8,
+    midfieldSccore: 7,
     defenseScore: 7,
     fitnessScore: 9,
     gender: 'male',
@@ -20,6 +23,9 @@ const mockPlayers = [
     _id: '2',
     name: 'Jane Smith',
     isPlayingThisWeek: false,
+    goalScoringScore: 5,
+    gameKnowledgeScore: 4,
+    midfieldSccore: 7,
     attackScore: 7,
     defenseScore: 8,
     fitnessScore: 8,
@@ -33,6 +39,9 @@ const mockBalancedTeams = {
     {
       players: [mockPlayers[0]],
       totalScore: 24,
+      totalGoalScoringScore: 7,
+      totalGameKnowledgeScore: 6,
+      totalMidfieldScore: 6,
       totalAttackScore: 8,
       totalDefenseScore: 7,
       fitnessScore: 9,
@@ -41,6 +50,9 @@ const mockBalancedTeams = {
     {
       players: [mockPlayers[1]],
       totalScore: 23,
+      totalGoalScoringScore: 7,
+      totalGameKnowledgeScore: 6,
+      totalMidfieldScore: 6,
       totalAttackScore: 7,
       totalDefenseScore: 8,
       fitnessScore: 8,
@@ -136,9 +148,16 @@ describe('CreateTeams', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Total Number of People Playing: 2/)
+        screen.getByText(/Total Number of People Playing: 2/i)
       ).toBeInTheDocument()
-      expect(screen.getByText(/Team Total Score: 24/)).toBeInTheDocument()
+      expect(screen.getByText(/Team Score: 24/i)).toBeInTheDocument()
+      expect(screen.getAllByText(/Midfield:/i)[0]).toBeInTheDocument()
+      expect(screen.getAllByText(/Mobility\/Stamina:/i)[0]).toBeInTheDocument()
+      expect(screen.getAllByText(/Attack:/i)[0]).toBeInTheDocument()
+      expect(screen.getAllByText(/Defense:/i)[0]).toBeInTheDocument()
+      expect(screen.getAllByText(/Game Knowledge:/i)[0]).toBeInTheDocument()
+      expect(screen.getAllByText(/Goal Scoring:/i)[0]).toBeInTheDocument()
+      expect(screen.getByText(/Team Score: 23.0/i)).toBeInTheDocument()
     })
   })
 

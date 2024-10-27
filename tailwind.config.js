@@ -9,6 +9,15 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontSize: {
+      xxs: '0.65rem',
+      xs: '0.7rem',
+      sm: '0.8rem',
+      lg: '1rem',
+      xl: '1.2rem',
+      '2xl': '1.6rem',
+      '3xl': '1.8rem',
+    },
     extend: {
       colors: {
         loonsRed: '#C42728',

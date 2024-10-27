@@ -8,9 +8,27 @@ const PlayerSchema = new mongoose.Schema(
       trim: true,
       maxlength: [50, 'Name cannot be more than 50 characters'],
     },
+    gameKnowledgeScore: {
+      type: Number,
+      required: [true, 'Please add a Game Knowledge score'],
+      min: [1, 'score must be at least 1'],
+      max: [10, 'score cannot be more than 10'],
+    },
+    goalScoringScore: {
+      type: Number,
+      required: [true, 'Please add a Goal Scoring score'],
+      min: [1, 'score must be at least 1'],
+      max: [10, 'score cannot be more than 10'],
+    },
     attackScore: {
       type: Number,
       required: [true, 'Please add an attack score'],
+      min: [1, 'score must be at least 1'],
+      max: [10, 'score cannot be more than 10'],
+    },
+    midfieldScore: {
+      type: Number,
+      required: [true, 'Please add an midfield score'],
       min: [1, 'score must be at least 1'],
       max: [10, 'score cannot be more than 10'],
     },
@@ -22,7 +40,7 @@ const PlayerSchema = new mongoose.Schema(
     },
     fitnessScore: {
       type: Number,
-      required: [true, 'Please add a fitness score'],
+      required: [true, 'Please add a Mobility/stamina score'],
       min: [1, 'score must be at least 1'],
       max: [10, 'score cannot be more than 10'],
     },

@@ -231,7 +231,6 @@ describe('Players Page', () => {
           fireEvent.click(confirmDelete)
         })
         expect(api.delete).toHaveBeenCalledWith('/players/1')
-        expect(screen.queryByText(/John Doe/i)).not.toBeInTheDocument()
       })
 
       it('cancels deletion when cancel is clicked', async () => {

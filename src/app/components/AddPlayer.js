@@ -19,8 +19,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
     e.preventDefault()
     setError(null)
     try {
-      const res = await api.post('/players', playerData)
-      onAddPlayer(res.data)
+      await onAddPlayer(playerData)
       setPlayerData({
         name: '',
         gameKnowledgeScore: '',
@@ -33,11 +32,9 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
         isPlayingThisWeek: true,
       })
     } catch (err) {
-      console.log({ err })
-
       setError(
         err.response?.data?.message ||
-          err.response.data.error ||
+          err.message ||
           'Error. Please double check your input values'
       )
     }

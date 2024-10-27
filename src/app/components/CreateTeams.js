@@ -300,7 +300,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3`}
+                            } rounded px-3 m-1`}
                           >
                             <p>Game Knowledge: </p>
                             <p>{team.totalGameKnowledgeScore}</p>
@@ -310,7 +310,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3`}
+                            } rounded px-3 m-1`}
                           >
                             <p>Goal Scoring: </p>
                             <p>{team.totalGoalScoringScore}</p>
@@ -320,7 +320,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3`}
+                            } rounded px-3 m-1`}
                           >
                             <p>Attack:</p>
                             <p>{team.totalAttackScore}</p>
@@ -332,7 +332,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3`}
+                            } rounded px-3 m-1`}
                           >
                             <p>Midfield:</p>
                             <p>{team.totalMidfieldScore}</p>
@@ -342,7 +342,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3`}
+                            } rounded px-3 m-1`}
                           >
                             <p>Defense:</p> <p>{team.totalDefenseScore}</p>
                           </div>
@@ -351,7 +351,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3`}
+                            } rounded px-3 m-1`}
                           >
                             <p>Mobility/Stamina:</p> <p>{team.fitnessScore}</p>
                           </div>

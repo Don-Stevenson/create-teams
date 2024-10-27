@@ -69,7 +69,10 @@ describe('Player Routes', () => {
   beforeEach(async () => {
     testPlayer = await Player.create({
       name: 'Test Player',
+      goalScoringScore: 4,
+      gameKnowledgeScore: 4,
       attackScore: 4,
+      midfieldScore: 4,
       defenseScore: 4,
       fitnessScore: 4,
       gender: 'male',
@@ -92,7 +95,10 @@ describe('Player Routes', () => {
     it('should create a new player with valid data', async () => {
       const newPlayer = {
         name: 'New Player',
+        goalScoringScore: 4,
+        gameKnowledgeScore: 4,
         attackScore: 4,
+        midfieldScore: 2,
         defenseScore: 5,
         fitnessScore: 6,
         gender: 'female',
@@ -109,7 +115,10 @@ describe('Player Routes', () => {
     it('should reject invalid player data', async () => {
       const invalidPlayer = {
         name: 'A',
+        gameKnowledgeScore: 22,
+        goalScoringScore: 18,
         attackScore: 100,
+        midfieldScore: 22,
         defenseScore: -1,
         fitnessScore: 'invalid',
         gender: 'invalid',
@@ -128,7 +137,10 @@ describe('Player Routes', () => {
         .put(`/players/${testPlayer._id}`)
         .send({
           name: testPlayer.name,
+          goalScoringScore: testPlayer.goalScoringScore,
+          gameKnowledgeScore: testPlayer.gameKnowledgeScore,
           attackScore: testPlayer.attackScore,
+          midfieldScore: testPlayer.midfieldScore,
           defenseScore: testPlayer.defenseScore,
           fitnessScore: testPlayer.fitnessScore,
           gender: testPlayer.gender,
@@ -143,9 +155,12 @@ describe('Player Routes', () => {
       const fakeId = new mongoose.Types.ObjectId()
       const response = await request(app).put(`/players/${fakeId}`).send({
         name: 'Test Player',
-        attackScore: 30,
-        defenseScore: 30,
-        fitnessScore: 30,
+        goalScoringScore: 4,
+        gameKnowledgeScore: 3,
+        attackScore: 2,
+        midfieldScore: 3,
+        defenseScore: 2,
+        fitnessScore: 2,
         gender: 'male',
         isPlayingThisWeek: true,
       })
@@ -158,7 +173,10 @@ describe('Player Routes', () => {
     it('should update all player information', async () => {
       const updatedInfo = {
         name: 'Updated Player',
+        goalScoringScore: 3,
+        gameKnowledgeScore: 3,
         attackScore: 4,
+        midfieldScore: 3,
         defenseScore: 5,
         fitnessScore: 4,
         gender: 'female',
@@ -179,7 +197,10 @@ describe('Player Routes', () => {
         .put(`/players/${testPlayer._id}/playerInfo`)
         .send({
           name: 'A',
+          goalScoringScore: -1,
+          gameKnowledgeScore: 33,
           attackScore: 100,
+          midfieldScore: 23,
           defenseScore: -1,
           fitnessScore: 'invalid',
           gender: 'invalid',

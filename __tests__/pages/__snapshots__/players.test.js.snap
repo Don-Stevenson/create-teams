@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Players Page matches snapshot 1`] = `
+exports[`Players Page Add Player Functionality matches snapshot 1`] = `
 <div>
   <div
     data-testid="mock-layout"
@@ -14,7 +14,7 @@ exports[`Players Page matches snapshot 1`] = `
         Manage Players
       </h1>
       <h2
-        class="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center"
+        class="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center cursor-pointer"
       >
         Add A New Player
       </h2>
@@ -25,8 +25,24 @@ exports[`Players Page matches snapshot 1`] = `
           List of Players
         </h2>
         <div
-          class="grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-2 w-full p-2"
-        />
+          class="flex-col text-loonsDarkBrown mb-4 gap-1"
+        >
+          <p
+            class="text-sm"
+          >
+            Legend:
+          </p>
+          <p
+            class="text-xxs"
+          >
+            K: Game knowledge, Sc: Goal Scoring, A: Attack, Md: Midfield, D: Defense, M/S: Mobility/Stamina
+          </p>
+        </div>
+        <div
+          class="text-center py-4"
+        >
+          Loading players...
+        </div>
       </div>
     </div>
   </div>

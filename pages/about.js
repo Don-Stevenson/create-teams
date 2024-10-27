@@ -23,12 +23,13 @@ const About = () => {
         </p>
         <p className="text-lg leading-relaxed mb-4">
           At the core of the app is a team balancing algorithm. It evaluates the
-          players available each week based on their attack, defense, and
-          fitness scores. Players are sorted primarily by gender and then by
-          overall score. Using a modified serpentine draft method, the algorithm
-          distributes players across teams while keeping the overall skill
-          levels balanced. It even introduces slight randomness to ensure that
-          teams vary week to week.
+          players available each week based on their game knowledge, goal
+          scoring, attack, midfield, defense, and mobility/stamina abilities.
+          Players are sorted primarily by gender and then by overall score.
+          Using a modified serpentine draft method, the algorithm distributes
+          players across teams while keeping the overall skill levels balanced.
+          It even introduces slight randomness to ensure that teams vary week to
+          week.
         </p>
         <p className="text-lg leading-relaxed">
           Simply select who's playing and choose how many teams you'd like to

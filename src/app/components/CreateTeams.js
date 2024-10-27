@@ -111,24 +111,40 @@ export default function CreateTeams() {
     }
   }
 
+  const WEIGHTS = {
+    gameKnowledge: 0.2,
+    goalScoring: 0.2,
+    attack: 0.135, // adjusted slightly to make total 1
+    midfield: 0.133,
+    defense: 0.133,
+    fitness: 0.1,
+  }
+
   const calculatePlayerScore = player => {
-    const fudge = score => Math.random() * 0.3 + score - 0.15
-    return (
-      fudge(player.attackScore) * 0.4 +
-      fudge(player.defenseScore) * 0.4 +
-      fudge(player.fitnessScore) * 0.2
-    )
+    return (player.totalScore =
+      player.gameKnowledgeScore * WEIGHTS.gameKnowledge +
+      player.goalScoringScore * WEIGHTS.goalScoring +
+      player.attackScore * WEIGHTS.attack +
+      player.midfieldScore * WEIGHTS.midfield +
+      player.defenseScore * WEIGHTS.defense +
+      player.fitnessScore * WEIGHTS.fitness)
   }
 
   const calculateTeamStats = team => {
     const stats = team.players.reduce(
       (acc, player) => {
         const playerScore = calculatePlayerScore(player)
+
         return {
           totalScore: acc.totalScore + playerScore,
+          totalGameKnowledgeScore:
+            acc.totalGameKnowledgeScore + player.gameKnowledgeScore,
+          totalGoalScoringScore:
+            acc.totalGoalScoringScore + player.goalScoringScore,
           totalAttackScore: acc.totalAttackScore + player.attackScore,
+          totalMidfieldScore: acc.totalMidfieldScore + player.midfieldScore,
           totalDefenseScore: acc.totalDefenseScore + player.defenseScore,
-          fitnessScore: acc.fitnessScore + player.fitnessScore,
+          totalFitnessScore: acc.totalFitnessScore + player.fitnessScore,
           genderCount: {
             ...acc.genderCount,
             [player.gender]: (acc.genderCount[player.gender] || 0) + 1,
@@ -137,9 +153,12 @@ export default function CreateTeams() {
       },
       {
         totalScore: 0,
+        totalGameKnowledgeScore: 0,
+        totalGoalScoringScore: 0,
         totalAttackScore: 0,
+        totalMidfieldScore: 0,
         totalDefenseScore: 0,
-        fitnessScore: 0,
+        totalFitnessScore: 0,
         genderCount: { male: 0, female: 0, nonBinary: 0 },
       }
     )
@@ -234,58 +253,116 @@ export default function CreateTeams() {
         {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
         {balancedTeams && (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex justify-center mb-4 flex-wrap text-xl print:m-1 print:gap-1 print:hidden">
+            <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden">
               Total Number of People Playing: {totalPlayers}
             </div>
-            <div className="flex justify-center gap-5 flex-wrap print:m-1 print:gap-1">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto px-4 print:grid-cols-2 print:gap-1 print:max-w-none print:px-0 print:py-0 print:m-0">
               {balancedTeams.map((team, index) => (
                 <Droppable key={index} droppableId={index.toString()}>
                   {provided => (
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={`flex flex-col p-4 rounded max-w-[600px] border-4 print:max-w-[400px] print:m-2 print:p-2 print:text-sm print:max-h-[900px] print:mb-0 ${
+                      className={`flex flex-col p-2 rounded max-w-[600px] border-4 print:w-full print:p-1 print:text-sm print:border-1 ${
                         index % 2 === 0
-                          ? 'border-loonsRed bg-red-200'
-                          : 'border-gray-500 bg-gray-200'
+                          ? 'border-loonsRed bg-red-200 print:bg-red-100'
+                          : 'border-gray-500 bg-gray-200 print:bg-gray-100'
                       }`}
                     >
-                      <h3
-                        className={`text-xl text-black font-semibold mb-2 print:text-sm`}
-                      >
+                      <h3 className="text-xl text-black font-semibold mb-2 print:text-lg print:mb-[2px] text-center">
                         {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
                         {Math.floor(index / 2) + 1}
                       </h3>
-                      <p className="text-lg print:hidden">
-                        Team Total Score: {team.totalScore.toFixed(1)}
+                      <p className="text-sm print:hidden underline">
+                        Team Totals
                       </p>
-                      <p className="text-sm print:hidden">
-                        Total Attack: {team.totalAttackScore}
+                      <p className="pb-1 text-sm print:hidden">
+                        Team Score: {team.totalScore?.toFixed(1)}
                       </p>
-                      <p className="text-sm print:hidden">
-                        Total Defense: {team.totalDefenseScore}
-                      </p>
-                      <p className="text-sm print:hidden">
-                        Total Fitness: {team.fitnessScore}
-                      </p>
-                      <p>
-                        Total No of Players:{' '}
+                      <p className="text-xs print:hidden">
+                        No of Players:{' '}
                         {team.genderCount.male +
                           team.genderCount.female +
                           team.genderCount.nonBinary}
                       </p>
-                      <p className="print:hidden text-wrap">
-                        Gender Distribution: Male - {team.genderCount.male},
-                        Female - {team.genderCount.female}
+                      <p className="text-xs print:hidden">
+                        Gender Count: Male - {team.genderCount.male}, Female -{' '}
+                        {team.genderCount.female}
                         {team.genderCount.nonBinary
-                          ? `, Non Binary - ${team.genderCount.nonBinary} `
+                          ? `, Non Binary - ${team.genderCount.nonBinary}`
                           : ''}
                       </p>
+                      <div className="flex justify-between print:flex-col">
+                        <div className="flex-col mr-2 text-xs print:mr-0 print:mb-1 print:hidden">
+                          <div
+                            className={`flex justify-between border ${
+                              index % 2 === 0
+                                ? 'border border-red-300 bg-red-100'
+                                : 'border-gray-400 bg-gray-100'
+                            } rounded px-3`}
+                          >
+                            <p>Game Knowledge: </p>
+                            <p>{team.totalGameKnowledgeScore}</p>
+                          </div>
+                          <div
+                            className={`flex justify-between border ${
+                              index % 2 === 0
+                                ? 'border border-red-300 bg-red-100'
+                                : 'border-gray-400 bg-gray-100'
+                            } rounded px-3`}
+                          >
+                            <p>Goal Scoring: </p>
+                            <p>{team.totalGoalScoringScore}</p>
+                          </div>
+                          <div
+                            className={`flex justify-between border ${
+                              index % 2 === 0
+                                ? 'border border-red-300 bg-red-100'
+                                : 'border-gray-400 bg-gray-100'
+                            } rounded px-3`}
+                          >
+                            <p>Attack:</p>
+                            <p>{team.totalAttackScore}</p>
+                          </div>
+                        </div>
+                        <div className="flex-col print:hidden text-xs">
+                          <div
+                            className={`flex justify-between border ${
+                              index % 2 === 0
+                                ? 'border border-red-300 bg-red-100'
+                                : 'border-gray-400 bg-gray-100'
+                            } rounded px-3`}
+                          >
+                            <p>Midfield:</p>
+                            <p>{team.totalMidfieldScore}</p>
+                          </div>
+                          <div
+                            className={`flex justify-between border ${
+                              index % 2 === 0
+                                ? 'border border-red-300 bg-red-100'
+                                : 'border-gray-400 bg-gray-100'
+                            } rounded px-3`}
+                          >
+                            <p>Defense:</p> <p>{team.totalDefenseScore}</p>
+                          </div>
+                          <div
+                            className={`flex justify-between border ${
+                              index % 2 === 0
+                                ? 'border border-red-300 bg-red-100'
+                                : 'border-gray-400 bg-gray-100'
+                            } rounded px-3`}
+                          >
+                            <p>Mobility/Stamina:</p> <p>{team.fitnessScore}</p>
+                          </div>
+                        </div>
+                      </div>
+
                       <h4 className="font-semibold mt-2 print:hidden">
                         {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
                         {Math.floor(index / 2) + 1} Players:
                       </h4>
-                      <ul className="list-disc pl-5 print:text-lg">
+                      <ul className="list-disc pl-5 print:pl-4 print:mt-1 print:list-none">
                         {team.players
                           .sort((a, b) => a.name.localeCompare(b.name))
                           .map((player, playerIndex) => (
@@ -299,7 +376,7 @@ export default function CreateTeams() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1"
+                                  className="border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl"
                                 >
                                   {player.name}
                                 </li>

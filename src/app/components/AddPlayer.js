@@ -4,8 +4,11 @@ import api from '../../../utils/api'
 export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
   const [playerData, setPlayerData] = useState({
     name: '',
+    gameKnowledgeScore: '',
+    goalScoringScore: '',
     attackScore: '',
     defenseScore: '',
+    midfieldScore: '',
     fitnessScore: '',
     gender: '',
     isPlayingThisWeek: true,
@@ -20,7 +23,10 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
       onAddPlayer(res.data)
       setPlayerData({
         name: '',
+        gameKnowledgeScore: '',
+        goalScoringScore: '',
         attackScore: '',
+        midfieldScore: '',
         defenseScore: '',
         fitnessScore: '',
         gender: '',
@@ -68,6 +74,43 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
       <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="gameKnowledgeScore"
+        >
+          Game Knowledge Score
+        </label>
+        <input
+          className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="gameKnowledgeScore"
+          type="number"
+          placeholder="1-10"
+          name="gameKnowledgeScore"
+          value={playerData.gameKnowledgeScore}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="goalScoringScore"
+        >
+          Goal Scoring Score
+        </label>
+        <input
+          className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="goalScoringScore"
+          type="number"
+          placeholder="1-10"
+          name="goalScoringScore"
+          value={playerData.goalScoringScore}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="attackScore"
         >
           Attack Score
@@ -79,6 +122,24 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           placeholder="1-10"
           name="attackScore"
           value={playerData.attackScore}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="midfieldScore"
+        >
+          Midfield Score
+        </label>
+        <input
+          className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="midfieldScore"
+          type="number"
+          placeholder="1-10"
+          name="midfieldScore"
+          value={playerData.midfieldScore}
           onChange={handleChange}
           required
         />
@@ -106,7 +167,7 @@ export default function AddPlayer({ onAddPlayer, setShowAddPlayer }) {
           className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="fitnessScore"
         >
-          Fitness Score
+          Mobility/Stamina
         </label>
         <input
           className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

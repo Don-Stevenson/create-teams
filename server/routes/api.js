@@ -71,9 +71,12 @@ router.post('/logout', (req, res) => {
 // Validation rules
 const playerValidationRules = [
   body('name').trim().isLength({ min: 2, max: 50 }).escape(),
-  body('attackScore').isInt({ min: 0, max: 50 }),
-  body('defenseScore').isInt({ min: 0, max: 50 }),
-  body('fitnessScore').isInt({ min: 0, max: 50 }),
+  body('gameKnowledgeScore').isLength({ min: 1, max: 10 }),
+  body('goalScoringScore').isLength({ min: 1, max: 10 }),
+  body('attackScore').isInt({ min: 1, max: 10 }),
+  body('midfieldScore').isInt({ min: 1, max: 10 }),
+  body('defenseScore').isInt({ min: 1, max: 10 }),
+  body('fitnessScore').isInt({ min: 1, max: 10 }),
   body('gender').isIn(['male', 'female', 'nonBinary']),
   body('isPlayingThisWeek').isBoolean(),
 ]
@@ -127,19 +130,15 @@ router.put(
 
 router.put(
   '/players/:id/playerInfo',
-  validate([
-    body('name').trim().isLength({ min: 2, max: 50 }).escape(),
-    body('attackScore').isInt({ min: 0, max: 50 }),
-    body('defenseScore').isInt({ min: 0, max: 50 }),
-    body('fitnessScore').isInt({ min: 0, max: 50 }),
-    body('isPlayingThisWeek').isBoolean(),
-    body('gender').isIn(['male', 'female', 'nonBinary']),
-  ]),
+  validate(playerValidationRules),
   async (req, res, next) => {
     try {
       const {
         name,
+        gameKnowledgeScore,
+        goalScoringScore,
         attackScore,
+        midfieldScore,
         defenseScore,
         fitnessScore,
         isPlayingThisWeek,
@@ -150,7 +149,10 @@ router.put(
         req.params.id,
         {
           name,
+          gameKnowledgeScore: Number(gameKnowledgeScore),
+          goalScoringScore: Number(goalScoringScore),
           attackScore: Number(attackScore),
+          midfieldScore: Number(midfieldScore),
           defenseScore: Number(defenseScore),
           fitnessScore: Number(fitnessScore),
           isPlayingThisWeek: Boolean(isPlayingThisWeek),

@@ -61,15 +61,28 @@ function Players() {
   const addPlayer = async newPlayer => {
     try {
       const response = await api.post('/players', newPlayer)
-
       if (response?.data) {
-        setPlayers(prevPlayers => [...prevPlayers, response.data])
+        const formattedPlayer = {
+          ...response.data,
+          isPlayingThisWeek: Boolean(response.data.isPlayingThisWeek),
+          gameKnowledgeScore: parseInt(response.data.gameKnowledgeScore),
+          goalScoringScore: parseInt(response.data.goalScoringScore),
+          attackScore: parseInt(response.data.attackScore),
+          midfieldScore: parseInt(response.data.midfieldScore),
+          defenseScore: parseInt(response.data.defenseScore),
+          fitnessScore: parseInt(response.data.fitnessScore),
+        }
+
+        setPlayers(prevPlayers => {
+          const newPlayers = [...prevPlayers, formattedPlayer]
+          return newPlayers.sort((a, b) => a.name.localeCompare(b.name))
+        })
+
         setShowAddPlayer(false)
 
-        setTimeout(() => fetchPlayers(true), 1000)
-      } else {
-        throw new Error('Invalid response format')
+        return formattedPlayer
       }
+      throw new Error('Invalid response format')
     } catch (error) {
       console.error('Failed to add player:', error)
     }
@@ -82,7 +95,7 @@ function Players() {
         prevPlayers.filter(player => player._id !== playerId)
       )
       setPlayerToDelete(null)
-      setTimeout(() => fetchPlayers(true), 1000)
+      await fetchPlayers(true)
     } catch (error) {
       console.error('Failed to delete player:', error)
     }
@@ -119,7 +132,7 @@ function Players() {
 
       setIsEditModalOpen(false)
       setPlayerToEdit(null)
-      setTimeout(() => fetchPlayers(true), 1000)
+      await fetchPlayers(true)
     } catch (error) {
       console.error('Failed to update player:', error)
     }

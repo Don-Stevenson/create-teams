@@ -295,12 +295,14 @@ export default function CreateTeams() {
                       </p>
                       <div className="flex flex-col xs:flex-row justify-between print:flex-col">
                         <div className="flex-col text-xxs xs:text-xs print:hidden gap-1">
+
                           <div
                             className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
                             } rounded py-[4px] px-3`}
+
                           >
                             <p>Game Knowledge:</p>
                             <p>{team.totalGameKnowledgeScore}</p>
@@ -321,12 +323,14 @@ export default function CreateTeams() {
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
                             } rounded py-[4px] px-3`}
+
                           >
                             <p>Attack:</p>
                             <p>{team.totalAttackScore}</p>
                           </div>
                         </div>
                         <div className="flex-col print:hidden text-xxs xs:text-xs gap-1">
+
                           <div
                             className={`flex justify-between border gap-1 ${
                               index % 2 === 0

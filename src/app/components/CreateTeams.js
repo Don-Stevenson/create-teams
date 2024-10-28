@@ -270,7 +270,7 @@ export default function CreateTeams() {
                           : 'border-gray-500 bg-gray-200 print:bg-gray-100'
                       }`}
                     >
-                      <h3 className="text-xl text-black font-semibold mb-2 print:text-lg print:mb-[2px] text-center">
+                      <h3 className="text-xl text-black font-semibold print:text-lg print:mb-[2px] text-center">
                         {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
                         {Math.floor(index / 2) + 1}
                       </h3>
@@ -294,13 +294,13 @@ export default function CreateTeams() {
                           : ''}
                       </p>
                       <div className="flex flex-col xs:flex-row justify-between print:flex-col">
-                        <div className="flex-col text-xxs xs:text-xs print:mr-0 print:mb-1 print:hidden">
+                        <div className="flex-col text-xxs xs:text-xs print:hidden gap-1">
                           <div
                             className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded py-[4px] px-3 m-1`}
+                            } rounded py-[4px] px-3`}
                           >
                             <p>Game Knowledge:</p>
                             <p>{team.totalGameKnowledgeScore}</p>
@@ -310,7 +310,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded py-[4px] px-3 m-1`}
+                            } rounded py-[4px] px-3`}
                           >
                             <p>Goal Scoring:</p>
                             <p>{team.totalGoalScoringScore}</p>
@@ -320,19 +320,19 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded py-[4px] px-3 m-1`}
+                            } rounded py-[4px] px-3`}
                           >
                             <p>Attack:</p>
                             <p>{team.totalAttackScore}</p>
                           </div>
                         </div>
-                        <div className="flex-col print:hidden text-xxs xs:text-xs">
+                        <div className="flex-col print:hidden text-xxs xs:text-xs gap-1">
                           <div
                             className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded py-[4px] px-3 m-1`}
+                            } rounded py-[4px] px-3`}
                           >
                             <p>Midfield:</p>
                             <p>{team.totalMidfieldScore}</p>
@@ -342,7 +342,7 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded py-[4px] px-3 m-1`}
+                            } rounded py-[4px] px-3`}
                           >
                             <p>Defense:</p>
                             <p>{team.totalDefenseScore}</p>
@@ -352,14 +352,13 @@ export default function CreateTeams() {
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded py-[4px] px-3 m-1`}
+                            } rounded py-[4px] px-3`}
                           >
                             <p>Mobility/ Stamina:</p>
                             <p>{team.fitnessScore}</p>
                           </div>
                         </div>
                       </div>
-
                       <h4 className="font-semibold mt-2 print:hidden">
                         {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
                         {Math.floor(index / 2) + 1} Players:

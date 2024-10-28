@@ -60,7 +60,7 @@ export default function LoginForm() {
             Loons Team Balancer
           </div>
         </div>
-        <div className="flex flex-col xs:flex-row">
+        <div className="flex flex-col justify-center xs:flex-row gap-3 mb-3">
           <input
             type="text"
             value={username}
@@ -68,7 +68,7 @@ export default function LoginForm() {
             onFocus={() => setError(false)}
             placeholder="Username"
             required
-            className="border border-gray-300 rounded w-40 h-8 mb-3 mr-3 text-center"
+            className="border border-gray-300 rounded w-40 h-8 text-center"
           />
           <input
             type="password"
@@ -76,16 +76,18 @@ export default function LoginForm() {
             onChange={e => setPassword(e.target.value)}
             onFocus={() => setError(false)}
             placeholder="Password"
-            className="border border-gray-300 rounded w-40 h-8 mb-3 text-center"
+            className="border border-gray-300 rounded w-40 h-8 text-center"
             required
           />
         </div>
-        <button
-          type="submit"
-          className="border border-gray-400 rounded w-36 h-8 bg-gray-200"
-        >
-          Login
-        </button>
+        <div className="flex justify-center items-center">
+          <button
+            type="submit"
+            className="border border-gray-400 rounded w-36 h-8 bg-gray-200"
+          >
+            Login
+          </button>
+        </div>
       </div>
       <div className="flex justify-center text-center items-center text-loonsRed h-10">
         {error ? "There's been an error. Please try again" : ''}

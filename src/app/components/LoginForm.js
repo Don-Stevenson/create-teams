@@ -60,7 +60,7 @@ export default function LoginForm() {
             Loons Team Balancer
           </div>
         </div>
-        <div className="flex-col">
+        <div className="flex flex-col xs:flex-row">
           <input
             type="text"
             value={username}

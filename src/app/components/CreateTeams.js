@@ -253,7 +253,7 @@ export default function CreateTeams() {
         {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
         {balancedTeams && (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden">
+            <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">
               Total Number of People Playing: {totalPlayers}
             </div>
 
@@ -277,83 +277,85 @@ export default function CreateTeams() {
                       <p className="text-sm print:hidden underline">
                         Team Totals
                       </p>
-                      <p className="pb-1 text-sm print:hidden">
+                      <p className="pb-1 print:hidden text-xxs xs:text-sm">
                         Team Score: {team.totalScore?.toFixed(1)}
                       </p>
-                      <p className="text-xs print:hidden">
+                      <p className="text-xxs xs:text-xs print:hidden">
                         No of Players:{' '}
                         {team.genderCount.male +
                           team.genderCount.female +
                           team.genderCount.nonBinary}
                       </p>
-                      <p className="text-xs print:hidden">
+                      <p className="text-xxs xs:text-xs print:hidden">
                         Gender Count: Male - {team.genderCount.male}, Female -{' '}
                         {team.genderCount.female}
                         {team.genderCount.nonBinary
                           ? `, Non Binary - ${team.genderCount.nonBinary}`
                           : ''}
                       </p>
-                      <div className="flex justify-between print:flex-col">
-                        <div className="flex-col mr-2 text-xs print:mr-0 print:mb-1 print:hidden">
+                      <div className="flex flex-col xs:flex-row justify-between print:flex-col">
+                        <div className="flex-col text-xxs xs:text-xs print:mr-0 print:mb-1 print:hidden">
                           <div
-                            className={`flex justify-between border ${
+                            className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3 m-1`}
+                            } rounded py-[4px] px-3 m-1`}
                           >
-                            <p>Game Knowledge: </p>
+                            <p>Game Knowledge:</p>
                             <p>{team.totalGameKnowledgeScore}</p>
                           </div>
                           <div
-                            className={`flex justify-between border ${
+                            className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3 m-1`}
+                            } rounded py-[4px] px-3 m-1`}
                           >
-                            <p>Goal Scoring: </p>
+                            <p>Goal Scoring:</p>
                             <p>{team.totalGoalScoringScore}</p>
                           </div>
                           <div
-                            className={`flex justify-between border ${
+                            className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3 m-1`}
+                            } rounded py-[4px] px-3 m-1`}
                           >
                             <p>Attack:</p>
                             <p>{team.totalAttackScore}</p>
                           </div>
                         </div>
-                        <div className="flex-col print:hidden text-xs">
+                        <div className="flex-col print:hidden text-xxs xs:text-xs">
                           <div
-                            className={`flex justify-between border ${
+                            className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3 m-1`}
+                            } rounded py-[4px] px-3 m-1`}
                           >
                             <p>Midfield:</p>
                             <p>{team.totalMidfieldScore}</p>
                           </div>
                           <div
-                            className={`flex justify-between border ${
+                            className={`flex justify-between border gap-1 ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3 m-1`}
+                            } rounded py-[4px] px-3 m-1`}
                           >
-                            <p>Defense:</p> <p>{team.totalDefenseScore}</p>
+                            <p>Defense:</p>
+                            <p>{team.totalDefenseScore}</p>
                           </div>
                           <div
-                            className={`flex justify-between border ${
+                            className={`flex border justify-between ${
                               index % 2 === 0
                                 ? 'border border-red-300 bg-red-100'
                                 : 'border-gray-400 bg-gray-100'
-                            } rounded px-3 m-1`}
+                            } rounded py-[4px] px-3 m-1`}
                           >
-                            <p>Mobility/Stamina:</p> <p>{team.fitnessScore}</p>
+                            <p>Mobility/ Stamina:</p>
+                            <p>{team.fitnessScore}</p>
                           </div>
                         </div>
                       </div>

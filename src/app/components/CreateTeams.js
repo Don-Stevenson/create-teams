@@ -270,7 +270,7 @@ export default function CreateTeams() {
                           : 'border-gray-500 bg-gray-200 print:bg-gray-100'
                       }`}
                     >
-                      <h3 className="text-xl text-black font-semibold mb-2 print:text-lg print:mb-[2px] text-center">
+                      <h3 className="text-xl text-black font-semibold print:text-lg print:mb-[2px] text-center">
                         {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
                         {Math.floor(index / 2) + 1}
                       </h3>

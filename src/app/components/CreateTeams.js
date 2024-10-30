@@ -174,7 +174,7 @@ export default function CreateTeams() {
             balancedTeams={balancedTeams}
             setBalancedTeams={setBalancedTeams}
             totalPlayers={totalPlayers}
-          />
+          /.
         )}
       </div>
     </div>

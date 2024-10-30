@@ -28,7 +28,7 @@ export default function withAuth(WrappedComponent) {
     }, [router])
 
     if (!isAuthenticated) {
-      return null // or a loading indicator
+      return null
     }
 
     return <WrappedComponent {...props} />

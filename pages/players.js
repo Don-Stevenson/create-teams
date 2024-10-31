@@ -5,14 +5,19 @@ import AddPlayerForm from '../src/app/components/AddPlayer.js'
 import EditPlayerModal from '../src/app/components/EditPlayerModal.js'
 import api from '../utils/api'
 import withAuth from '@/app/components/withAuth.js'
+import DeleteConfirmationModal from '@/app/components/DeleteConfirmationModal.js'
 
 function Players() {
   const [players, setPlayers] = useState([])
   const [playerToEdit, setPlayerToEdit] = useState(null)
-  const [playerToDelete, setPlayerToDelete] = useState(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [showAddPlayer, setShowAddPlayer] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const [deleteState, setDeleteState] = useState({
+    isDeleting: false,
+    playerToDelete: null,
+  })
 
   const lastFetchRef = useRef(0)
   const fetchTimeoutRef = useRef(null)
@@ -91,13 +96,34 @@ function Players() {
   const onDeletePlayer = async playerId => {
     try {
       await api.delete(`/players/${playerId}`)
+
       setPlayers(prevPlayers =>
         prevPlayers.filter(player => player._id !== playerId)
       )
-      setPlayerToDelete(null)
-      await fetchPlayers(true)
     } catch (error) {
+      if (error.response?.status === 404) {
+        console.error('Player not found')
+      } else if (error.response?.status === 403) {
+        console.error('You do not have permission to delete this player')
+      } else {
+        console.error('Failed to delete player')
+      }
       console.error('Failed to delete player:', error)
+    }
+  }
+
+  const confirmDelete = async () => {
+    if (deleteState.playerToDelete) {
+      try {
+        await onDeletePlayer(deleteState.playerToDelete._id)
+      } catch (error) {
+        console.error('Delete failed', error)
+      } finally {
+        setDeleteState({
+          isDeleting: false,
+          playerToDelete: null,
+        })
+      }
     }
   }
 
@@ -151,11 +177,17 @@ function Players() {
 
   const handleDeleteConfirmation = playerId => {
     const playerToDelete = players.find(p => p._id === playerId)
-    setPlayerToDelete(playerToDelete)
+    setDeleteState({
+      isDeleting: true,
+      playerToDelete,
+    })
   }
 
   const cancelDelete = () => {
-    setPlayerToDelete(null)
+    setDeleteState({
+      isDeleting: false,
+      playerToDelete: null,
+    })
   }
 
   const sortedPlayers = [...players].sort((a, b) =>
@@ -209,28 +241,12 @@ function Players() {
           onClose={closeEditModal}
         />
       )}
-      {playerToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="p-6 rounded-lg bg-white w-[260px] sm:w-[350px]">
-            <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
-            <p>Are you sure you want to delete {playerToDelete.name}?</p>
-            <div className="flex sm:justify-end justify-between mt-4">
-              <button
-                onClick={cancelDelete}
-                className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => onDeletePlayer(playerToDelete._id)}
-                className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmationModal
+        isOpen={deleteState.isDeleting}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        playerName={deleteState.playerToDelete?.name}
+      />
     </Layout>
   )
 }

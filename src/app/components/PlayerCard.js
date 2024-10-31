@@ -3,7 +3,7 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => (
   <div className="flex justify-between mb-2 p-2 max-w-[25rem] h-[75px] border border-gray-300 rounded hover:bg-gray-200">
     <div className="flex gap-2 p-2 justify-between max-w-[14rem]">
       <div className="text-sm">{player.name}</div>
-      <div className="grid grid-rows-2 gap-1 w-[12rem]">
+      <div className="grid grid-rows-2 gap-1 max-w-[12rem]">
         <div className="flex items-center gap-2">
           <div className="flex items-center bg-gray-100 rounded px-1.5 py-0.5">
             <span className="text-xxs text-gray-400">K:</span>

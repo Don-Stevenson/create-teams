@@ -72,69 +72,71 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
                       ? `, Non Binary - ${team.genderCount.nonBinary}`
                       : ''}
                   </p>
-                  <div className="flex flex-col xs:flex-row justify-between print:flex-col">
-                    <div className="flex-col text-xxs xs:text-xs print:hidden gap-1">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2">
+                    <div className="flex flex-col gap-2 print:flex-col">
                       <div
                         className={`flex justify-between border gap-1 ${
                           index % 2 === 0
-                            ? 'border border-red-300 bg-red-100'
+                            ? 'border-red-300 bg-red-100'
                             : 'border-gray-400 bg-gray-100'
-                        } rounded py-[4px] px-3`}
+                        } rounded py-1 px-3`}
                       >
-                        <p>Game Knowledge:</p>
-                        <p>{team.totalGameKnowledgeScore}</p>
+                        <p className="text-xxs">Game Knowledge:</p>
+                        <p className="text-xxs">
+                          {team.totalGameKnowledgeScore}
+                        </p>
                       </div>
                       <div
                         className={`flex justify-between border gap-1 ${
                           index % 2 === 0
-                            ? 'border border-red-300 bg-red-100'
+                            ? 'border-red-300 bg-red-100'
                             : 'border-gray-400 bg-gray-100'
-                        } rounded py-[4px] px-3`}
+                        } rounded py-1 px-3`}
                       >
-                        <p>Goal Scoring:</p>
-                        <p>{team.totalGoalScoringScore}</p>
+                        <p className="text-xxs">Goal Scoring:</p>
+                        <p className="text-xxs">{team.totalGoalScoringScore}</p>
                       </div>
                       <div
                         className={`flex justify-between border gap-1 ${
                           index % 2 === 0
-                            ? 'border border-red-300 bg-red-100'
+                            ? 'border-red-300 bg-red-100'
                             : 'border-gray-400 bg-gray-100'
-                        } rounded py-[4px] px-3`}
+                        } rounded py-1 px-3`}
                       >
-                        <p>Attack:</p>
-                        <p>{team.totalAttackScore}</p>
+                        <p className="text-xxs">Attack:</p>
+                        <p className="text-xxs">{team.totalAttackScore}</p>
                       </div>
                     </div>
-                    <div className="flex-col print:hidden text-xxs xs:text-xs gap-1">
+                    <div className="flex flex-col gap-2 print:flex-col">
                       <div
                         className={`flex justify-between border gap-1 ${
                           index % 2 === 0
-                            ? 'border border-red-300 bg-red-100'
+                            ? 'border-red-300 bg-red-100'
                             : 'border-gray-400 bg-gray-100'
-                        } rounded py-[4px] px-3`}
+                        } rounded py-1 px-3`}
                       >
-                        <p>Midfield:</p>
-                        <p>{team.totalMidfieldScore}</p>
+                        <p className="text-xxs">Midfield:</p>
+                        <p className="text-xxs">{team.totalMidfieldScore}</p>
                       </div>
                       <div
                         className={`flex justify-between border gap-1 ${
                           index % 2 === 0
-                            ? 'border border-red-300 bg-red-100'
+                            ? 'border-red-300 bg-red-100'
                             : 'border-gray-400 bg-gray-100'
-                        } rounded py-[4px] px-3`}
+                        } rounded py-1 px-3`}
                       >
-                        <p>Defense:</p>
-                        <p>{team.totalDefenseScore}</p>
+                        <p className="text-xxs">Defense:</p>
+                        <p className="text-xxs">{team.totalDefenseScore}</p>
                       </div>
                       <div
                         className={`flex border justify-between ${
                           index % 2 === 0
-                            ? 'border border-red-300 bg-red-100'
+                            ? 'border-red-300 bg-red-100'
                             : 'border-gray-400 bg-gray-100'
-                        } rounded py-[4px] px-3`}
+                        } rounded py-1 px-3`}
                       >
-                        <p>Mobility/ Stamina:</p>
-                        <p>{team.fitnessScore}</p>
+                        <p className="text-xxs">Mobility/Stamina:</p>
+                        <p className="text-xxs">{team.fitnessScore}</p>
                       </div>
                     </div>
                   </div>

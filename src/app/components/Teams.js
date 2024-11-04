@@ -72,7 +72,7 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
                       ? `, Non Binary - ${team.genderCount.nonBinary}`
                       : ''}
                   </p>
-                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2 print:hidden">
                     <div className="flex flex-col gap-2 print:flex-col">
                       <div
                         className={`flex justify-between border gap-1 ${

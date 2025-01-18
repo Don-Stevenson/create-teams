@@ -32,6 +32,17 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
     setBalancedTeams(newBalancedTeams)
   }
 
+  const getTeamName = index => {
+    const isRedTeam = index % 2 === 0
+    const teamNumber = Math.floor(index / 2) + 1
+    const color = isRedTeam ? 'Red' : 'Black'
+
+    if (balancedTeams.length > 2) {
+      return `${color} Team ${teamNumber}`
+    }
+    return `${color} Team`
+  }
+
   return (
     <>
       <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">
@@ -52,8 +63,7 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
                   }`}
                 >
                   <h3 className="text-xl text-black font-semibold print:text-lg print:mb-[2px] text-center">
-                    {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
-                    {Math.floor(index / 2) + 1}
+                    {getTeamName(index)}
                   </h3>
                   <p className="text-sm print:hidden underline">Team Totals</p>
                   <p className="pb-1 print:hidden text-xxs xs:text-sm">
@@ -141,8 +151,7 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
                     </div>
                   </div>
                   <h4 className="font-semibold mt-2 print:hidden">
-                    {index % 2 === 0 ? 'Red' : 'Black'} Team{' '}
-                    {Math.floor(index / 2) + 1} Players:
+                    {getTeamName(index)} Players:
                   </h4>
                   <ul className="list-disc pl-5 print:pl-4 print:mt-1 print:list-none">
                     {team.players

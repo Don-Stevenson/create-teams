@@ -6,7 +6,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
   )
 
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,_minmax(15.5rem,_1fr))] gap-4 w-full p-2 print:hidden">
+    <ul className="grid grid-cols-[repeat(auto-fill,_minmax(15rem,_1fr))] gap-4 w-full p-2 print:hidden">
       {sortedPlayers.map(player => (
         <li
           key={player._id}

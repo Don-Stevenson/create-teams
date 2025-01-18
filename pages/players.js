@@ -213,10 +213,10 @@ function Players() {
           />
         )}
         <div>
-          <h2 className="text-2xl font-semibold mb-4 text-loonsDarkBrown">
+          <h2 className="text-2xl font-semibold mb-4 text-black">
             List of Players
           </h2>
-          <div className="flex-col text-loonsDarkBrown mb-4 gap-1">
+          <div className="flex-col text-black mb-4 gap-1">
             <p className="text-sm">Legend:</p>
             <p className="text-xxs">
               K: Game knowledge, Sc: Goal Scoring, A: Attack, Md: Midfield, D:

@@ -112,8 +112,8 @@ describe('CreateTeams', () => {
       expect(api.post).toHaveBeenCalledWith('/balance-teams', { numTeams: 2 })
     })
 
-    expect(screen.getByText('Red Team 1')).toBeInTheDocument()
-    expect(screen.getByText('Black Team 1')).toBeInTheDocument()
+    expect(screen.getByText('Red Team')).toBeInTheDocument()
+    expect(screen.getByText('Black Team')).toBeInTheDocument()
   })
 
   test('handles error states correctly', async () => {

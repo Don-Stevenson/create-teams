@@ -1,4 +1,3 @@
-// pages/balance-teams.js
 import Layout from '../src/app/components/Layout.js'
 import CreateTeams from '../src/app/components/CreateTeams.js'
 import withAuth from '@/app/components/withAuth.js'

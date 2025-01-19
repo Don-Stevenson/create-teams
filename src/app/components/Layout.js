@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import NavBar from './NavBar'
+import Footer from './Footer'
 
 export default function Layout({ children }) {
   return (
@@ -10,10 +11,7 @@ export default function Layout({ children }) {
       </Head>
       <NavBar />
       <main className="flex-grow">{children}</main>
-      <div className="text-center items-center text-xs p-4 print:hidden">
-        © {new Date(Date.now()).getFullYear().toString()} Loons Team Balancer.
-        All rights reserved.
-      </div>
+      <Footer />
     </div>
   )
 }

@@ -1,18 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Layout from '../src/app/components/Layout.js'
 import PlayerList from '../src/app/components/PlayerList'
-import AddPlayerForm from '../src/app/components/AddPlayer.js'
+
 import EditPlayerModal from '../src/app/components/EditPlayerModal.js'
 import api from '../utils/api'
 import withAuth from '@/app/components/withAuth.js'
 import DeleteConfirmationModal from '@/app/components/DeleteConfirmationModal.js'
+import AddPlayerModal from '@/app/components/AddPlayerModal.js'
 
 function Players() {
   const [players, setPlayers] = useState([])
   const [playerToEdit, setPlayerToEdit] = useState(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [showAddPlayer, setShowAddPlayer] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isAddPlayerModalOpen, setIsAddPlayerModalOpen] = useState(false)
 
   const [deleteState, setDeleteState] = useState({
     isDeleting: false,
@@ -83,7 +84,7 @@ function Players() {
           return newPlayers.sort((a, b) => a.name.localeCompare(b.name))
         })
 
-        setShowAddPlayer(false)
+        setIsAddPlayerModalOpen(false)
 
         return formattedPlayer
       }
@@ -200,18 +201,19 @@ function Players() {
         <h1 className="text-3xl font-bold mb-8 text-loonsDarkBrown">
           Manage Players
         </h1>
-        <h2
-          className="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center cursor-pointer"
-          onClick={() => setShowAddPlayer(!showAddPlayer)}
-        >
-          Add A New Player
-        </h2>
-        {showAddPlayer && (
-          <AddPlayerForm
+        <div>
+          <button
+            className="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center"
+            onClick={() => setIsAddPlayerModalOpen(true)}
+          >
+            Add A New Player
+          </button>
+          <AddPlayerModal
+            isOpen={isAddPlayerModalOpen}
             onAddPlayer={addPlayer}
-            setShowAddPlayer={setShowAddPlayer}
+            onClose={() => setIsAddPlayerModalOpen(false)}
           />
-        )}
+        </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4 text-black">
             List of Players

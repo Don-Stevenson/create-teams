@@ -7,6 +7,7 @@ export default function AddPlayerModal({
   isOpen,
   playerAdded,
 }) {
+
   const [playerData, setPlayerData] = useState({
     name: '',
     gameKnowledgeScore: '',

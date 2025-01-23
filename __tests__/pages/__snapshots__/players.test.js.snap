@@ -24,6 +24,7 @@ exports[`Players Page Add Player Functionality matches snapshot 1`] = `
         >
           placeholder
         </p>
+
       </div>
       <div>
         <h2

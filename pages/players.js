@@ -88,7 +88,7 @@ function Players() {
         setIsAddPlayerModalOpen(false)
         setPlayerAdded(true)
         setTimeout(() => setPlayerAdded(false), 2500)
-
+        
         return formattedPlayer
       }
       throw new Error('Invalid response format')
@@ -224,6 +224,7 @@ function Players() {
           >
             {playerAdded ? 'Player added successfully!' : 'placeholder'}
           </p>
+
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4 text-black">

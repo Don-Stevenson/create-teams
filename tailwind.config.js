@@ -29,6 +29,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        background: '#F3F4F6',
         loonsRed: '#C42728',
         loonsBrown: '#613A14',
         loonsDarkBrown: '#411B0C',

@@ -14,6 +14,7 @@ function Players() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isAddPlayerModalOpen, setIsAddPlayerModalOpen] = useState(false)
+  const [playerAdded, setPlayerAdded] = useState(false)
 
   const [deleteState, setDeleteState] = useState({
     isDeleting: false,
@@ -85,6 +86,8 @@ function Players() {
         })
 
         setIsAddPlayerModalOpen(false)
+        setPlayerAdded(true)
+        setTimeout(() => setPlayerAdded(false), 2500)
 
         return formattedPlayer
       }
@@ -211,8 +214,16 @@ function Players() {
           <AddPlayerModal
             isOpen={isAddPlayerModalOpen}
             onAddPlayer={addPlayer}
+            playerAdded={playerAdded}
             onClose={() => setIsAddPlayerModalOpen(false)}
           />
+          <p
+            className={`italic mt-4 ${
+              playerAdded ? 'text-green-600' : 'text-background'
+            }`}
+          >
+            {playerAdded ? 'Player added successfully!' : 'placeholder'}
+          </p>
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4 text-black">

@@ -19,6 +19,11 @@ exports[`Players Page Add Player Functionality matches snapshot 1`] = `
         >
           Add A New Player
         </button>
+        <p
+          class="italic mt-4 text-background"
+        >
+          placeholder
+        </p>
       </div>
       <div>
         <h2

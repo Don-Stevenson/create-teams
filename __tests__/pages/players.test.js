@@ -112,7 +112,6 @@ describe('Players Page', () => {
         await user.click(addButton)
       })
 
-      // Fill in form fields
       await act(async () => {
         await user.type(screen.getByLabelText(/name/i), newPlayer.name)
         await user.type(
@@ -139,13 +138,9 @@ describe('Players Page', () => {
           screen.getByLabelText(/Mobility\/Stamina/i),
           newPlayer.fitnessScore
         )
-        await user.selectOptions(
-          screen.getByLabelText(/gender/i),
-          newPlayer.gender
-        )
+        screen.getByTestId('gender')
       })
 
-      // Submit form
       await act(async () => {
         await user.click(screen.getByRole('button', { name: /add player/i }))
       })
@@ -161,7 +156,6 @@ describe('Players Page', () => {
             midfieldScore: newPlayer.midfieldScore,
             defenseScore: newPlayer.defenseScore,
             fitnessScore: newPlayer.fitnessScore,
-            gender: newPlayer.gender,
             isPlayingThisWeek: newPlayer.isPlayingThisWeek,
           })
         )

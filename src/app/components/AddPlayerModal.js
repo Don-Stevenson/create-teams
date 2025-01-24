@@ -7,7 +7,6 @@ export default function AddPlayerModal({
   isOpen,
   playerAdded,
 }) {
-
   const [playerData, setPlayerData] = useState({
     name: '',
     gameKnowledgeScore: '',
@@ -59,27 +58,25 @@ export default function AddPlayerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50">
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center pt-5 pb-8 md:pt-4 md:pb-4">
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded px-8 pt-4 pb-4 mt-4 lg:mt-5 mb-4 lg:mb-5 w-70 sm:w-96 h-[775px] lg:w-96 overflow-visible"
+          className="bg-white rounded px-8 pt-4 pb-4 mt-4 lg:mt-5 lg:mb-5 w-70 sm:w-96 h-[35rem] md:h-[43rem] lg:w-96 overflow-visible gap-2"
           data-testid="add-player-form"
         >
-          <div className="mb-4">
-            <h2 className="text-2xl font-semibold mb-4 text-black">
-              Add Player
-            </h2>
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
+            <h2 className="text-2xl font-semibold text-black">Add Player</h2>
             {error && !playerAdded && (
               <p className="text-red-500 text-xs italic mt-4">{error}</p>
             )}
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="name"
             >
               Name
             </label>
             <input
-              className="shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[180px] py-1 px-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="name"
               type="text"
               name="name"
@@ -89,15 +86,16 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="mb-4">
+
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="gameKnowledgeScore"
             >
               Game Knowledge Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="gameKnowledgeScore"
               type="number"
               placeholder="1-10"
@@ -107,15 +105,15 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="goalScoringScore"
             >
               Goal Scoring Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="goalScoringScore"
               type="number"
               placeholder="1-10"
@@ -125,16 +123,15 @@ export default function AddPlayerModal({
               required
             />
           </div>
-
-          <div className="mb-4">
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="attackScore"
             >
               Attack Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="attackScore"
               type="number"
               placeholder="1-10"
@@ -144,15 +141,15 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="midfieldScore"
             >
               Midfield Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[100px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="midfieldScore"
               type="number"
               placeholder="1-10"
@@ -162,15 +159,15 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="defenseScore"
             >
               Defense Score
             </label>
             <input
-              className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="defenseScore"
               type="number"
               placeholder="1-10"
@@ -180,15 +177,15 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="fitnessScore"
             >
               Mobility/Stamina
             </label>
             <input
-              className="shadow appearance-none border rounded py-2 px-3 w-[100px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="fitnessScore"
               type="number"
               placeholder="1-10"
@@ -198,9 +195,9 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-xxs md:text-sm font-bold"
               htmlFor="gender"
               aria-labelledby="gender"
               data-testid="gender"
@@ -223,7 +220,7 @@ export default function AddPlayerModal({
               isClearable
             />
           </div>
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 mt-3 md:mt-6">
             <button
               className="bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-gray-700"
               type="submit"

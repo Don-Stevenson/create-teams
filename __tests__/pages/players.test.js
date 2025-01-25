@@ -88,6 +88,8 @@ describe('Players Page', () => {
     })
 
     it('adds a new player successfully', async () => {
+      render(<Players />)
+
       const newPlayer = {
         _id: '3',
         name: 'New Player',
@@ -107,7 +109,7 @@ describe('Players Page', () => {
         render(<Players />)
       })
 
-      const addButton = screen.getByText('Add A New Player')
+      const addButton = screen.getAllByText('Add A New Player')[0]
       await act(async () => {
         await user.click(addButton)
       })
@@ -138,8 +140,12 @@ describe('Players Page', () => {
           screen.getByLabelText(/Mobility\/Stamina/i),
           newPlayer.fitnessScore
         )
-        screen.getByTestId('gender')
       })
+      const genderSelect = screen.getByLabelText(/gender/i)
+
+      await userEvent.click(genderSelect)
+
+      await user.click(screen.getByText('Male'))
 
       await act(async () => {
         await user.click(screen.getByRole('button', { name: /add player/i }))
@@ -157,6 +163,7 @@ describe('Players Page', () => {
             defenseScore: newPlayer.defenseScore,
             fitnessScore: newPlayer.fitnessScore,
             isPlayingThisWeek: newPlayer.isPlayingThisWeek,
+            gender: newPlayer.gender,
           })
         )
       })

@@ -76,7 +76,7 @@ export default function AddPlayerModal({
               Name
             </label>
             <input
-              className="shadow appearance-none border rounded w-[180px] py-1 px-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[180px] py-1 px-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="name"
               type="text"
               name="name"
@@ -95,7 +95,7 @@ export default function AddPlayerModal({
               Game Knowledge Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="gameKnowledgeScore"
               type="number"
               placeholder="1-10"
@@ -113,7 +113,7 @@ export default function AddPlayerModal({
               Goal Scoring Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="goalScoringScore"
               type="number"
               placeholder="1-10"
@@ -131,7 +131,7 @@ export default function AddPlayerModal({
               Attack Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="attackScore"
               type="number"
               placeholder="1-10"
@@ -149,7 +149,7 @@ export default function AddPlayerModal({
               Midfield Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="midfieldScore"
               type="number"
               placeholder="1-10"
@@ -167,7 +167,7 @@ export default function AddPlayerModal({
               Defense Score
             </label>
             <input
-              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="defenseScore"
               type="number"
               placeholder="1-10"
@@ -185,7 +185,7 @@ export default function AddPlayerModal({
               Mobility/Stamina
             </label>
             <input
-              className="shadow appearance-none border rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border text-xs sm:text-sm rounded w-[60px] py-1 px-1 md:w-[100px] md:p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="fitnessScore"
               type="number"
               placeholder="1-10"
@@ -198,15 +198,15 @@ export default function AddPlayerModal({
           <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
             <label
               className="block text-gray-700 text-xxs md:text-sm font-bold"
-              htmlFor="gender"
-              aria-labelledby="gender"
-              data-testid="gender"
+              id="gender-label"
             >
               Gender
             </label>
             <Select
               name="gender"
+              aria-labelledby="gender-label"
               options={genderOptions}
+              className="text-xs sm:text-sm"
               value={genderOptions.find(
                 option => option.value === playerData.gender
               )}
@@ -218,18 +218,19 @@ export default function AddPlayerModal({
               }
               placeholder="Select Gender"
               isClearable
+              required
             />
           </div>
-          <div className="flex items-center justify-between gap-2 mt-3 md:mt-6">
+          <div className="flex items-center justify-between gap-2 mt-6 md:mt-8">
             <button
-              className="bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-gray-700"
+              className="bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-gray-700 text-xs sm:text-sm"
               type="submit"
               onClick={onClose}
             >
               cancel
             </button>
             <button
-              className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs sm:text-sm"
               type="submit"
             >
               Add Player

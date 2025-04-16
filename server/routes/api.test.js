@@ -6,9 +6,14 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 import routes from '../routes/api.js'
 import Player from '../models/Player.js'
 import User from '../models/User.js'
+import jwt from 'jsonwebtoken'
+import cookieParser from 'cookie-parser'
+import bcrypt from 'bcryptjs'
 
 let app
 let mongoServer
+let authToken
+let testUser
 
 jest.mock('../utils/balanceTeams.js', () => {
   return {
@@ -24,6 +29,7 @@ beforeAll(async () => {
 
   app = express()
   app.use(express.json())
+  app.use(cookieParser())
   app.use('/', routes)
 
   process.env.JWT_SECRET = 'test-secret'
@@ -37,6 +43,19 @@ afterAll(async () => {
 beforeEach(async () => {
   await Player.deleteMany({})
   await User.deleteMany({})
+
+  // Create a test user with a hashed password
+  const salt = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash('testpass123', salt)
+
+  testUser = await User.create({
+    username: 'testuser',
+    password: hashedPassword,
+  })
+
+  authToken = jwt.sign({ userId: testUser._id }, process.env.JWT_SECRET, {
+    expiresIn: '1h',
+  })
 })
 
 describe('Authentication Routes', () => {
@@ -82,7 +101,9 @@ describe('Player Routes', () => {
 
   describe('GET /players', () => {
     it('should return all players', async () => {
-      const response = await request(app).get('/players')
+      const response = await request(app)
+        .get('/players')
+        .set('Cookie', [`token=${authToken}`])
 
       expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
@@ -105,7 +126,10 @@ describe('Player Routes', () => {
         isPlayingThisWeek: true,
       }
 
-      const response = await request(app).post('/players').send(newPlayer)
+      const response = await request(app)
+        .post('/players')
+        .set('Cookie', [`token=${authToken}`])
+        .send(newPlayer)
 
       expect(response.status).toBe(201)
       expect(response.body.name).toBe(newPlayer.name)
@@ -125,7 +149,10 @@ describe('Player Routes', () => {
         isPlayingThisWeek: 'not-boolean',
       }
 
-      const response = await request(app).post('/players').send(invalidPlayer)
+      const response = await request(app)
+        .post('/players')
+        .set('Cookie', [`token=${authToken}`])
+        .send(invalidPlayer)
 
       expect(response.status).toBe(400)
     })
@@ -135,6 +162,7 @@ describe('Player Routes', () => {
     it('should update player weekly status', async () => {
       const response = await request(app)
         .put(`/players/${testPlayer._id}`)
+        .set('Cookie', [`token=${authToken}`])
         .send({
           name: testPlayer.name,
           goalScoringScore: testPlayer.goalScoringScore,
@@ -153,17 +181,20 @@ describe('Player Routes', () => {
 
     it('should return 404 for non-existent player', async () => {
       const fakeId = new mongoose.Types.ObjectId()
-      const response = await request(app).put(`/players/${fakeId}`).send({
-        name: 'Test Player',
-        goalScoringScore: 4,
-        gameKnowledgeScore: 3,
-        attackScore: 2,
-        midfieldScore: 3,
-        defenseScore: 2,
-        fitnessScore: 2,
-        gender: 'male',
-        isPlayingThisWeek: true,
-      })
+      const response = await request(app)
+        .put(`/players/${fakeId}`)
+        .set('Cookie', [`token=${authToken}`])
+        .send({
+          name: 'Test Player',
+          goalScoringScore: 4,
+          gameKnowledgeScore: 3,
+          attackScore: 2,
+          midfieldScore: 3,
+          defenseScore: 2,
+          fitnessScore: 2,
+          gender: 'male',
+          isPlayingThisWeek: true,
+        })
 
       expect(response.status).toBe(404)
     })
@@ -185,6 +216,7 @@ describe('Player Routes', () => {
 
       const response = await request(app)
         .put(`/players/${testPlayer._id}/playerInfo`)
+        .set('Cookie', [`token=${authToken}`])
         .send(updatedInfo)
 
       expect(response.status).toBe(200)
@@ -195,6 +227,7 @@ describe('Player Routes', () => {
     it('should reject invalid updates', async () => {
       const response = await request(app)
         .put(`/players/${testPlayer._id}/playerInfo`)
+        .set('Cookie', [`token=${authToken}`])
         .send({
           name: 'A',
           goalScoringScore: -1,
@@ -212,7 +245,9 @@ describe('Player Routes', () => {
 
   describe('DELETE /players/:id', () => {
     it('should delete an existing player', async () => {
-      const response = await request(app).delete(`/players/${testPlayer._id}`)
+      const response = await request(app)
+        .delete(`/players/${testPlayer._id}`)
+        .set('Cookie', [`token=${authToken}`])
 
       expect(response.status).toBe(200)
       expect(response.body.message).toBe('Player deleted successfully')
@@ -223,7 +258,9 @@ describe('Player Routes', () => {
 
     it('should return 404 for non-existent player', async () => {
       const fakeId = new mongoose.Types.ObjectId()
-      const response = await request(app).delete(`/players/${fakeId}`)
+      const response = await request(app)
+        .delete(`/players/${fakeId}`)
+        .set('Cookie', [`token=${authToken}`])
 
       expect(response.status).toBe(404)
     })
@@ -233,6 +270,7 @@ describe('Player Routes', () => {
     it('should balance teams with valid number of teams', async () => {
       const response = await request(app)
         .post('/balance-teams')
+        .set('Cookie', [`token=${authToken}`])
         .send({ numTeams: 2 })
 
       expect(response.status).toBe(200)
@@ -241,6 +279,7 @@ describe('Player Routes', () => {
     it('should reject invalid number of teams', async () => {
       const response = await request(app)
         .post('/balance-teams')
+        .set('Cookie', [`token=${authToken}`])
         .send({ numTeams: 1 })
 
       expect(response.status).toBe(400)
@@ -251,6 +290,7 @@ describe('Player Routes', () => {
     it('should update all players status', async () => {
       const response = await request(app)
         .put('/players-bulk-update')
+        .set('Cookie', [`token=${authToken}`])
         .send({ isPlayingThisWeek: false })
 
       expect(response.status).toBe(200)
@@ -265,6 +305,7 @@ describe('Player Routes', () => {
     it('should reject invalid boolean value', async () => {
       const response = await request(app)
         .put('/players-bulk-update')
+        .set('Cookie', [`token=${authToken}`])
         .send({ isPlayingThisWeek: 'not-a-boolean' })
 
       expect(response.status).toBe(400)

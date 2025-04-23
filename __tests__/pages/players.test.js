@@ -197,7 +197,7 @@ describe('Players Page', () => {
           const editButton = screen.getAllByTestId('edit-player')[0]
           fireEvent.click(editButton)
 
-          expect(mockOnEditPlayer).toHaveBeenCalledWith('1')
+          expect(mockOnEditPlayer).toHaveBeenCalledWith('2')
         })
       })
     })

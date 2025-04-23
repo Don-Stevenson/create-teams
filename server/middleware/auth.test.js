@@ -34,7 +34,7 @@ describe('Auth Middleware', () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(401)
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: 'No authentication token provided',
+      message: 'Unauthenticated request',
     })
     expect(mockNext).not.toHaveBeenCalled()
   })
@@ -70,7 +70,7 @@ describe('Auth Middleware', () => {
     expect(jwt.verify).toHaveBeenCalledWith(token, process.env.JWT_SECRET)
     expect(mockRes.status).toHaveBeenCalledWith(401)
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: 'Invalid token',
+      message: 'Unauthenticated request',
     })
     expect(mockNext).not.toHaveBeenCalled()
   })
@@ -102,7 +102,7 @@ describe('Auth Middleware', () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(401)
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: 'Authentication token is required',
+      message: 'Unauthenticated request',
     })
     expect(mockNext).not.toHaveBeenCalled()
   })

@@ -13,6 +13,30 @@ const router = express.Router()
 // Public routes (no authentication required)
 const publicRouter = express.Router()
 
+// // Registration route
+// router.post(
+//   '/register',
+//   [
+//     body('username').trim().isLength({ min: 3 }).escape(),
+//     body('password').isLength({ min: 6 }),
+//   ],
+//   async (req, res) => {
+//     const errors = validationResult(req)
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({ errors: errors.array() })
+//     }
+
+//     try {
+//       const user = await User.create(req.body)
+//       res.status(201).json({
+//         success: true,
+//         user: { id: user._id, username: user.username },
+//       })
+//     } catch (error) {
+//       res.status(400).json({ success: false, error: error.message })
+//     }
+//   }
+
 // Login route
 publicRouter.post('/login', async (req, res) => {
   try {

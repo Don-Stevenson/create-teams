@@ -9,17 +9,13 @@ function auth(req, res, next) {
     if (!token) {
       const authHeader = req.headers['authorization']
       if (!authHeader) {
-        return res
-          .status(401)
-          .json({ message: 'No authentication token provided' })
+        return res.status(401).json({ message: 'Unauthenticated request' })
       }
       token = authHeader.split(' ')[1] // Format: "Bearer TOKEN"
     }
 
     if (!token) {
-      return res
-        .status(401)
-        .json({ message: 'Authentication token is required' })
+      return res.status(401).json({ message: 'Unauthenticated request' })
     }
 
     try {
@@ -36,15 +32,13 @@ function auth(req, res, next) {
         return res.status(401).json({ message: 'Token has expired' })
       }
       if (error.name === 'JsonWebTokenError') {
-        return res.status(401).json({ message: 'Invalid token' })
+        return res.status(401).json({ message: 'Unauthenticated request' })
       }
       throw error
     }
   } catch (error) {
     console.error('Auth middleware error:', error)
-    return res
-      .status(500)
-      .json({ message: 'Internal server error during authentication' })
+    return res.status(500).json({ message: 'Unauthenticated request' })
   }
 }
 

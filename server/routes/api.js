@@ -10,6 +10,9 @@ import auth from '../middleware/auth.js'
 
 const router = express.Router()
 
+// Public routes (no authentication required)
+const publicRouter = express.Router()
+
 // // Registration route
 // router.post(
 //   '/register',
@@ -33,9 +36,9 @@ const router = express.Router()
 //       res.status(400).json({ success: false, error: error.message })
 //     }
 //   }
-// )
 
-router.post('/login', async (req, res) => {
+// Login route
+publicRouter.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body
     const user = await User.findOne({ username })
@@ -63,10 +66,21 @@ router.post('/login', async (req, res) => {
 })
 
 // Logout route
-router.post('/logout', (req, res) => {
+publicRouter.post('/logout', (req, res) => {
   res.clearCookie('token')
   res.status(200).json({ success: true })
 })
+
+// Auth check route
+publicRouter.get('/auth/check', auth, (req, res) => {
+  res
+    .status(200)
+    .json({ success: true, message: 'Authenticated', userId: req.userId })
+})
+
+// Protected routes (authentication required)
+const protectedRouter = express.Router()
+protectedRouter.use(auth)
 
 // Validation rules
 const playerValidationRules = [
@@ -82,7 +96,7 @@ const playerValidationRules = [
 ]
 
 // GET all players
-router.get('/players', async (req, res, next) => {
+protectedRouter.get('/players', async (req, res, next) => {
   try {
     const players = await Player.find().select('-__v')
     res.json(players)
@@ -92,7 +106,7 @@ router.get('/players', async (req, res, next) => {
 })
 
 // POST a new player
-router.post(
+protectedRouter.post(
   '/players',
   validate(playerValidationRules),
   async (req, res, next) => {
@@ -108,7 +122,7 @@ router.post(
 )
 
 // PUT update player's weekly status
-router.put(
+protectedRouter.put(
   '/players/:id',
   validate(playerValidationRules),
   async (req, res, next) => {
@@ -128,7 +142,7 @@ router.put(
   }
 )
 
-router.put(
+protectedRouter.put(
   '/players/:id/playerInfo',
   validate(playerValidationRules),
   async (req, res, next) => {
@@ -179,7 +193,7 @@ router.put(
 )
 
 // DELETE a player
-router.delete('/players/:id', async (req, res, next) => {
+protectedRouter.delete('/players/:id', async (req, res, next) => {
   try {
     const deletedPlayer = await Player.findByIdAndDelete(req.params.id)
     if (!deletedPlayer) {
@@ -192,7 +206,7 @@ router.delete('/players/:id', async (req, res, next) => {
 })
 
 // POST balance teams
-router.post(
+protectedRouter.post(
   '/balance-teams',
   validate([body('numTeams').isInt({ min: 2 })]),
   async (req, res, next) => {
@@ -207,7 +221,7 @@ router.post(
 )
 
 // Route for bulk updating players is playing this week
-router.put(
+protectedRouter.put(
   '/players-bulk-update',
   [
     body('isPlayingThisWeek')
@@ -238,10 +252,8 @@ router.put(
   }
 )
 
-// Check if user is authenticated
-router.get('/auth/check', auth, (req, res) => {
-  res
-    .status(200)
-    .json({ success: true, message: 'Authenticated', userId: req.userId })
-})
+// Mount the routers
+router.use('/', publicRouter)
+router.use('/', protectedRouter)
+
 export default router

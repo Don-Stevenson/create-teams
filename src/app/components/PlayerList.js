@@ -18,7 +18,7 @@ const PlayerList = ({ players, onEditPlayer, onDeletePlayer }) => {
       {sortedInitials.map(initial => (
         <div key={initial} className="flex flex-col gap-4">
           <div className="text-2xl font-bold text-red-700 px-2 ">{initial}</div>
-          <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-2 px-2">
+          <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-5 px-3">
             {playersByInitial[initial].map(player => (
               <PlayerCard
                 key={player._id}

@@ -231,7 +231,7 @@ function Players() {
           </h2>
           <div className="flex-col text-black mb-4 gap-1">
             <p className="text-sm">Legend:</p>
-            <p className="text-xxs">
+            <p className="text-sm">
               K: Game Knowledge, Sc: Goal Scoring, A: Attack, Md: Midfield, D:
               Defense, M/S: Mobility/Stamina
             </p>

@@ -28,6 +28,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
               <li
                 key={player._id}
                 className={`flex items-center gap-4 p-3 border-2 border-gray-300 rounded hover:border-[#b1c1de] cursor-pointer ${
+
                   player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-200'
                 }`}
                 onClick={() => onTogglePlayingThisWeek(player._id)}

@@ -40,7 +40,7 @@ exports[`Players Page Add Player Functionality matches snapshot 1`] = `
             Legend:
           </p>
           <p
-            class="text-xxs"
+            class="text-sm"
           >
             K: Game Knowledge, Sc: Goal Scoring, A: Attack, Md: Midfield, D: Defense, M/S: Mobility/Stamina
           </p>

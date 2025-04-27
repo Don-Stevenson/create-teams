@@ -74,10 +74,18 @@ const setup = async () => {
 }
 
 describe('CreateTeams', () => {
+  let originalConsoleError
+
   beforeEach(() => {
     jest.clearAllMocks()
     api.get.mockResolvedValue({ data: mockPlayers })
     api.post.mockResolvedValue({ data: mockBalancedTeams })
+    originalConsoleError = console.error
+    console.error = jest.fn()
+  })
+
+  afterEach(() => {
+    console.error = originalConsoleError
   })
 
   test('renders component and fetches players', async () => {

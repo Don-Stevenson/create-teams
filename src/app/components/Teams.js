@@ -1,19 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { calculateTeamStats } from '../utils/teamStats'
 
-const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
+// Custom hook for drag and drop functionality
+const useDragAndDrop = (balancedTeams, setBalancedTeams) => {
   const [draggedPlayer, setDraggedPlayer] = useState(null)
-
-  const getTeamName = index => {
-    const isRedTeam = index % 2 === 0
-    const teamNumber = Math.floor(index / 2) + 1
-    const color = isRedTeam ? 'Red' : 'Black'
-
-    if (balancedTeams.length > 2) {
-      return `${color} Team ${teamNumber}`
-    }
-    return `${color} Team`
-  }
 
   const handleDragStart = (e, teamIndex, playerIndex, playerId) => {
     // Store the dragged player info
@@ -77,6 +67,160 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
     setBalancedTeams(newBalancedTeams)
   }
 
+  return {
+    draggedPlayer,
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  }
+}
+
+// Component for team statistics
+const TeamStats = ({ team, index }) => {
+  return (
+    <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2 print:hidden">
+      <div className="flex flex-col gap-2 print:flex-col">
+        <div
+          className={`flex justify-between border gap-1 ${
+            index % 2 === 0
+              ? 'border-red-300 bg-red-100'
+              : 'border-gray-400 bg-gray-100'
+          } rounded py-1 px-3`}
+        >
+          <p className="text-xxs">Game Knowledge:</p>
+          <p className="text-xxs">{team.totalGameKnowledgeScore}</p>
+        </div>
+        <div
+          className={`flex justify-between border gap-1 ${
+            index % 2 === 0
+              ? 'border-red-300 bg-red-100'
+              : 'border-gray-400 bg-gray-100'
+          } rounded py-1 px-3`}
+        >
+          <p className="text-xxs">Goal Scoring:</p>
+          <p className="text-xxs">{team.totalGoalScoringScore}</p>
+        </div>
+        <div
+          className={`flex justify-between border gap-1 ${
+            index % 2 === 0
+              ? 'border-red-300 bg-red-100'
+              : 'border-gray-400 bg-gray-100'
+          } rounded py-1 px-3`}
+        >
+          <p className="text-xxs">Attack:</p>
+          <p className="text-xxs">{team.totalAttackScore}</p>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 print:flex-col">
+        <div
+          className={`flex justify-between border gap-1 ${
+            index % 2 === 0
+              ? 'border-red-300 bg-red-100'
+              : 'border-gray-400 bg-gray-100'
+          } rounded py-1 px-3`}
+        >
+          <p className="text-xxs">Midfield:</p>
+          <p className="text-xxs">{team.totalMidfieldScore}</p>
+        </div>
+        <div
+          className={`flex justify-between border gap-1 ${
+            index % 2 === 0
+              ? 'border-red-300 bg-red-100'
+              : 'border-gray-400 bg-gray-100'
+          } rounded py-1 px-3`}
+        >
+          <p className="text-xxs">Defense:</p>
+          <p className="text-xxs">{team.totalDefenseScore}</p>
+        </div>
+        <div
+          className={`flex border justify-between ${
+            index % 2 === 0
+              ? 'border-red-300 bg-red-100'
+              : 'border-gray-400 bg-gray-100'
+          } rounded py-1 px-3`}
+        >
+          <p className="text-xxs">Mobility/Stamina:</p>
+          <p className="text-xxs">{team.fitnessScore}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Component for player list
+const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
+  return (
+    <ul className="list-disc pl-5 print:pl-4 print:mt-1 print:list-none relative">
+      {team.players
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((player, playerIndex) => (
+          <li
+            key={player._id}
+            draggable="true"
+            onDragStart={e =>
+              handleDragStart(e, teamIndex, playerIndex, player._id)
+            }
+            onDragEnd={handleDragEnd}
+            className="border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl cursor-grab active:cursor-grabbing"
+          >
+            {player.name}
+          </li>
+        ))}
+    </ul>
+  )
+}
+
+// Component for team header
+const TeamHeader = ({ team, index, getTeamName }) => {
+  return (
+    <>
+      <h3 className="text-xl text-black font-semibold print:text-lg print:mb-[2px] text-center">
+        {getTeamName(index)}
+      </h3>
+      <p className="text-sm print:hidden underline">Team Totals</p>
+      <p className="pb-1 print:hidden text-xxs xs:text-sm">
+        Team Score: {team.totalScore?.toFixed(1)}
+      </p>
+      <p className="text-xxs xs:text-xs print:hidden">
+        No of Players:{' '}
+        {team.genderCount.male +
+          team.genderCount.female +
+          team.genderCount.nonBinary}
+      </p>
+      <p className="text-xxs xs:text-xs print:hidden">
+        Gender Count: Male - {team.genderCount.male}, Female -{' '}
+        {team.genderCount.female}
+        {team.genderCount.nonBinary
+          ? `, Non Binary - ${team.genderCount.nonBinary}`
+          : ''}
+      </p>
+    </>
+  )
+}
+
+// Main Teams component
+const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
+  const {
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useDragAndDrop(balancedTeams, setBalancedTeams)
+
+  const getTeamName = index => {
+    const isRedTeam = index % 2 === 0
+    const teamNumber = Math.floor(index / 2) + 1
+    const color = isRedTeam ? 'Red' : 'Black'
+
+    if (balancedTeams.length > 2) {
+      return `${color} Team ${teamNumber}`
+    }
+    return `${color} Team`
+  }
+
   return (
     <>
       <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">
@@ -95,112 +239,17 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, index)}
           >
-            <h3 className="text-xl text-black font-semibold print:text-lg print:mb-[2px] text-center">
-              {getTeamName(index)}
-            </h3>
-            <p className="text-sm print:hidden underline">Team Totals</p>
-            <p className="pb-1 print:hidden text-xxs xs:text-sm">
-              Team Score: {team.totalScore?.toFixed(1)}
-            </p>
-            <p className="text-xxs xs:text-xs print:hidden">
-              No of Players:{' '}
-              {team.genderCount.male +
-                team.genderCount.female +
-                team.genderCount.nonBinary}
-            </p>
-            <p className="text-xxs xs:text-xs print:hidden">
-              Gender Count: Male - {team.genderCount.male}, Female -{' '}
-              {team.genderCount.female}
-              {team.genderCount.nonBinary
-                ? `, Non Binary - ${team.genderCount.nonBinary}`
-                : ''}
-            </p>
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2 print:hidden">
-              <div className="flex flex-col gap-2 print:flex-col">
-                <div
-                  className={`flex justify-between border gap-1 ${
-                    index % 2 === 0
-                      ? 'border-red-300 bg-red-100'
-                      : 'border-gray-400 bg-gray-100'
-                  } rounded py-1 px-3`}
-                >
-                  <p className="text-xxs">Game Knowledge:</p>
-                  <p className="text-xxs">{team.totalGameKnowledgeScore}</p>
-                </div>
-                <div
-                  className={`flex justify-between border gap-1 ${
-                    index % 2 === 0
-                      ? 'border-red-300 bg-red-100'
-                      : 'border-gray-400 bg-gray-100'
-                  } rounded py-1 px-3`}
-                >
-                  <p className="text-xxs">Goal Scoring:</p>
-                  <p className="text-xxs">{team.totalGoalScoringScore}</p>
-                </div>
-                <div
-                  className={`flex justify-between border gap-1 ${
-                    index % 2 === 0
-                      ? 'border-red-300 bg-red-100'
-                      : 'border-gray-400 bg-gray-100'
-                  } rounded py-1 px-3`}
-                >
-                  <p className="text-xxs">Attack:</p>
-                  <p className="text-xxs">{team.totalAttackScore}</p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 print:flex-col">
-                <div
-                  className={`flex justify-between border gap-1 ${
-                    index % 2 === 0
-                      ? 'border-red-300 bg-red-100'
-                      : 'border-gray-400 bg-gray-100'
-                  } rounded py-1 px-3`}
-                >
-                  <p className="text-xxs">Midfield:</p>
-                  <p className="text-xxs">{team.totalMidfieldScore}</p>
-                </div>
-                <div
-                  className={`flex justify-between border gap-1 ${
-                    index % 2 === 0
-                      ? 'border-red-300 bg-red-100'
-                      : 'border-gray-400 bg-gray-100'
-                  } rounded py-1 px-3`}
-                >
-                  <p className="text-xxs">Defense:</p>
-                  <p className="text-xxs">{team.totalDefenseScore}</p>
-                </div>
-                <div
-                  className={`flex border justify-between ${
-                    index % 2 === 0
-                      ? 'border-red-300 bg-red-100'
-                      : 'border-gray-400 bg-gray-100'
-                  } rounded py-1 px-3`}
-                >
-                  <p className="text-xxs">Mobility/Stamina:</p>
-                  <p className="text-xxs">{team.fitnessScore}</p>
-                </div>
-              </div>
-            </div>
+            <TeamHeader team={team} index={index} getTeamName={getTeamName} />
+            <TeamStats team={team} index={index} />
             <h4 className="font-semibold mt-2 print:hidden">
               {getTeamName(index)} Players:
             </h4>
-            <ul className="list-disc pl-5 print:pl-4 print:mt-1 print:list-none relative">
-              {team.players
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((player, playerIndex) => (
-                  <li
-                    key={player._id}
-                    draggable="true"
-                    onDragStart={e =>
-                      handleDragStart(e, index, playerIndex, player._id)
-                    }
-                    onDragEnd={handleDragEnd}
-                    className="border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl cursor-grab active:cursor-grabbing"
-                  >
-                    {player.name}
-                  </li>
-                ))}
-            </ul>
+            <PlayerList
+              team={team}
+              teamIndex={index}
+              handleDragStart={handleDragStart}
+              handleDragEnd={handleDragEnd}
+            />
           </div>
         ))}
       </div>

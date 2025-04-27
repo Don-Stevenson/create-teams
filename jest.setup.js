@@ -8,13 +8,15 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
-// Suppress console errors for specific React warnings during tests
+// Suppress only act() warnings during tests
 const originalError = console.error
 beforeAll(() => {
   console.error = (...args) => {
+    // Only suppress act() warnings
     if (
-      /Warning: The current testing environment is not configured to support act\(...\)/.test(
-        args[0]
+      typeof args[0] === 'string' &&
+      args[0].includes(
+        'Warning: The current testing environment is not configured to support act'
       )
     ) {
       return

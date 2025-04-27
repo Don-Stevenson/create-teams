@@ -1,5 +1,13 @@
 ## Getting Started
 
+Install
+
+```bash
+npm i --legacy-peer-deps
+```
+
+--legacy-peer-deps flag required for pragmatic-dnd-drop library
+
 First, run the development server:
 
 ```bash

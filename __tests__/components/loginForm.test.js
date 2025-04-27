@@ -31,16 +31,23 @@ const mockError = jest.spyOn(console, 'error').mockImplementation(() => {})
 
 describe('LoginForm', () => {
   const mockPush = jest.fn()
+  const originalConsoleError = console.error
+  let mockError
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockError.mockReset()
+    mockError = jest.fn()
+    console.error = mockError
 
     useRouter.mockImplementation(() => ({
       push: mockPush,
     }))
 
     global.fetch = jest.fn()
+  })
+
+  afterEach(() => {
+    console.error = originalConsoleError
   })
 
   it('renders all form elements correctly', () => {
@@ -180,7 +187,8 @@ describe('LoginForm', () => {
   it('handles network errors correctly', async () => {
     render(<LoginForm />)
 
-    global.fetch = jest.fn(() => Promise.reject(new Error('Network error')))
+    const networkError = new Error('Network error')
+    global.fetch = jest.fn(() => Promise.reject(networkError))
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -188,16 +196,14 @@ describe('LoginForm', () => {
 
     fireEvent.change(usernameInput, { target: { value: 'testuser' } })
     fireEvent.change(passwordInput, { target: { value: 'wrongpass' } })
-    fireEvent.click(submitButton)
 
-    await waitFor(() => {
+    await waitFor(async () => {
       fireEvent.click(submitButton)
+      expect(mockError).toHaveBeenCalledWith('Login error:', networkError)
     })
 
     expect(
-      await screen.getByText(/There's been an error. Please try again/i)
+      screen.getByText(/There's been an error. Please try again/i)
     ).toBeInTheDocument()
-
-    expect(mockError).toHaveBeenCalled()
   })
 })

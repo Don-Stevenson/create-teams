@@ -80,16 +80,22 @@ describe('Players Page', () => {
       await act(async () => {
         render(<Players />)
       })
+
       const addButton = screen.getByText('Add A New Player')
-      await user.click(addButton)
+      await act(async () => {
+        await user.click(addButton)
+      })
+
       expect(screen.getByTestId('add-player-form')).toBeInTheDocument()
-      await user.click(screen.getByText('cancel'))
+
+      await act(async () => {
+        await user.click(screen.getByText('cancel'))
+      })
+
       expect(screen.queryByTestId('add-player-form')).not.toBeInTheDocument()
     })
 
     it('adds a new player successfully', async () => {
-      render(<Players />)
-
       const newPlayer = {
         _id: '3',
         name: 'New Player',
@@ -141,11 +147,15 @@ describe('Players Page', () => {
           newPlayer.fitnessScore
         )
       })
+
       const genderSelect = screen.getByLabelText(/gender/i)
+      await act(async () => {
+        await user.click(genderSelect)
+      })
 
-      await userEvent.click(genderSelect)
-
-      await user.click(screen.getByText('Male'))
+      await act(async () => {
+        await user.click(screen.getByText('Male'))
+      })
 
       await act(async () => {
         await user.click(screen.getByRole('button', { name: /add player/i }))
@@ -179,23 +189,28 @@ describe('Players Page', () => {
           const editButton = screen.getAllByTestId('edit-player')[0]
           fireEvent.click(editButton)
         })
+
         expect(screen.getByTestId('edit-player-modal')).toBeInTheDocument()
       })
 
       describe('PlayerList', () => {
-        it('calls onEditPlayer when edit button is clicked', () => {
+        it('calls onEditPlayer when edit button is clicked', async () => {
           const mockOnEditPlayer = jest.fn()
-          render(
-            <PlayerList
-              players={mockPlayers}
-              onEditPlayer={mockOnEditPlayer}
-              onDeletePlayer={() => {}}
-              fetchPlayers={() => {}}
-            />
-          )
+          await act(async () => {
+            render(
+              <PlayerList
+                players={mockPlayers}
+                onEditPlayer={mockOnEditPlayer}
+                onDeletePlayer={() => {}}
+                fetchPlayers={() => {}}
+              />
+            )
+          })
 
           const editButton = screen.getAllByTestId('edit-player')[0]
-          fireEvent.click(editButton)
+          await act(async () => {
+            fireEvent.click(editButton)
+          })
 
           expect(mockOnEditPlayer).toHaveBeenCalledWith('2')
         })
@@ -212,6 +227,7 @@ describe('Players Page', () => {
           const deleteButton = screen.getAllByTestId('delete-player')[1]
           fireEvent.click(deleteButton)
         })
+
         expect(
           screen.getByText(/Are you sure you want to delete John Doe?/i)
         ).toBeInTheDocument()
@@ -231,6 +247,7 @@ describe('Players Page', () => {
           const confirmDelete = screen.getAllByText('Delete')[2]
           fireEvent.click(confirmDelete)
         })
+
         expect(api.delete).toHaveBeenCalledWith('/players/1')
       })
 
@@ -293,11 +310,16 @@ describe('Players Page', () => {
         const mockError = new Error('Update failed')
         api.put.mockRejectedValue(mockError)
 
-        render(<Players />)
+        await act(async () => {
+          render(<Players />)
+        })
 
         await screen.findByText('John Doe')
         const editButton = screen.getByTestId('edit-player')
-        fireEvent.click(editButton)
+
+        await act(async () => {
+          fireEvent.click(editButton)
+        })
 
         const modal = await screen.findByTestId('edit-player-modal')
         expect(modal).toBeInTheDocument()
@@ -324,9 +346,11 @@ describe('Players Page', () => {
       })
     })
 
-    it('matches snapshot', () => {
-      const { container } = render(<Players />)
-      expect(container).toMatchSnapshot()
+    it('matches snapshot', async () => {
+      await act(async () => {
+        const { container } = render(<Players />)
+        expect(container).toMatchSnapshot()
+      })
     })
   })
 })

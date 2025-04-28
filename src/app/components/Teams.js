@@ -77,7 +77,6 @@ const useDragAndDrop = (balancedTeams, setBalancedTeams) => {
   }
 }
 
-// Component for team statistics
 const TeamStats = ({ team, index }) => {
   return (
     <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2 print:hidden">
@@ -149,7 +148,6 @@ const TeamStats = ({ team, index }) => {
   )
 }
 
-// Component for player list
 const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
   return (
     <ul className="list-disc pl-5 print:pl-4 print:mt-1 print:list-none relative">
@@ -172,7 +170,6 @@ const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
   )
 }
 
-// Component for team header
 const TeamHeader = ({ team, index, getTeamName }) => {
   return (
     <>
@@ -221,38 +218,68 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
     return `${color} Team`
   }
 
+  const hasLargeTeams = balancedTeams.some(team => team.players.length > 12)
+
+  const teamsPerPage = hasLargeTeams ? 2 : 4
+
+  const totalPages = Math.ceil(balancedTeams.length / teamsPerPage)
+
+  const teamGroups = []
+  for (let i = 0; i < totalPages; i++) {
+    const startIdx = i * teamsPerPage
+    const endIdx = Math.min(startIdx + teamsPerPage, balancedTeams.length)
+    teamGroups.push(balancedTeams.slice(startIdx, endIdx))
+  }
+
   return (
     <>
       <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">
         Total Number of People Playing: {totalPlayers}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto px-4 print:grid-cols-2 print:gap-1 print:max-w-none print:px-0 print:py-0 print:m-0">
-        {balancedTeams.map((team, index) => (
-          <div
-            key={index}
-            className={`flex flex-col p-2 rounded max-w-[600px] border-4 print:w-full print:p-1 print:text-sm print:border-1 ${
-              index % 2 === 0
-                ? 'border-loonsRed bg-red-200 print:bg-red-100'
-                : 'border-gray-500 bg-gray-200 print:bg-gray-100'
-            }`}
-            onDragOver={e => handleDragOver(e, index)}
-            onDragLeave={handleDragLeave}
-            onDrop={e => handleDrop(e, index)}
-          >
-            <TeamHeader team={team} index={index} getTeamName={getTeamName} />
-            <TeamStats team={team} index={index} />
-            <h4 className="font-semibold mt-2 print:hidden">
-              {getTeamName(index)} Players:
-            </h4>
-            <PlayerList
-              team={team}
-              teamIndex={index}
-              handleDragStart={handleDragStart}
-              handleDragEnd={handleDragEnd}
-            />
-          </div>
-        ))}
-      </div>
+
+      {teamGroups.map((group, pageIndex) => (
+        <div
+          key={pageIndex}
+          className={`grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto px-4 print:grid-cols-2 print:gap-1 print:max-w-none print:px-0 print:py-0 print:m-0 ${
+            pageIndex > 0 ? 'print:break-before-page' : ''
+          }`}
+        >
+          {group.map((team, index) => {
+            // Calculate the actual team index in the full balancedTeams array
+            const actualIndex = pageIndex * teamsPerPage + index
+
+            return (
+              <div
+                key={actualIndex}
+                className={`flex flex-col p-2 rounded max-w-[600px] border-4 print:w-full print:p-1 print:text-sm print:border-1 ${
+                  actualIndex % 2 === 0
+                    ? 'border-loonsRed bg-red-200 print:bg-red-100'
+                    : 'border-gray-500 bg-gray-200 print:bg-gray-100'
+                }`}
+                onDragOver={e => handleDragOver(e, actualIndex)}
+                onDragLeave={handleDragLeave}
+                onDrop={e => handleDrop(e, actualIndex)}
+              >
+                <TeamHeader
+                  team={team}
+                  index={actualIndex}
+                  getTeamName={getTeamName}
+                />
+                <TeamStats team={team} index={actualIndex} />
+                <h4 className="font-semibold mt-2 print:hidden">
+                  {getTeamName(actualIndex)} Players:
+                </h4>
+                <PlayerList
+                  team={team}
+                  teamIndex={actualIndex}
+                  handleDragStart={handleDragStart}
+                  handleDragEnd={handleDragEnd}
+                />
+              </div>
+            )
+          })}
+        </div>
+      ))}
     </>
   )
 }

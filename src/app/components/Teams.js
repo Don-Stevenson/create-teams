@@ -197,7 +197,6 @@ const TeamHeader = ({ team, index, getTeamName }) => {
   )
 }
 
-// Main Teams component
 const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
   const {
     handleDragStart,
@@ -236,7 +235,6 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
       <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">
         Total Number of People Playing: {totalPlayers}
       </div>
-
       {teamGroups.map((group, pageIndex) => (
         <div
           key={pageIndex}
@@ -245,7 +243,6 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
           }`}
         >
           {group.map((team, index) => {
-            // Calculate the actual team index in the full balancedTeams array
             const actualIndex = pageIndex * teamsPerPage + index
 
             return (

@@ -11,11 +11,33 @@ export default function CreateTeams() {
   const [players, setPlayers] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [selectedPlayerCount, setSelectedPlayerCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const [showLoadingMessage, setShowLoadingMessage] = useState(true)
+  const [isCreatingTeams, setIsCreatingTeams] = useState(false)
+
+  useEffect(() => {
+    let timer
+    if (players.length > 0) {
+      timer = setTimeout(() => {
+        setShowLoadingMessage(false)
+        setIsLoading(false)
+      }, 400)
+    }
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
+  }, [players.length])
 
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await api.get('/players')
+        setIsLoading(true)
+        setShowLoadingMessage(true)
+
+        const minimumDuration = new Promise(resolve => setTimeout(resolve, 400))
+
+        const [res] = await Promise.all([api.get('/players'), minimumDuration])
+
         const fetchedPlayers = res.data.map(player => ({
           ...player,
           isPlayingThisWeek: Boolean(player.isPlayingThisWeek),
@@ -25,9 +47,13 @@ export default function CreateTeams() {
         setSelectedPlayerCount(
           fetchedPlayers.filter(player => player.isPlayingThisWeek).length
         )
+        setIsLoading(false)
+        setShowLoadingMessage(false)
       } catch (error) {
         console.error('Failed to fetch players:', error)
         setError('Failed to fetch players')
+        setIsLoading(false)
+        setShowLoadingMessage(false)
       }
     }
     fetchPlayers()
@@ -104,11 +130,24 @@ export default function CreateTeams() {
   const handleBalanceTeams = async () => {
     setError(null)
     try {
-      const res = await api.post('/balance-teams', { numTeams })
+      setIsLoading(true)
+      setShowLoadingMessage(true)
+
+      const minimumDuration = new Promise(resolve => setTimeout(resolve, 500))
+
+      const [res] = await Promise.all([
+        api.post('/balance-teams', { numTeams }),
+        minimumDuration,
+      ])
+
       setTotalPlayers(res.data.totalPlayersPlaying)
       setBalancedTeams(res.data.teams)
+      setIsLoading(false)
+      setShowLoadingMessage(false)
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred')
+      setIsLoading(false)
+      setShowLoadingMessage(false)
     }
   }
 
@@ -137,10 +176,14 @@ export default function CreateTeams() {
             </span>
           </label>
         </div>
-        <PlayerListToggleIsPlaying
-          players={players}
-          onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
-        />
+        {showLoadingMessage && players.length === 0 ? (
+          <div className="text-center text-xl py-4">Loading players...</div>
+        ) : (
+          <PlayerListToggleIsPlaying
+            players={players}
+            onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
+          />
+        )}
       </div>
       <div className="flex flex-col mt-10 items-center">
         <div className="flex flex-col items-center mb-4">
@@ -164,8 +207,9 @@ export default function CreateTeams() {
           <button
             className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden mb-4"
             onClick={handleBalanceTeams}
+            disabled={isLoading}
           >
-            Create Balanced Teams
+            {'Create Balanced Teams'}
           </button>
         </div>
         {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}

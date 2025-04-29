@@ -15,6 +15,8 @@ function Players() {
   const [isLoading, setIsLoading] = useState(true)
   const [isAddPlayerModalOpen, setIsAddPlayerModalOpen] = useState(false)
   const [playerAdded, setPlayerAdded] = useState(false)
+  const [showLoadingMessage, setShowLoadingMessage] = useState(true)
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   const [deleteState, setDeleteState] = useState({
     isDeleting: false,
@@ -24,6 +26,19 @@ function Players() {
   const lastFetchRef = useRef(0)
   const fetchTimeoutRef = useRef(null)
   const FETCH_COOLDOWN = 5000
+
+  useEffect(() => {
+    let timer
+    if (dataLoaded) {
+      timer = setTimeout(() => {
+        setShowLoadingMessage(false)
+        setIsLoading(false)
+      }, 400)
+    }
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
+  }, [dataLoaded])
 
   const fetchPlayers = useCallback(async (force = false) => {
     const now = Date.now()
@@ -40,7 +55,12 @@ function Players() {
 
     try {
       setIsLoading(true)
-      const res = await api.get('/players')
+      setShowLoadingMessage(true)
+
+      const minimumDuration = new Promise(resolve => setTimeout(resolve, 400))
+
+      const [res] = await Promise.all([api.get('/players'), minimumDuration])
+
       setPlayers(
         res.data.map(player => ({
           ...player,
@@ -48,10 +68,13 @@ function Players() {
         }))
       )
       lastFetchRef.current = Date.now()
+
+      setIsLoading(false)
+      setShowLoadingMessage(false)
     } catch (error) {
       console.error('Failed to fetch players:', error)
-    } finally {
       setIsLoading(false)
+      setShowLoadingMessage(false)
     }
   }, [])
 
@@ -236,8 +259,8 @@ function Players() {
               Defense, M/S: Mobility/Stamina
             </p>
           </div>
-          {isLoading && players.length === 0 ? (
-            <div className="text-center py-4">Loading players...</div>
+          {showLoadingMessage && players.length === 0 ? (
+            <div className="text-center text-xl py-4">Loading players...</div>
           ) : (
             <PlayerList
               players={sortedPlayers}

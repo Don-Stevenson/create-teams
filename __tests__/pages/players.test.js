@@ -68,6 +68,65 @@ describe('Players Page', () => {
     })
   })
 
+  describe('Loading States', () => {
+    it('shows loading message when initially loading', async () => {
+      await act(async () => {
+        render(<Players />)
+      })
+
+      expect(screen.getByText('Loading players...')).toBeInTheDocument()
+    })
+
+    it('hides loading message after players are loaded', async () => {
+      await act(async () => {
+        render(<Players />)
+      })
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+      })
+    })
+
+    it('handles loading state during data fetch', async () => {
+      const delay = new Promise(resolve => setTimeout(resolve, 100))
+      api.get.mockImplementationOnce(() =>
+        delay.then(() => ({ data: mockPlayers }))
+      )
+
+      await act(async () => {
+        render(<Players />)
+      })
+
+      expect(screen.getByText('Loading players...')).toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+        expect(screen.getByText('John Doe')).toBeInTheDocument()
+      })
+    })
+
+    it('handles error during loading gracefully', async () => {
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+      api.get.mockRejectedValueOnce(new Error('Failed to fetch'))
+
+      await act(async () => {
+        render(<Players />)
+      })
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+      })
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to fetch players:',
+        expect.any(Error)
+      )
+      consoleSpy.mockRestore()
+    })
+  })
+
   describe('Add Player Functionality', () => {
     let user
 

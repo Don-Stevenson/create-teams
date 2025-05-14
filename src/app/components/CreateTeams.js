@@ -14,6 +14,7 @@ export default function CreateTeams() {
   const [isLoading, setIsLoading] = useState(true)
   const [showLoadingMessage, setShowLoadingMessage] = useState(true)
   const [isCreatingTeams, setIsCreatingTeams] = useState(false)
+  const [openPlayerList, setOpenPlayerList] = useState(false)
 
   useEffect(() => {
     let timer
@@ -139,7 +140,7 @@ export default function CreateTeams() {
         api.post('/balance-teams', { numTeams }),
         minimumDuration,
       ])
-
+      setOpenPlayerList(true)
       setTotalPlayers(res.data.totalPlayersPlaying)
       setBalancedTeams(res.data.teams)
       setIsLoading(false)
@@ -152,74 +153,98 @@ export default function CreateTeams() {
   }
 
   return (
-    <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
-      <div className="flex-col flex-wrap">
-        <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
-          Player List
-        </h2>
-        <p className="flex text-center md:justify-center mb-4 print:hidden">
-          <span className="font-bold text-xl text-gray-800 ">
-            {`Total Players Selected: ${selectedPlayerCount}`}
-          </span>
-        </p>
+    <div className="container">
+      <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        <div className="flex md:justify-center mb-4 print:hidden">
-          <label className="inline-flex items-center">
+        <div className="print:hidden">
+          <div className="flex-col flex-wrap">
+            {openPlayerList ? (
+              <div className="h-[5.5rem] mb-4">{''}</div>
+            ) : (
+              <>
+                <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
+                  Player List
+                </h2>
+                <p className="flex text-center md:justify-center mb-4 print:hidden">
+                  <span className="font-bold text-xl text-gray-800 ">
+                    {`Total Players Selected: ${selectedPlayerCount}`}
+                  </span>
+                </p>
+              </>
+            )}
+            <div className="flex justify-center items-center mb-2">
+              <button
+                onClick={() => setOpenPlayerList(!openPlayerList)}
+                className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-red-900 mb-2 text-lg font-bold border-2  rounded-md px-2 py-1"
+              >
+                {openPlayerList ? 'Show Player List' : 'Hide Player List'}
+              </button>
+            </div>
+            {!openPlayerList && (
+              <>
+                <div className="flex md:justify-center mb-4 print:hidden">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-loonsRed"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                    />
+                    <span className="ml-2 text-gray-700 text-sm">
+                      Toggle All Players Playing / Not Playing
+                    </span>
+                  </label>
+                </div>
+                {showLoadingMessage && players.length === 0 ? (
+                  <div className="text-center text-xl py-4">
+                    Loading players...
+                  </div>
+                ) : (
+                  <PlayerListToggleIsPlaying
+                    players={players}
+                    onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col mt-10 items-center">
+          <div className="flex flex-col items-center mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2 print:hidden"
+              htmlFor="numTeams"
+            >
+              Number of Teams
+            </label>
             <input
-              type="checkbox"
-              className="form-checkbox h-5 w-5 text-loonsRed"
-              checked={selectAll}
-              onChange={handleSelectAll}
+              className="shadow appearance-none border rounded w-15 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline print:hidden"
+              id="numTeams"
+              type="number"
+              min="2"
+              max="10"
+              value={numTeams}
+              onChange={e => setNumTeams(e.target.value)}
             />
-            <span className="ml-2 text-gray-700 text-sm">
-              Toggle All Players Playing / Not Playing
-            </span>
-          </label>
+          </div>
+          <div className="flex items-center justify-between print:hidden">
+            <button
+              className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden mb-4"
+              onClick={handleBalanceTeams}
+              disabled={isLoading}
+            >
+              {'Create Balanced Teams'}
+            </button>
+          </div>
+          {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
+          {balancedTeams && (
+            <Teams
+              balancedTeams={balancedTeams}
+              setBalancedTeams={setBalancedTeams}
+              totalPlayers={totalPlayers}
+            />
+          )}
         </div>
-        {showLoadingMessage && players.length === 0 ? (
-          <div className="text-center text-xl py-4">Loading players...</div>
-        ) : (
-          <PlayerListToggleIsPlaying
-            players={players}
-            onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
-          />
-        )}
-      </div>
-      <div className="flex flex-col mt-10 items-center">
-        <div className="flex flex-col items-center mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2 print:hidden"
-            htmlFor="numTeams"
-          >
-            Number of Teams
-          </label>
-          <input
-            className="shadow appearance-none border rounded w-15 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline print:hidden"
-            id="numTeams"
-            type="number"
-            min="2"
-            max="10"
-            value={numTeams}
-            onChange={e => setNumTeams(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center justify-between print:hidden">
-          <button
-            className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden mb-4"
-            onClick={handleBalanceTeams}
-            disabled={isLoading}
-          >
-            {'Create Balanced Teams'}
-          </button>
-        </div>
-        {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
-        {balancedTeams && (
-          <Teams
-            balancedTeams={balancedTeams}
-            setBalancedTeams={setBalancedTeams}
-            totalPlayers={totalPlayers}
-          />
-        )}
       </div>
     </div>
   )

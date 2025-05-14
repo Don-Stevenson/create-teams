@@ -237,7 +237,6 @@ describe('CreateTeams', () => {
       response: { data: { message: 'Failed to create teams' } },
     })
 
-    // Wait for initial loading to complete
     await waitFor(() => {
       expect(
         screen.getByRole('button', { name: /create balanced teams/i })
@@ -307,6 +306,91 @@ describe('CreateTeams', () => {
       expect(screen.getAllByText('Failed to update all players')).toHaveLength(
         2
       )
+    })
+  })
+
+  test('toggles player list visibility', async () => {
+    const { user } = await setup()
+
+    const toggleButton = screen.getByRole('button', {
+      name: /Hide Player List/i,
+    })
+    expect(toggleButton).toBeInTheDocument()
+
+    await user.click(toggleButton)
+    expect(
+      screen.getByRole('button', { name: /Show Player List/i })
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /Show Player List/i }))
+    expect(
+      screen.getByRole('button', { name: /Hide Player List/i })
+    ).toBeInTheDocument()
+  })
+
+  test('shows loading message with minimum duration', async () => {
+    jest.useFakeTimers()
+    await act(async () => {
+      render(<CreateTeams />)
+    })
+
+    expect(screen.getByText('Loading players...')).toBeInTheDocument()
+
+    await act(async () => {
+      jest.advanceTimersByTime(400)
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+    })
+
+    jest.useRealTimers()
+  })
+
+  test('shows loading message during team creation', async () => {
+    const { user } = await setup()
+
+    const createTeamsButton = screen.getByRole('button', {
+      name: /create balanced teams/i,
+    })
+
+    await user.click(createTeamsButton)
+
+    expect(screen.getByText('Loading players...')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+    })
+  })
+
+  test('updates selected player count when toggling individual players', async () => {
+    const { user } = await setup()
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByText(/Total Players Selected: 1/i)).toBeInTheDocument()
+
+    api.put.mockResolvedValueOnce({
+      data: { ...mockPlayers[0], isPlayingThisWeek: false },
+    })
+
+    const playerCheckbox = screen.getByRole('checkbox', { checked: true })
+    await user.click(playerCheckbox)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total Players Selected: 0/i)).toBeInTheDocument()
+    })
+
+    api.put.mockResolvedValueOnce({
+      data: { ...mockPlayers[0], isPlayingThisWeek: true },
+    })
+
+    await user.click(playerCheckbox)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total Players Selected: 1/i)).toBeInTheDocument()
     })
   })
 })

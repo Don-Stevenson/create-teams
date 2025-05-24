@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import api from '../../../utils/api'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import Teams from './Teams'
+import DatePicker from 'react-datepicker'
+
+import 'react-datepicker/dist/react-datepicker.css'
 
 export default function CreateTeams() {
   const [numTeams, setNumTeams] = useState(2)
@@ -15,6 +18,8 @@ export default function CreateTeams() {
   const [showLoadingMessage, setShowLoadingMessage] = useState(true)
   const [isCreatingTeams, setIsCreatingTeams] = useState(false)
   const [openPlayerList, setOpenPlayerList] = useState(false)
+  const [upcomingGames, setUpcomingGames] = useState([])
+  const [selectedDate, setSelectedDate] = useState(new Date())
 
   useEffect(() => {
     let timer
@@ -152,8 +157,36 @@ export default function CreateTeams() {
     }
   }
 
+  // import upcoming games from a date picker
+
+  const fetchUpcomingGames = async () => {
+    const res = await api.get('/games/upcoming')
+    setUpcomingGames(res.data)
+  }
+  const fetchPlayersFromHeja = async () => {
+    const res = await api.get('/players')
+    setPlayers(res.data)
+  }
+
+  const DatePickerCalendar = () => {
+    return (
+      <DatePicker
+        selected={selectedDate}
+        onChange={date => setSelectedDate(date)}
+      />
+    )
+  }
+
   return (
     <div className="container">
+      <div className="flex items-center justify-center mt-4 mb-4">
+        <div className="flex-col justify-center items-center">
+          <div className="text-lg">
+            Click the date below to see all games played on that date
+          </div>
+          <DatePickerCalendar />
+        </div>
+      </div>
       <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <div className="print:hidden">

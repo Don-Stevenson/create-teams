@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react'
 import api from '../../../utils/api'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import Teams from './Teams'
-import DatePicker from 'react-datepicker'
-
-import 'react-datepicker/dist/react-datepicker.css'
+import UpcomingGamesDropDown from './UpcomingGamesDropDown'
 
 export default function CreateTeams() {
   const [numTeams, setNumTeams] = useState(2)
@@ -20,19 +18,50 @@ export default function CreateTeams() {
   const [openPlayerList, setOpenPlayerList] = useState(false)
   const [upcomingGames, setUpcomingGames] = useState([])
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [rsvpsForGame, setRsvpsForGame] = useState([])
+  const [selectedGameId, setSelectedGameId] = useState(null)
+  const [isLoadingRsvps, setIsLoadingRsvps] = useState(false)
+
+  const normalizeName = name => {
+    return name.toLowerCase().trim().replace(/\s+/g, ' ')
+  }
+
+  const updatePlayersBasedOnRsvps = rsvps => {
+    // Create a Set of normalized RSVP'd player names for faster lookup
+    const rsvpNames = new Set(rsvps.map(name => normalizeName(name)))
+
+    const updatedPlayers = players.map(player => {
+      const normalizedPlayerName = normalizeName(player.name)
+      const isPlaying = rsvpNames.has(normalizedPlayerName)
+
+      // Log any name mismatches for debugging
+      if (player.isPlayingThisWeek !== isPlaying) {
+        console.log('Name match status:', {
+          playerName: player.name,
+          normalizedPlayerName,
+          rsvpNames: Array.from(rsvpNames),
+          isPlaying,
+        })
+      }
+
+      return {
+        ...player,
+        isPlayingThisWeek: isPlaying,
+      }
+    })
+
+    setPlayers(updatedPlayers)
+    setSelectedPlayerCount(rsvps.length)
+    setSelectAll(rsvps.length === players.length)
+  }
 
   useEffect(() => {
-    let timer
-    if (players.length > 0) {
-      timer = setTimeout(() => {
-        setShowLoadingMessage(false)
-        setIsLoading(false)
-      }, 400)
+    const fetchUpcomingGames = async () => {
+      const res = await api.get('/upcoming-games')
+      setUpcomingGames(res.data)
     }
-    return () => {
-      if (timer) clearTimeout(timer)
-    }
-  }, [players.length])
+    fetchUpcomingGames()
+  }, [])
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -44,6 +73,7 @@ export default function CreateTeams() {
 
         const [res] = await Promise.all([api.get('/players'), minimumDuration])
 
+        // Initialize players with their current playing status
         const fetchedPlayers = res.data.map(player => ({
           ...player,
           isPlayingThisWeek: Boolean(player.isPlayingThisWeek),
@@ -64,6 +94,105 @@ export default function CreateTeams() {
     }
     fetchPlayers()
   }, [])
+
+  const deselectAllPlayers = async () => {
+    try {
+      // Update all players to not playing this week
+      await api.put('/players-bulk-update', {
+        isPlayingThisWeek: 'false',
+      })
+
+      // Update local state
+      const updatedPlayers = players.map(player => ({
+        ...player,
+        isPlayingThisWeek: false,
+      }))
+      setPlayers(updatedPlayers)
+      setSelectedPlayerCount(0)
+      setSelectAll(false)
+    } catch (error) {
+      console.error('Failed to deselect all players:', error)
+      setError('Failed to deselect all players')
+    }
+  }
+
+  useEffect(() => {
+    const fetchRsvpsForGame = async () => {
+      if (!selectedGameId) return
+      try {
+        setIsLoadingRsvps(true)
+        const res = await api.get(`/rsvps-for-game/${selectedGameId}`)
+        setRsvpsForGame(res.data)
+
+        // First, deselect all players
+        await deselectAllPlayers()
+
+        // Then, select only the players in the RSVP list
+        const rsvpNames = new Set(res.data.map(name => normalizeName(name)))
+
+        // Log the RSVP names and player names for debugging
+        console.log('RSVP Names:', {
+          original: res.data,
+          normalized: Array.from(rsvpNames),
+        })
+        console.log(
+          'Player Names:',
+          players.map(p => ({
+            original: p.name,
+            normalized: normalizeName(p.name),
+            isInRsvp: rsvpNames.has(normalizeName(p.name)),
+          }))
+        )
+
+        // Select players that are in the RSVP list
+        for (const player of players) {
+          const normalizedPlayerName = normalizeName(player.name)
+          const shouldBePlaying = rsvpNames.has(normalizedPlayerName)
+
+          console.log('Checking player:', {
+            name: player.name,
+            normalized: normalizedPlayerName,
+            shouldBePlaying,
+            isCurrentlyPlaying: player.isPlayingThisWeek,
+          })
+
+          if (shouldBePlaying && !player.isPlayingThisWeek) {
+            console.log('Selecting player:', player.name)
+            await handleTogglePlayingThisWeek(player._id)
+          }
+        }
+
+        // Update the selected player count and select all state
+        const finalPlayers = players.map(player => ({
+          ...player,
+          isPlayingThisWeek: rsvpNames.has(normalizeName(player.name)),
+        }))
+
+        // Log final state
+        console.log(
+          'Final player states:',
+          finalPlayers
+            .filter(p => p.isPlayingThisWeek)
+            .map(p => ({
+              name: p.name,
+              normalized: normalizeName(p.name),
+              isPlaying: p.isPlayingThisWeek,
+            }))
+        )
+
+        setSelectedPlayerCount(
+          finalPlayers.filter(p => p.isPlayingThisWeek).length
+        )
+        setSelectAll(finalPlayers.every(player => player.isPlayingThisWeek))
+      } catch (error) {
+        console.error('Failed to fetch RSVPs:', error)
+        setError('Failed to fetch RSVPs for the selected game')
+      } finally {
+        setIsLoadingRsvps(false)
+      }
+    }
+    fetchRsvpsForGame()
+  }, [selectedGameId, players.length])
 
   const handleTogglePlayingThisWeek = async playerId => {
     const playerToUpdate = players.find(player => player._id === playerId)
@@ -88,7 +217,7 @@ export default function CreateTeams() {
       })
     } catch (error) {
       console.error('Failed to update player:', error)
-
+      // Revert the change on error
       const revertedPlayers = players.map(player =>
         player._id === playerId
           ? { ...player, isPlayingThisWeek: !newPlayingState }
@@ -121,7 +250,7 @@ export default function CreateTeams() {
       })
     } catch (error) {
       console.error('Failed to update all players:', error)
-
+      // Revert the change on error
       const revertedPlayers = players.map(player => ({
         ...player,
         isPlayingThisWeek: !newSelectAllState,
@@ -141,50 +270,142 @@ export default function CreateTeams() {
 
       const minimumDuration = new Promise(resolve => setTimeout(resolve, 500))
 
-      const [res] = await Promise.all([
-        api.post('/balance-teams', { numTeams }),
-        minimumDuration,
-      ])
-      setOpenPlayerList(true)
-      setTotalPlayers(res.data.totalPlayersPlaying)
-      setBalancedTeams(res.data.teams)
-      setIsLoading(false)
-      setShowLoadingMessage(false)
+      // Get only the players that are marked as playing
+      const playingPlayers = players.filter(player => player.isPlayingThisWeek)
+
+      if (playingPlayers.length === 0) {
+        throw new Error('No players selected for team creation')
+      }
+
+      // Clean up player data to only include necessary fields and ensure correct types
+      const cleanPlayers = playingPlayers.map(player => ({
+        _id: String(player._id),
+        name: String(player.name),
+        gameKnowledgeScore: Number(player.gameKnowledgeScore),
+        goalScoringScore: Number(player.goalScoringScore),
+        attackScore: Number(player.attackScore),
+        midfieldScore: Number(player.midfieldScore),
+        defenseScore: Number(player.defenseScore),
+        fitnessScore: Number(player.fitnessScore),
+        gender: String(player.gender || 'male'),
+        isPlayingThisWeek: true,
+      }))
+
+      // Create the request payload
+      const requestPayload = {
+        numTeams: Number(numTeams),
+        players: cleanPlayers,
+      }
+
+      // Log the exact data being sent
+      console.log('Sending request with:', {
+        numTeams: requestPayload.numTeams,
+        playerCount: requestPayload.players.length,
+        firstPlayer: requestPayload.players[0],
+        isArray: Array.isArray(requestPayload.players),
+      })
+
+      try {
+        // Send the request with explicit content type
+        const [res] = await Promise.all([
+          api.post('/balance-teams', requestPayload, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
+          minimumDuration,
+        ])
+
+        console.log('Response received:', res.data)
+
+        setOpenPlayerList(true)
+        setTotalPlayers(cleanPlayers.length)
+        setBalancedTeams(res.data.teams)
+        setIsLoading(false)
+        setShowLoadingMessage(false)
+      } catch (err) {
+        console.error('API Error Details:', {
+          status: err.response?.status,
+          data: err.response?.data,
+          errors: err.response?.data?.errors,
+          message: err.message,
+          requestData: requestPayload,
+        })
+
+        let errorMessage = 'An error occurred while creating teams'
+
+        if (err.response?.data?.errors) {
+          const errorDetails = err.response.data.errors
+            .map(e => {
+              if (typeof e === 'string') return e
+              return `${e.param || e.path}: ${e.msg}`
+            })
+            .join(', ')
+          errorMessage = `Validation Error: ${errorDetails}`
+        } else if (err.response?.data?.error) {
+          errorMessage = err.response.data.error
+        } else if (err.message) {
+          errorMessage = err.message
+        }
+
+        setError(errorMessage)
+        setIsLoading(false)
+        setShowLoadingMessage(false)
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred')
+      console.error('Error creating teams:', err)
+      setError(err.message || 'An error occurred while creating teams')
       setIsLoading(false)
       setShowLoadingMessage(false)
     }
   }
 
-  // import upcoming games from a date picker
-
-  const fetchUpcomingGames = async () => {
-    const res = await api.get('/games/upcoming')
-    setUpcomingGames(res.data)
-  }
-  const fetchPlayersFromHeja = async () => {
-    const res = await api.get('/players')
-    setPlayers(res.data)
-  }
-
-  const DatePickerCalendar = () => {
-    return (
-      <DatePicker
-        selected={selectedDate}
-        onChange={date => setSelectedDate(date)}
-      />
-    )
-  }
+  console.log('rsvpsForGame', rsvpsForGame)
 
   return (
     <div className="container">
       <div className="flex items-center justify-center mt-4 mb-4">
         <div className="flex-col justify-center items-center">
-          <div className="text-lg">
-            Click the date below to see all games played on that date
+          <div className="text-lg mb-4">
+            Choose an upcoming game to see the players playing that day
           </div>
-          <DatePickerCalendar />
+          <UpcomingGamesDropDown
+            upcomingGames={upcomingGames.map(game => ({
+              value: game._id,
+              label: `${game.title} - ${new Date(
+                game.meetdate
+              ).toLocaleDateString()}`,
+            }))}
+            onSelect={gameId => {
+              const selectedGame = upcomingGames.find(
+                game => game._id === gameId
+              )
+              setSelectedDate(new Date(selectedGame.meetdate))
+              setSelectedGameId(gameId)
+            }}
+          />
+          {selectedGameId && (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">
+                Players RSVP'd for this game:
+              </h3>
+              {isLoadingRsvps ? (
+                <p className="text-gray-700 text-center text-xl py-4">
+                  Loading RSVPs...
+                </p>
+              ) : rsvpsForGame.length > 0 ? (
+                <ul className="list-disc pl-5">
+                  {rsvpsForGame.map((player, index) => (
+                    <li key={index} className="text-gray-700">
+                      {player}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No players have RSVP'd for this game yet.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
@@ -235,6 +456,7 @@ export default function CreateTeams() {
                 ) : (
                   <PlayerListToggleIsPlaying
                     players={players}
+                    rsvpsForGame={rsvpsForGame}
                     onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
                   />
                 )}

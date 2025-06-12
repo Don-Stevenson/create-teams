@@ -14,7 +14,15 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   config => {
-    // You can add any request modifications here if needed
+    // Log request data for debugging
+    if (config.data) {
+      console.log('Request data:', {
+        data: config.data,
+        type: typeof config.data,
+        isArray: Array.isArray(config.data),
+        stringified: JSON.stringify(config.data),
+      })
+    }
     return config
   },
   error => Promise.reject(error)

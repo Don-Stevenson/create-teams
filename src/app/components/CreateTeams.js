@@ -21,6 +21,7 @@ export default function CreateTeams() {
   const [rsvpsForGame, setRsvpsForGame] = useState([])
   const [selectedGameId, setSelectedGameId] = useState(null)
   const [isLoadingRsvps, setIsLoadingRsvps] = useState(false)
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false)
 
   const normalizeName = name => {
     return name.toLowerCase().trim().replace(/\s+/g, ' ')
@@ -73,18 +74,48 @@ export default function CreateTeams() {
 
         const [res] = await Promise.all([api.get('/players'), minimumDuration])
 
-        // Initialize players with their current playing status
-        const fetchedPlayers = res.data.map(player => ({
-          ...player,
-          isPlayingThisWeek: Boolean(player.isPlayingThisWeek),
-        }))
+        // Log the raw data from the API
+        console.log(
+          'Raw player data from API:',
+          res.data.map(p => ({
+            name: p.name,
+            isPlayingThisWeek: p.isPlayingThisWeek,
+            type: typeof p.isPlayingThisWeek,
+          }))
+        )
+
+        // Initialize players with their current playing status from the database
+        const fetchedPlayers = res.data.map(player => {
+          // Default to false unless explicitly set to true in the database
+          const isPlaying =
+            player.isPlayingThisWeek === true ||
+            player.isPlayingThisWeek === 'true'
+          console.log(
+            `Player ${player.name}: isPlayingThisWeek=${player.isPlayingThisWeek}, converted to=${isPlaying}`
+          )
+          return {
+            ...player,
+            isPlayingThisWeek: isPlaying,
+          }
+        })
+
+        // Log the final state
+        console.log(
+          'Final player states:',
+          fetchedPlayers.map(p => ({
+            name: p.name,
+            isPlayingThisWeek: p.isPlayingThisWeek,
+          }))
+        )
+
         setPlayers(fetchedPlayers)
-        setSelectAll(fetchedPlayers.every(player => player.isPlayingThisWeek))
+        setSelectAll(false) // Always start with select all as false
         setSelectedPlayerCount(
           fetchedPlayers.filter(player => player.isPlayingThisWeek).length
         )
         setIsLoading(false)
         setShowLoadingMessage(false)
+        setInitialLoadComplete(true)
       } catch (error) {
         console.error('Failed to fetch players:', error)
         setError('Failed to fetch players')
@@ -97,10 +128,43 @@ export default function CreateTeams() {
 
   const deselectAllPlayers = async () => {
     try {
-      // Update all players to not playing this week
-      await api.put('/players-bulk-update', {
-        isPlayingThisWeek: 'false',
+      // Ensure we have an array of player IDs
+      const playerIds = players.map(player => player._id)
+      console.log('Player IDs to update:', playerIds)
+
+      // Create the payload with explicit types
+      const payload = {
+        isPlayingThisWeek: false,
+        playerIds: playerIds,
+      }
+
+      // Log the exact payload being sent
+      console.log('Sending deselect request with payload:', {
+        ...payload,
+        isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
+        playerIdsType: Array.isArray(payload.playerIds)
+          ? 'array'
+          : typeof payload.playerIds,
+        playerIdsLength: payload.playerIds.length,
       })
+
+      // Update all players to not playing this week
+      const response = await api.put('/players-bulk-update', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        transformRequest: [
+          data => {
+            // Ensure the data is properly formatted
+            return JSON.stringify({
+              isPlayingThisWeek: Boolean(data.isPlayingThisWeek),
+              playerIds: Array.isArray(data.playerIds) ? data.playerIds : [],
+            })
+          },
+        ],
+      })
+      console.log('Deselect response:', response.data)
 
       // Update local state
       const updatedPlayers = players.map(player => ({
@@ -110,9 +174,61 @@ export default function CreateTeams() {
       setPlayers(updatedPlayers)
       setSelectedPlayerCount(0)
       setSelectAll(false)
+
+      return true
     } catch (error) {
       console.error('Failed to deselect all players:', error)
+      if (error.response) {
+        console.error('Error response:', error.response.data)
+      }
       setError('Failed to deselect all players')
+      return false
+    }
+  }
+
+  const selectPlayers = async playerIds => {
+    try {
+      // Ensure we have an array of player IDs
+      if (!Array.isArray(playerIds)) {
+        console.error('playerIds must be an array:', playerIds)
+        return false
+      }
+
+      // Create the payload with explicit types
+      const payload = {
+        isPlayingThisWeek: true, // Send as literal true
+        playerIds: playerIds, // Send as array
+      }
+      console.log('Sending select request with payload:', {
+        ...payload,
+        isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
+        playerIdsType: Array.isArray(payload.playerIds)
+          ? 'array'
+          : typeof payload.playerIds,
+        playerIdsLength: payload.playerIds.length,
+      })
+
+      // Update all specified players to playing this week
+      const response = await api.put('/players-bulk-update', payload)
+      console.log('Select response:', response.data)
+
+      // Update local state
+      const updatedPlayers = players.map(player => ({
+        ...player,
+        isPlayingThisWeek: playerIds.includes(player._id),
+      }))
+      setPlayers(updatedPlayers)
+      setSelectedPlayerCount(playerIds.length)
+      setSelectAll(playerIds.length === players.length)
+
+      return true
+    } catch (error) {
+      console.error('Failed to select players:', error)
+      if (error.response) {
+        console.error('Error response:', error.response.data)
+      }
+      setError('Failed to select players')
+      return false
     }
   }
 
@@ -125,53 +241,41 @@ export default function CreateTeams() {
         setRsvpsForGame(res.data)
 
         // First, deselect all players
-        await deselectAllPlayers()
+        const deselectionComplete = await deselectAllPlayers()
+        if (!deselectionComplete) {
+          throw new Error('Failed to deselect all players')
+        }
 
         // Then, select only the players in the RSVP list
         const rsvpNames = new Set(res.data.map(name => normalizeName(name)))
+        console.log('RSVP names:', Array.from(rsvpNames))
 
-        // Log the RSVP names and player names for debugging
-        console.log('RSVP Names:', {
-          original: res.data,
-          normalized: Array.from(rsvpNames),
-        })
-        console.log(
-          'Player Names:',
-          players.map(p => ({
-            original: p.name,
-            normalized: normalizeName(p.name),
-            isInRsvp: rsvpNames.has(normalizeName(p.name)),
-          }))
-        )
-
-        // Select players that are in the RSVP list
-        for (const player of players) {
-          const normalizedPlayerName = normalizeName(player.name)
-          const shouldBePlaying = rsvpNames.has(normalizedPlayerName)
-
-          console.log('Checking player:', {
-            name: player.name,
-            normalized: normalizedPlayerName,
-            shouldBePlaying,
-            isCurrentlyPlaying: player.isPlayingThisWeek,
+        // Find all players that should be playing
+        const playersToSelect = players
+          .filter(player => {
+            const normalizedName = normalizeName(player.name)
+            const shouldPlay = rsvpNames.has(normalizedName)
+            console.log(
+              `Player ${player.name} (${normalizedName}): shouldPlay=${shouldPlay}`
+            )
+            return shouldPlay
           })
+          .map(player => player._id)
 
-          if (shouldBePlaying && !player.isPlayingThisWeek) {
-            console.log('Selecting player:', player.name)
-            await handleTogglePlayingThisWeek(player._id)
+        console.log('Players to select:', playersToSelect)
+
+        // Select all matching players at once
+        if (playersToSelect.length > 0) {
+          const selectionComplete = await selectPlayers(playersToSelect)
+          if (!selectionComplete) {
+            throw new Error('Failed to select RSVP players')
           }
         }
-
-        // Update the selected player count and select all state
-        const finalPlayers = players.map(player => ({
-          ...player,
-          isPlayingThisWeek: rsvpNames.has(normalizeName(player.name)),
-        }))
 
         // Log final state
         console.log(
           'Final player states:',
-          finalPlayers
+          players
             .filter(p => p.isPlayingThisWeek)
             .map(p => ({
               name: p.name,
@@ -179,11 +283,6 @@ export default function CreateTeams() {
               isPlaying: p.isPlayingThisWeek,
             }))
         )
-
-        setSelectedPlayerCount(
-          finalPlayers.filter(p => p.isPlayingThisWeek).length
-        )
-        setSelectAll(finalPlayers.every(player => player.isPlayingThisWeek))
       } catch (error) {
         console.error('Failed to fetch RSVPs:', error)
         setError('Failed to fetch RSVPs for the selected game')

@@ -408,31 +408,85 @@ protectedRouter.post(
 // Route for bulk updating players is playing this week
 protectedRouter.put(
   '/players-bulk-update',
-  [
-    body('isPlayingThisWeek')
-      .isBoolean()
-      .withMessage('isPlayingThisWeek must be a boolean value'),
-  ],
-  async (req, res, next) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
-    }
-
+  express.json(),
+  async (req, res) => {
     try {
-      const { isPlayingThisWeek } = req.body
-      const result = await Player.updateMany(
-        {},
-        { $set: { isPlayingThisWeek: isPlayingThisWeek } }
-      )
+      // Log the raw request body
+      console.log('Raw request body:', req.body)
 
-      res.status(200).json({
-        success: true,
-        message: 'All players updated successfully',
+      // Extract and validate the data
+      let { isPlayingThisWeek, playerIds } = req.body
+
+      // Convert isPlayingThisWeek to boolean if it's a string
+      if (typeof isPlayingThisWeek === 'string') {
+        isPlayingThisWeek = isPlayingThisWeek.toLowerCase() === 'true'
+      }
+
+      // Convert playerIds to array if it's a string
+      if (typeof playerIds === 'string') {
+        playerIds = playerIds.split(',').map(id => id.trim())
+      }
+
+      console.log('Processed request data:', {
+        isPlayingThisWeek,
+        isPlayingThisWeekType: typeof isPlayingThisWeek,
+        playerIds,
+        playerIdsType: Array.isArray(playerIds) ? 'array' : typeof playerIds,
+        playerIdsLength: Array.isArray(playerIds) ? playerIds.length : 'N/A',
       })
+
+      // Validate isPlayingThisWeek
+      if (typeof isPlayingThisWeek !== 'boolean') {
+        console.log('Validation failed for isPlayingThisWeek:', {
+          value: isPlayingThisWeek,
+          type: typeof isPlayingThisWeek,
+          rawValue: req.body.isPlayingThisWeek,
+        })
+        return res.status(400).json({
+          errors: [
+            {
+              type: 'field',
+              value: isPlayingThisWeek,
+              msg: 'isPlayingThisWeek must be a boolean value',
+              path: 'isPlayingThisWeek',
+              location: 'body',
+            },
+          ],
+        })
+      }
+
+      // Validate playerIds
+      if (!Array.isArray(playerIds) || playerIds.length === 0) {
+        console.log('Validation failed for playerIds:', {
+          value: playerIds,
+          isArray: Array.isArray(playerIds),
+          length: Array.isArray(playerIds) ? playerIds.length : 'N/A',
+          rawValue: req.body.playerIds,
+        })
+        return res.status(400).json({
+          errors: [
+            {
+              type: 'field',
+              value: playerIds,
+              msg: 'playerIds must be a non-empty array',
+              path: 'playerIds',
+              location: 'body',
+            },
+          ],
+        })
+      }
+
+      // Update all specified players
+      const result = await Player.updateMany(
+        { _id: { $in: playerIds } },
+        { $set: { isPlayingThisWeek } }
+      )
+      console.log('Update result:', result)
+
+      res.json({ message: 'Players updated successfully' })
     } catch (error) {
       console.error('Error updating players:', error)
-      res.status(500).json({ success: false, error: error.message })
+      res.status(500).json({ error: 'Failed to update players' })
     }
   }
 )

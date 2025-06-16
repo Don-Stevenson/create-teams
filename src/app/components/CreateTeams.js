@@ -35,15 +35,15 @@ export default function CreateTeams() {
       const normalizedPlayerName = normalizeName(player.name)
       const isPlaying = rsvpNames.has(normalizedPlayerName)
 
-      // Log any name mismatches for debugging
-      if (player.isPlayingThisWeek !== isPlaying) {
-        console.log('Name match status:', {
-          playerName: player.name,
-          normalizedPlayerName,
-          rsvpNames: Array.from(rsvpNames),
-          isPlaying,
-        })
-      }
+      // // Log any name mismatches for debugging
+      // if (player.isPlayingThisWeek !== isPlaying) {
+      //   console.log('Name match status:', {
+      //     playerName: player.name,
+      //     normalizedPlayerName,
+      //     rsvpNames: Array.from(rsvpNames),
+      //     isPlaying,
+      //   })
+      // }
 
       return {
         ...player,
@@ -74,15 +74,15 @@ export default function CreateTeams() {
 
         const [res] = await Promise.all([api.get('/players'), minimumDuration])
 
-        // Log the raw data from the API
-        console.log(
-          'Raw player data from API:',
-          res.data.map(p => ({
-            name: p.name,
-            isPlayingThisWeek: p.isPlayingThisWeek,
-            type: typeof p.isPlayingThisWeek,
-          }))
-        )
+        // // Log the raw data from the API
+        // console.log(
+        //   'Raw player data from API:',
+        //   res.data.map(p => ({
+        //     name: p.name,
+        //     isPlayingThisWeek: p.isPlayingThisWeek,
+        //     type: typeof p.isPlayingThisWeek,
+        //   }))
+        // )
 
         // Initialize players with their current playing status from the database
         const fetchedPlayers = res.data.map(player => {
@@ -90,9 +90,9 @@ export default function CreateTeams() {
           const isPlaying =
             player.isPlayingThisWeek === true ||
             player.isPlayingThisWeek === 'true'
-          console.log(
-            `Player ${player.name}: isPlayingThisWeek=${player.isPlayingThisWeek}, converted to=${isPlaying}`
-          )
+          // console.log(
+          //   `Player ${player.name}: isPlayingThisWeek=${player.isPlayingThisWeek}, converted to=${isPlaying}`
+          // )
           return {
             ...player,
             isPlayingThisWeek: isPlaying,
@@ -100,13 +100,13 @@ export default function CreateTeams() {
         })
 
         // Log the final state
-        console.log(
-          'Final player states:',
-          fetchedPlayers.map(p => ({
-            name: p.name,
-            isPlayingThisWeek: p.isPlayingThisWeek,
-          }))
-        )
+        // console.log(
+        //   'Final player states:',
+        //   fetchedPlayers.map(p => ({
+        //     name: p.name,
+        //     isPlayingThisWeek: p.isPlayingThisWeek,
+        //   }))
+        // )
 
         setPlayers(fetchedPlayers)
         setSelectAll(false) // Always start with select all as false
@@ -138,15 +138,15 @@ export default function CreateTeams() {
         playerIds: playerIds,
       }
 
-      // Log the exact payload being sent
-      console.log('Sending deselect request with payload:', {
-        ...payload,
-        isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
-        playerIdsType: Array.isArray(payload.playerIds)
-          ? 'array'
-          : typeof payload.playerIds,
-        playerIdsLength: payload.playerIds.length,
-      })
+      // // Log the exact payload being sent
+      // console.log('Sending deselect request with payload:', {
+      //   ...payload,
+      //   isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
+      //   playerIdsType: Array.isArray(payload.playerIds)
+      //     ? 'array'
+      //     : typeof payload.playerIds,
+      //   playerIdsLength: payload.playerIds.length,
+      // })
 
       // Update all players to not playing this week
       const response = await api.put('/players-bulk-update', payload, {
@@ -164,7 +164,7 @@ export default function CreateTeams() {
           },
         ],
       })
-      console.log('Deselect response:', response.data)
+      // console.log('Deselect response:', response.data)
 
       // Update local state
       const updatedPlayers = players.map(player => ({
@@ -199,18 +199,18 @@ export default function CreateTeams() {
         isPlayingThisWeek: true, // Send as literal true
         playerIds: playerIds, // Send as array
       }
-      console.log('Sending select request with payload:', {
-        ...payload,
-        isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
-        playerIdsType: Array.isArray(payload.playerIds)
-          ? 'array'
-          : typeof payload.playerIds,
-        playerIdsLength: payload.playerIds.length,
-      })
+      // console.log('Sending select request with payload:', {
+      //   ...payload,
+      //   isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
+      //   playerIdsType: Array.isArray(payload.playerIds)
+      //     ? 'array'
+      //     : typeof payload.playerIds,
+      //   playerIdsLength: payload.playerIds.length,
+      // })
 
       // Update all specified players to playing this week
       const response = await api.put('/players-bulk-update', payload)
-      console.log('Select response:', response.data)
+      // console.log('Select response:', response.data)
 
       // Update local state
       const updatedPlayers = players.map(player => ({
@@ -248,7 +248,7 @@ export default function CreateTeams() {
 
         // Then, select only the players in the RSVP list
         const rsvpNames = new Set(res.data.map(name => normalizeName(name)))
-        console.log('RSVP names:', Array.from(rsvpNames))
+        // console.log('RSVP names:', Array.from(rsvpNames))
 
         // Find all players that should be playing
         const playersToSelect = players
@@ -272,17 +272,17 @@ export default function CreateTeams() {
           }
         }
 
-        // Log final state
-        console.log(
-          'Final player states:',
-          players
-            .filter(p => p.isPlayingThisWeek)
-            .map(p => ({
-              name: p.name,
-              normalized: normalizeName(p.name),
-              isPlaying: p.isPlayingThisWeek,
-            }))
-        )
+        // // Log final state
+        // console.log(
+        //   'Final player states:',
+        //   players
+        //     .filter(p => p.isPlayingThisWeek)
+        //     .map(p => ({
+        //       name: p.name,
+        //       normalized: normalizeName(p.name),
+        //       isPlaying: p.isPlayingThisWeek,
+        //     }))
+        // )
       } catch (error) {
         console.error('Failed to fetch RSVPs:', error)
         setError('Failed to fetch RSVPs for the selected game')
@@ -378,7 +378,6 @@ export default function CreateTeams() {
 
       // Clean up player data to only include necessary fields and ensure correct types
       const cleanPlayers = playingPlayers.map(player => ({
-        _id: String(player._id),
         name: String(player.name),
         gameKnowledgeScore: Number(player.gameKnowledgeScore),
         goalScoringScore: Number(player.goalScoringScore),
@@ -396,26 +395,27 @@ export default function CreateTeams() {
         players: cleanPlayers,
       }
 
-      // Log the exact data being sent
-      console.log('Sending request with:', {
-        numTeams: requestPayload.numTeams,
-        playerCount: requestPayload.players.length,
-        firstPlayer: requestPayload.players[0],
-        isArray: Array.isArray(requestPayload.players),
-      })
+      console.log('=== CREATE TEAMS REQUEST PAYLOAD ===')
+      console.log('Request payload:', JSON.stringify(requestPayload, null, 2))
+      console.log('Payload type:', typeof requestPayload)
+      console.log('Players array type:', typeof requestPayload.players)
+      console.log('Is players array?', Array.isArray(requestPayload.players))
+      console.log('Number of players:', requestPayload.players.length)
+      console.log('First player sample:', requestPayload.players[0])
+      console.log('==================================')
 
       try {
-        // Send the request with explicit content type
+        // Send the request with explicit content type and data transformation
         const [res] = await Promise.all([
           api.post('/balance-teams', requestPayload, {
             headers: {
               'Content-Type': 'application/json',
+              Accept: 'application/json',
             },
+            withCredentials: true,
           }),
           minimumDuration,
         ])
-
-        console.log('Response received:', res.data)
 
         setOpenPlayerList(true)
         setTotalPlayers(cleanPlayers.length)
@@ -429,10 +429,11 @@ export default function CreateTeams() {
           errors: err.response?.data?.errors,
           message: err.message,
           requestData: requestPayload,
+          headers: err.response?.headers,
+          config: err.config,
         })
 
         let errorMessage = 'An error occurred while creating teams'
-
         if (err.response?.data?.errors) {
           const errorDetails = err.response.data.errors
             .map(e => {

@@ -4,11 +4,35 @@ import config_url from '../config'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: `${config_url}/api/`,
+  baseURL: 'http://localhost:5050/api',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
-  withCredentials: true,
+  transformRequest: [
+    (data, headers) => {
+      // Log the request data
+      console.log('Request data:', {
+        data,
+        type: typeof data,
+        isArray: Array.isArray(data),
+        stringified: JSON.stringify(data),
+      })
+
+      // Ensure data is properly stringified
+      return JSON.stringify(data)
+    },
+  ],
+  transformResponse: [
+    data => {
+      try {
+        return JSON.parse(data)
+      } catch (e) {
+        return data
+      }
+    },
+  ],
 })
 
 // Request interceptor

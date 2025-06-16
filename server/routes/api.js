@@ -96,6 +96,60 @@ const playerValidationRules = [
   body('isPlayingThisWeek').isBoolean(),
 ]
 
+// Balance teams validation rules
+const balanceTeamsValidationRules = [
+  body('numTeams')
+    .isInt({ min: 2, max: 10 })
+    .withMessage('Number of teams must be between 2 and 10'),
+  body('players')
+    .custom(value => {
+      if (!Array.isArray(value)) {
+        try {
+          // Try to parse if it's a string
+          const parsed = JSON.parse(value)
+          return Array.isArray(parsed)
+        } catch (e) {
+          return false
+        }
+      }
+      return true
+    })
+    .withMessage('Players must be an array')
+    .custom(value => {
+      const players = Array.isArray(value) ? value : JSON.parse(value)
+      return players.length > 0
+    })
+    .withMessage('Players array cannot be empty'),
+  body('players.*.name')
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Player name must be between 2 and 50 characters'),
+  body('players.*.gameKnowledgeScore')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Game knowledge score must be between 1 and 10'),
+  body('players.*.goalScoringScore')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Goal scoring score must be between 1 and 10'),
+  body('players.*.attackScore')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Attack score must be between 1 and 10'),
+  body('players.*.midfieldScore')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Midfield score must be between 1 and 10'),
+  body('players.*.defenseScore')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Defense score must be between 1 and 10'),
+  body('players.*.fitnessScore')
+    .isInt({ min: 1, max: 10 })
+    .withMessage('Fitness score must be between 1 and 10'),
+  body('players.*.gender')
+    .isIn(['male', 'female', 'nonBinary'])
+    .withMessage('Gender must be male, female, or nonBinary'),
+  body('players.*.isPlayingThisWeek')
+    .isBoolean()
+    .withMessage('isPlayingThisWeek must be a boolean'),
+]
+
 // GET all players
 protectedRouter.get('/players', async (req, res, next) => {
   try {
@@ -209,198 +263,49 @@ protectedRouter.delete('/players/:id', async (req, res, next) => {
 // POST balance teams
 protectedRouter.post(
   '/balance-teams',
-  express.json(),
-  validate([
-    body('numTeams')
-      .isInt({ min: 2 })
-      .withMessage('Number of teams must be at least 2'),
-    body('players')
-      .custom((value, { req }) => {
-        // Log the raw value and request body
-        console.log('Validating players array:', {
-          value,
-          valueType: typeof value,
-          isArray: Array.isArray(value),
-          length: value?.length,
-          rawBody: req.body,
-          bodyType: typeof req.body,
-          bodyKeys: Object.keys(req.body),
-          rawBodyString: JSON.stringify(req.body),
-          contentType: req.headers['content-type'],
-        })
+  // Temporarily comment out validation to debug core functionality
+  // validate(balanceTeamsValidationRules),
+  async (req, res) => {
+    console.log('=== BALANCE TEAMS ROUTE MIDDLEWARE ===')
+    console.log('Request headers:', req.headers)
+    console.log('Raw request body:', req.rawBody)
+    console.log('Parsed request body:', req.body)
+    console.log('Request body type:', typeof req.body)
+    console.log('Players type:', typeof req.body.players)
+    console.log('Is players array?', Array.isArray(req.body.players))
+    console.log('=====================================')
 
-        // Check if value exists
-        if (!value) {
-          console.error('Players value is undefined or null')
-          return false
-        }
-
-        // If value is a string, try to parse it
-        if (typeof value === 'string') {
-          try {
-            // Try to parse the string as JSON
-            const parsed = JSON.parse(value)
-            if (Array.isArray(parsed)) {
-              req.body.players = parsed
-              return true
-            }
-          } catch (e) {
-            console.error('Failed to parse players string:', e)
-            // If parsing fails, try to parse the entire request body
-            try {
-              const parsedBody = JSON.parse(req.body.players)
-              if (Array.isArray(parsedBody)) {
-                req.body.players = parsedBody
-                return true
-              }
-            } catch (e2) {
-              console.error('Failed to parse entire request body:', e2)
-            }
-          }
-          return false
-        }
-
-        // If value is not an array, return false
-        if (!Array.isArray(value)) {
-          console.error('Players is not an array:', value)
-          return false
-        }
-
-        // If array is empty, return false
-        if (value.length === 0) {
-          console.error('Players array is empty')
-          return false
-        }
-
-        // Validate each player object
-        for (const player of value) {
-          if (!player || typeof player !== 'object') {
-            console.error('Invalid player object:', player)
-            return false
-          }
-
-          // Check required fields
-          const requiredFields = [
-            'name',
-            'gameKnowledgeScore',
-            'goalScoringScore',
-            'attackScore',
-            'midfieldScore',
-            'defenseScore',
-            'fitnessScore',
-          ]
-
-          for (const field of requiredFields) {
-            if (!(field in player)) {
-              console.error(
-                `Missing required field ${field} in player:`,
-                player
-              )
-              return false
-            }
-          }
-        }
-
-        // Log each player in the array
-        console.log(
-          'Players array contents:',
-          value.map(player => ({
-            name: player.name,
-            id: player._id,
-            scores: {
-              gameKnowledge: player.gameKnowledgeScore,
-              goalScoring: player.goalScoringScore,
-              attack: player.attackScore,
-              midfield: player.midfieldScore,
-              defense: player.defenseScore,
-              fitness: player.fitnessScore,
-            },
-          }))
-        )
-
-        return true
-      })
-      .withMessage('Players must be a non-empty array of valid player objects'),
-  ]),
-  async (req, res, next) => {
     try {
-      // Log the raw request body
-      console.log('Raw request body:', {
-        body: req.body,
-        bodyType: typeof req.body,
-        playersType: typeof req.body.players,
-        isArray: Array.isArray(req.body.players),
-        playersLength: req.body.players?.length,
-        bodyKeys: Object.keys(req.body),
-        contentType: req.headers['content-type'],
-      })
+      // Parse the raw request body to get the proper players array
+      const rawData = JSON.parse(req.rawBody)
+      const { numTeams, players } = rawData
 
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        const errorDetails = errors.array().map(err => ({
-          param: err.param,
-          path: err.path,
-          msg: err.msg,
-          value: err.value,
-          type: typeof err.value,
-          location: err.location,
-        }))
-        console.error(
-          'Validation errors:',
-          JSON.stringify(errorDetails, null, 2)
-        )
-        return res.status(400).json({ errors: errorDetails })
-      }
-
-      const { numTeams, players } = req.body
-
-      // Log the parsed request data
-      console.log('Parsed request:', {
-        numTeams,
-        playerCount: players?.length,
-        isArray: Array.isArray(players),
-        firstPlayer: players?.[0],
-        playersType: typeof players,
-      })
-
-      // Add validation and logging
-      if (!players || !Array.isArray(players)) {
-        console.error('Invalid players data:', players)
-        return res.status(400).json({ error: 'Invalid players data' })
-      }
-
-      if (players.length === 0) {
-        return res.status(400).json({ error: 'No players provided' })
-      }
-
-      // Ensure all numeric fields are numbers
-      const cleanPlayers = players.map(player => ({
-        ...player,
+      // Clean up player data
+      const cleanedPlayers = players.map(player => ({
+        name: String(player.name),
         gameKnowledgeScore: Number(player.gameKnowledgeScore),
         goalScoringScore: Number(player.goalScoringScore),
         attackScore: Number(player.attackScore),
         midfieldScore: Number(player.midfieldScore),
         defenseScore: Number(player.defenseScore),
         fitnessScore: Number(player.fitnessScore),
-        gender: player.gender || 'male',
-        isPlayingThisWeek: true,
+        gender: String(player.gender || 'male'),
+        isPlayingThisWeek: Boolean(player.isPlayingThisWeek),
       }))
 
-      try {
-        const balancedTeams = balanceTeams(cleanPlayers, numTeams)
-        console.log('Successfully balanced teams:', {
-          teamCount: balancedTeams.teams.length,
-          totalPlayers: balancedTeams.totalPlayersPlaying,
-          firstTeam: balancedTeams.teams[0],
-        })
-        return res.json(balancedTeams)
-      } catch (error) {
-        console.error('Error in balanceTeams:', error)
-        return res.status(400).json({ error: error.message })
-      }
-    } catch (err) {
-      console.error('Error in balance-teams:', err)
-      return res.status(400).json({ error: err.message })
+      console.log('=== CLEANED PLAYERS DATA ===')
+      console.log('Number of cleaned players:', cleanedPlayers.length)
+      console.log('First cleaned player:', cleanedPlayers[0])
+      console.log('===========================')
+
+      const { teams, totalPlayersPlaying } = balanceTeams(
+        cleanedPlayers,
+        numTeams
+      )
+      return res.json({ teams, totalPlayersPlaying })
+    } catch (error) {
+      console.error('Error processing request:', error)
+      return res.status(400).json({ error: error.message })
     }
   }
 )
@@ -427,13 +332,13 @@ protectedRouter.put(
         playerIds = playerIds.split(',').map(id => id.trim())
       }
 
-      console.log('Processed request data:', {
-        isPlayingThisWeek,
-        isPlayingThisWeekType: typeof isPlayingThisWeek,
-        playerIds,
-        playerIdsType: Array.isArray(playerIds) ? 'array' : typeof playerIds,
-        playerIdsLength: Array.isArray(playerIds) ? playerIds.length : 'N/A',
-      })
+      // console.log('Processed request data:', {
+      //   isPlayingThisWeek,
+      //   isPlayingThisWeekType: typeof isPlayingThisWeek,
+      //   playerIds,
+      //   playerIdsType: Array.isArray(playerIds) ? 'array' : typeof playerIds,
+      //   playerIdsLength: Array.isArray(playerIds) ? playerIds.length : 'N/A',
+      // })
 
       // Validate isPlayingThisWeek
       if (typeof isPlayingThisWeek !== 'boolean') {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import api from '../../../utils/api'
+import api from '../../../utils/FEapi'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import Teams from './Teams'
 import UpcomingGamesDropDown from './UpcomingGamesDropDown'
@@ -14,7 +14,6 @@ export default function CreateTeams() {
   const [selectedPlayerCount, setSelectedPlayerCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [showLoadingMessage, setShowLoadingMessage] = useState(true)
-  const [isCreatingTeams, setIsCreatingTeams] = useState(false)
   const [openPlayerList, setOpenPlayerList] = useState(false)
   const [upcomingGames, setUpcomingGames] = useState([])
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -34,16 +33,6 @@ export default function CreateTeams() {
     const updatedPlayers = players.map(player => {
       const normalizedPlayerName = normalizeName(player.name)
       const isPlaying = rsvpNames.has(normalizedPlayerName)
-
-      // // Log any name mismatches for debugging
-      // if (player.isPlayingThisWeek !== isPlaying) {
-      //   console.log('Name match status:', {
-      //     playerName: player.name,
-      //     normalizedPlayerName,
-      //     rsvpNames: Array.from(rsvpNames),
-      //     isPlaying,
-      //   })
-      // }
 
       return {
         ...player,
@@ -74,39 +63,18 @@ export default function CreateTeams() {
 
         const [res] = await Promise.all([api.get('/players'), minimumDuration])
 
-        // // Log the raw data from the API
-        // console.log(
-        //   'Raw player data from API:',
-        //   res.data.map(p => ({
-        //     name: p.name,
-        //     isPlayingThisWeek: p.isPlayingThisWeek,
-        //     type: typeof p.isPlayingThisWeek,
-        //   }))
-        // )
-
         // Initialize players with their current playing status from the database
         const fetchedPlayers = res.data.map(player => {
           // Default to false unless explicitly set to true in the database
           const isPlaying =
             player.isPlayingThisWeek === true ||
             player.isPlayingThisWeek === 'true'
-          // console.log(
-          //   `Player ${player.name}: isPlayingThisWeek=${player.isPlayingThisWeek}, converted to=${isPlaying}`
-          // )
+
           return {
             ...player,
             isPlayingThisWeek: isPlaying,
           }
         })
-
-        // Log the final state
-        // console.log(
-        //   'Final player states:',
-        //   fetchedPlayers.map(p => ({
-        //     name: p.name,
-        //     isPlayingThisWeek: p.isPlayingThisWeek,
-        //   }))
-        // )
 
         setPlayers(fetchedPlayers)
         setSelectAll(false) // Always start with select all as false
@@ -130,7 +98,6 @@ export default function CreateTeams() {
     try {
       // Ensure we have an array of player IDs
       const playerIds = players.map(player => player._id)
-      console.log('Player IDs to update:', playerIds)
 
       // Create the payload with explicit types
       const payload = {
@@ -138,33 +105,8 @@ export default function CreateTeams() {
         playerIds: playerIds,
       }
 
-      // // Log the exact payload being sent
-      // console.log('Sending deselect request with payload:', {
-      //   ...payload,
-      //   isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
-      //   playerIdsType: Array.isArray(payload.playerIds)
-      //     ? 'array'
-      //     : typeof payload.playerIds,
-      //   playerIdsLength: payload.playerIds.length,
-      // })
-
       // Update all players to not playing this week
-      const response = await api.put('/players-bulk-update', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        transformRequest: [
-          data => {
-            // Ensure the data is properly formatted
-            return JSON.stringify({
-              isPlayingThisWeek: Boolean(data.isPlayingThisWeek),
-              playerIds: Array.isArray(data.playerIds) ? data.playerIds : [],
-            })
-          },
-        ],
-      })
-      // console.log('Deselect response:', response.data)
+      const response = await api.put('/players-bulk-update', payload)
 
       // Update local state
       const updatedPlayers = players.map(player => ({
@@ -196,21 +138,12 @@ export default function CreateTeams() {
 
       // Create the payload with explicit types
       const payload = {
-        isPlayingThisWeek: true, // Send as literal true
-        playerIds: playerIds, // Send as array
+        isPlayingThisWeek: true,
+        playerIds: playerIds,
       }
-      // console.log('Sending select request with payload:', {
-      //   ...payload,
-      //   isPlayingThisWeekType: typeof payload.isPlayingThisWeek,
-      //   playerIdsType: Array.isArray(payload.playerIds)
-      //     ? 'array'
-      //     : typeof payload.playerIds,
-      //   playerIdsLength: payload.playerIds.length,
-      // })
 
-      // Update all specified players to playing this week
-      const response = await api.put('/players-bulk-update', payload)
-      // console.log('Select response:', response.data)
+      // Make the API call
+      await api.put('/players-bulk-update', payload)
 
       // Update local state
       const updatedPlayers = players.map(player => ({
@@ -248,21 +181,15 @@ export default function CreateTeams() {
 
         // Then, select only the players in the RSVP list
         const rsvpNames = new Set(res.data.map(name => normalizeName(name)))
-        // console.log('RSVP names:', Array.from(rsvpNames))
 
         // Find all players that should be playing
         const playersToSelect = players
           .filter(player => {
             const normalizedName = normalizeName(player.name)
             const shouldPlay = rsvpNames.has(normalizedName)
-            console.log(
-              `Player ${player.name} (${normalizedName}): shouldPlay=${shouldPlay}`
-            )
             return shouldPlay
           })
           .map(player => player._id)
-
-        console.log('Players to select:', playersToSelect)
 
         // Select all matching players at once
         if (playersToSelect.length > 0) {
@@ -271,18 +198,6 @@ export default function CreateTeams() {
             throw new Error('Failed to select RSVP players')
           }
         }
-
-        // // Log final state
-        // console.log(
-        //   'Final player states:',
-        //   players
-        //     .filter(p => p.isPlayingThisWeek)
-        //     .map(p => ({
-        //       name: p.name,
-        //       normalized: normalizeName(p.name),
-        //       isPlaying: p.isPlayingThisWeek,
-        //     }))
-        // )
       } catch (error) {
         console.error('Failed to fetch RSVPs:', error)
         setError('Failed to fetch RSVPs for the selected game')
@@ -373,47 +288,56 @@ export default function CreateTeams() {
       const playingPlayers = players.filter(player => player.isPlayingThisWeek)
 
       if (playingPlayers.length === 0) {
-        throw new Error('No players selected for team creation')
+        setError('Please select at least one player to create teams')
+        setIsLoading(false)
+        setShowLoadingMessage(false)
+        return
       }
 
       // Clean up player data to only include necessary fields and ensure correct types
-      const cleanPlayers = playingPlayers.map(player => ({
-        name: String(player.name),
-        gameKnowledgeScore: Number(player.gameKnowledgeScore),
-        goalScoringScore: Number(player.goalScoringScore),
-        attackScore: Number(player.attackScore),
-        midfieldScore: Number(player.midfieldScore),
-        defenseScore: Number(player.defenseScore),
-        fitnessScore: Number(player.fitnessScore),
-        gender: String(player.gender || 'male'),
-        isPlayingThisWeek: true,
-      }))
+      const cleanPlayers = playingPlayers.map((player, index) => {
+        // Validate scores are between 0 and 10
+        const validateScore = (score, field) => {
+          const num = Number(score || 0)
+          if (isNaN(num) || num < 0 || num > 10) {
+            throw new Error(
+              `Invalid ${field} score for player ${player.name}: ${score}`
+            )
+          }
+          return num
+        }
+
+        return {
+          name: String(player.name || ''),
+          gameKnowledgeScore: validateScore(
+            player.gameKnowledgeScore,
+            'game knowledge'
+          ),
+          goalScoringScore: validateScore(
+            player.goalScoringScore,
+            'goal scoring'
+          ),
+          attackScore: validateScore(player.attackScore, 'attack'),
+          midfieldScore: validateScore(player.midfieldScore, 'midfield'),
+          defenseScore: validateScore(player.defenseScore, 'defense'),
+          fitnessScore: validateScore(player.fitnessScore, 'fitness'),
+          gender: String(player.gender || 'male'),
+          isPlayingThisWeek: true,
+        }
+      })
 
       // Create the request payload
       const requestPayload = {
-        numTeams: Number(numTeams),
+        numTeams: parseInt(numTeams, 10),
         players: cleanPlayers,
       }
 
-      console.log('=== CREATE TEAMS REQUEST PAYLOAD ===')
-      console.log('Request payload:', JSON.stringify(requestPayload, null, 2))
-      console.log('Payload type:', typeof requestPayload)
-      console.log('Players array type:', typeof requestPayload.players)
-      console.log('Is players array?', Array.isArray(requestPayload.players))
-      console.log('Number of players:', requestPayload.players.length)
-      console.log('First player sample:', requestPayload.players[0])
-      console.log('==================================')
+      console.log('Request Payload:', JSON.stringify(requestPayload, null, 2))
 
       try {
         // Send the request with explicit content type and data transformation
         const [res] = await Promise.all([
-          api.post('/balance-teams', requestPayload, {
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-            },
-            withCredentials: true,
-          }),
+          api.post('/balance-teams', requestPayload),
           minimumDuration,
         ])
 
@@ -433,16 +357,18 @@ export default function CreateTeams() {
           config: err.config,
         })
 
+        // Log the full error response
+        if (err.response) {
+          console.error('Error Response:', {
+            status: err.response.status,
+            statusText: err.response.statusText,
+            data: err.response.data,
+            headers: err.response.headers,
+          })
+        }
+
         let errorMessage = 'An error occurred while creating teams'
-        if (err.response?.data?.errors) {
-          const errorDetails = err.response.data.errors
-            .map(e => {
-              if (typeof e === 'string') return e
-              return `${e.param || e.path}: ${e.msg}`
-            })
-            .join(', ')
-          errorMessage = `Validation Error: ${errorDetails}`
-        } else if (err.response?.data?.error) {
+        if (err.response?.data?.error) {
           errorMessage = err.response.data.error
         } else if (err.message) {
           errorMessage = err.message
@@ -460,14 +386,13 @@ export default function CreateTeams() {
     }
   }
 
-  console.log('rsvpsForGame', rsvpsForGame)
-
   return (
-    <div className="container">
-      <div className="flex items-center justify-center mt-4 mb-4">
+    <div className="flex flex-col mx-2">
+      <div className="flex items-center justify-center mt-4 mb-4 print:hidden">
         <div className="flex-col justify-center items-center">
           <div className="text-lg mb-4">
-            Choose an upcoming game to see the players playing that day
+            Choose an upcoming game to see the players RSVP'd from Heja for that
+            game
           </div>
           <UpcomingGamesDropDown
             upcomingGames={upcomingGames.map(game => ({
@@ -482,25 +407,66 @@ export default function CreateTeams() {
               )
               setSelectedDate(new Date(selectedGame.meetdate))
               setSelectedGameId(gameId)
+              // Clear the balanced teams when a new game is selected
+              setBalancedTeams(null)
+              setTotalPlayers(0)
             }}
           />
           {selectedGameId && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">
-                Players RSVP'd for this game:
+            <div className="mt-4 items-center justify-center">
+              <h3 className="text-lg font-semibold mb-2 text-loonsRed">
+                Players RSVP'd for this game on Heja
               </h3>
               {isLoadingRsvps ? (
                 <p className="text-gray-700 text-center text-xl py-4">
-                  Loading RSVPs...
+                  Loading RSVPs and updating player list...
                 </p>
               ) : rsvpsForGame.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {rsvpsForGame.map((player, index) => (
-                    <li key={index} className="text-gray-700">
-                      {player}
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex flex-col">
+                  <p className="text-lg font-semibold mb-2">
+                    No of RSVP'd players: {rsvpsForGame.length}{' '}
+                  </p>
+                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
+                    {rsvpsForGame
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((player, index) => {
+                        // Check if the player exists in the players list
+                        const playerExists = players.some(
+                          p => normalizeName(p.name) === normalizeName(player)
+                        )
+                        return (
+                          <li
+                            key={index}
+                            className={`text-gray-700 ${
+                              !playerExists
+                                ? 'bg-red-200 p-1 rounded text-red-500'
+                                : ''
+                            }`}
+                          >
+                            {player}
+                            {!playerExists && (
+                              <span className="text-red-600 text-xs ml-2">
+                                * Not in player list below
+                              </span>
+                            )}
+                          </li>
+                        )
+                      })}
+                  </ul>
+                  {rsvpsForGame.some(
+                    player =>
+                      !players.some(
+                        p => normalizeName(p.name) === normalizeName(player)
+                      )
+                  ) && (
+                    <div className="text-red-600 text-xs max-w-sm mt-2">
+                      * please double check the spelling of the name; the
+                      spelling in Heja and in this application must match.
+                      Alternately, player(s) may need to be added to the loons
+                      team balancer.
+                    </div>
+                  )}
+                </div>
               ) : (
                 <p>No players have RSVP'd for this game yet.</p>
               )}
@@ -509,11 +475,13 @@ export default function CreateTeams() {
         </div>
       </div>
       <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        {error && (
+          <p className="text-center text-red-500 text-sm mt-2">{error}</p>
+        )}
         <div className="print:hidden">
           <div className="flex-col flex-wrap">
             {openPlayerList ? (
-              <div className="h-[5.5rem] mb-4">{''}</div>
+              <div className="h-[1.5rem]">{''}</div>
             ) : (
               <>
                 <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">

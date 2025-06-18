@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import Players from '../../pages/players'
-import api from '../../utils/api'
+import api from '../../utils/FEapi'
 import PlayerList from '../../src/app/components/PlayerList'
 
 jest.mock('../../utils/api')

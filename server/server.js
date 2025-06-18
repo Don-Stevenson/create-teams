@@ -19,9 +19,6 @@ app.use(
     strict: false,
     verify: (req, res, buf) => {
       req.rawBody = buf.toString()
-      console.log('=== RAW REQUEST BODY ===')
-      console.log(req.rawBody)
-      console.log('========================')
     },
   })
 )
@@ -51,7 +48,13 @@ const sanitizeInput = (req, res, next) => {
   if (req.body) {
     for (const key in req.body) {
       if (Object.prototype.hasOwnProperty.call(req.body, key)) {
-        req.body[key] = xss(req.body[key])
+        if (typeof req.body[key] === 'string') {
+          req.body[key] = xss(req.body[key])
+        } else if (Array.isArray(req.body[key])) {
+          req.body[key] = req.body[key].map(item =>
+            typeof item === 'string' ? xss(item) : item
+          )
+        }
       }
     }
   }

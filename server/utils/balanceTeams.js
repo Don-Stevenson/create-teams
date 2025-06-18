@@ -1,12 +1,4 @@
 function balanceTeams(players, numTeams) {
-  console.log('=== BALANCE TEAMS FUNCTION INPUT ===')
-  console.log('Players input:', players)
-  console.log('Players type:', typeof players)
-  console.log('Is players array?', Array.isArray(players))
-  console.log('Number of teams:', numTeams)
-  console.log('Number of teams type:', typeof numTeams)
-  console.log('===================================')
-
   // Validate input
   if (!players || !Array.isArray(players)) {
     console.error('Invalid players data:', players)
@@ -17,18 +9,8 @@ function balanceTeams(players, numTeams) {
     throw new Error('Invalid number of teams')
   }
 
-  // Log the input data
-  console.log('=== PROCESSING TEAMS DATA ===')
-  console.log('Number of teams:', numTeams)
-  console.log('Player count:', players.length)
-  console.log('First player:', players[0])
-  console.log('============================')
-
   // Ensure all required player properties exist and are of correct type
   const validPlayers = players.filter(player => {
-    console.log('=== VALIDATING PLAYER ===')
-    console.log('Player being validated:', player)
-
     // Convert all numeric fields to numbers
     const gameKnowledgeScore = Number(player.gameKnowledgeScore)
     const goalScoringScore = Number(player.goalScoringScore)
@@ -36,15 +18,6 @@ function balanceTeams(players, numTeams) {
     const midfieldScore = Number(player.midfieldScore)
     const defenseScore = Number(player.defenseScore)
     const fitnessScore = Number(player.fitnessScore)
-
-    console.log('Converted scores:', {
-      gameKnowledgeScore,
-      goalScoringScore,
-      attackScore,
-      midfieldScore,
-      defenseScore,
-      fitnessScore,
-    })
 
     // Check if any numeric fields are NaN
     if (
@@ -78,11 +51,17 @@ function balanceTeams(players, numTeams) {
       return false
     }
 
-    // Check if isPlayingThisWeek is true
-    if (player.isPlayingThisWeek !== true) {
+    // Check if isPlayingThisWeek is true (handle both boolean and string values)
+    const isPlaying =
+      player.isPlayingThisWeek === true ||
+      player.isPlayingThisWeek === 'true' ||
+      player.isPlayingThisWeek === 1 ||
+      player.isPlayingThisWeek === '1'
+    if (!isPlaying) {
       console.warn('Player is not marked as playing this week:', {
         player,
         isPlayingThisWeek: player.isPlayingThisWeek,
+        type: typeof player.isPlayingThisWeek,
       })
       return false
     }
@@ -103,16 +82,8 @@ function balanceTeams(players, numTeams) {
     // Update the original player object with cleaned values
     Object.assign(player, cleanPlayer)
 
-    console.log('Player validation passed')
-    console.log('========================')
     return true
   })
-
-  // Log validation results
-  console.log('=== VALIDATION RESULTS ===')
-  console.log('Total players:', players.length)
-  console.log('Valid players:', validPlayers.length)
-  console.log('=========================')
 
   if (validPlayers.length === 0) {
     throw new Error('No valid players provided')
@@ -195,13 +166,6 @@ function balanceTeams(players, numTeams) {
       nonBinary: team.genderCount.nonBinary,
     },
   }))
-
-  // Log the final teams for debugging
-  console.log('Final teams:', {
-    teamCount: finalTeams.length,
-    totalPlayers: validPlayers.length,
-    firstTeam: finalTeams[0],
-  })
 
   return { teams: finalTeams, totalPlayersPlaying: validPlayers.length }
 }

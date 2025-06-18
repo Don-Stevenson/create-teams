@@ -1,6 +1,5 @@
 // utils/api.js
 import axios from 'axios'
-import config_url from '../config'
 
 // Create axios instance
 const api = axios.create({
@@ -10,42 +9,21 @@ const api = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  transformRequest: [
-    (data, headers) => {
-      // Log the request data
-      console.log('Request data:', {
-        data,
-        type: typeof data,
-        isArray: Array.isArray(data),
-        stringified: JSON.stringify(data),
-      })
-
-      // Ensure data is properly stringified
-      return JSON.stringify(data)
-    },
-  ],
-  transformResponse: [
-    data => {
-      try {
-        return JSON.parse(data)
-      } catch (e) {
-        return data
-      }
-    },
-  ],
 })
 
 // Request interceptor
 api.interceptors.request.use(
   config => {
-    // Log request data for debugging
-    if (config.data) {
-      console.log('Request data:', {
-        data: config.data,
-        type: typeof config.data,
-        isArray: Array.isArray(config.data),
-        stringified: JSON.stringify(config.data),
-      })
+    // Only stringify if data exists and is an object
+    if (config.data && typeof config.data === 'object') {
+      // Ensure arrays are properly stringified
+      if (Array.isArray(config.data.players)) {
+        config.data = {
+          ...config.data,
+          players: config.data.players,
+        }
+      }
+      config.data = JSON.stringify(config.data)
     }
     return config
   },

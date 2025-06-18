@@ -204,10 +204,8 @@ export async function rsvpsForGame({ teamId, gameId }) {
   }
 }
 
-// Example usage:
 async function getUpcomingGames() {
   try {
-    // Get upcoming games
     const games = await upcomingGames({ teamId })
     return games.slice(0, 5)
   } catch (error) {
@@ -215,12 +213,8 @@ async function getUpcomingGames() {
   }
 }
 
-// console.log('upcomingGames  ', await getUpcomingGames())
-
 export const upcomingGamesList = await getUpcomingGames()
 export const rsvpsForGameList = await rsvpsForGame({
   teamId,
   gameId: upcomingGamesList[0]._id,
 })
-
-// console.log('rsvpsForGameList', rsvpsForGameList)

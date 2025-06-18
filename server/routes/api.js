@@ -96,60 +96,6 @@ const playerValidationRules = [
   body('isPlayingThisWeek').isBoolean(),
 ]
 
-// Balance teams validation rules
-const balanceTeamsValidationRules = [
-  body('numTeams')
-    .isInt({ min: 2, max: 10 })
-    .withMessage('Number of teams must be between 2 and 10'),
-  body('players')
-    .custom(value => {
-      if (!Array.isArray(value)) {
-        try {
-          // Try to parse if it's a string
-          const parsed = JSON.parse(value)
-          return Array.isArray(parsed)
-        } catch (e) {
-          return false
-        }
-      }
-      return true
-    })
-    .withMessage('Players must be an array')
-    .custom(value => {
-      const players = Array.isArray(value) ? value : JSON.parse(value)
-      return players.length > 0
-    })
-    .withMessage('Players array cannot be empty'),
-  body('players.*.name')
-    .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Player name must be between 2 and 50 characters'),
-  body('players.*.gameKnowledgeScore')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('Game knowledge score must be between 1 and 10'),
-  body('players.*.goalScoringScore')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('Goal scoring score must be between 1 and 10'),
-  body('players.*.attackScore')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('Attack score must be between 1 and 10'),
-  body('players.*.midfieldScore')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('Midfield score must be between 1 and 10'),
-  body('players.*.defenseScore')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('Defense score must be between 1 and 10'),
-  body('players.*.fitnessScore')
-    .isInt({ min: 1, max: 10 })
-    .withMessage('Fitness score must be between 1 and 10'),
-  body('players.*.gender')
-    .isIn(['male', 'female', 'nonBinary'])
-    .withMessage('Gender must be male, female, or nonBinary'),
-  body('players.*.isPlayingThisWeek')
-    .isBoolean()
-    .withMessage('isPlayingThisWeek must be a boolean'),
-]
-
 // GET all players
 protectedRouter.get('/players', async (req, res, next) => {
   try {
@@ -261,54 +207,120 @@ protectedRouter.delete('/players/:id', async (req, res, next) => {
 })
 
 // POST balance teams
-protectedRouter.post(
-  '/balance-teams',
-  // Temporarily comment out validation to debug core functionality
-  // validate(balanceTeamsValidationRules),
-  async (req, res) => {
-    console.log('=== BALANCE TEAMS ROUTE MIDDLEWARE ===')
-    console.log('Request headers:', req.headers)
-    console.log('Raw request body:', req.rawBody)
-    console.log('Parsed request body:', req.body)
-    console.log('Request body type:', typeof req.body)
-    console.log('Players type:', typeof req.body.players)
-    console.log('Is players array?', Array.isArray(req.body.players))
-    console.log('=====================================')
+protectedRouter.post('/balance-teams', express.json(), async (req, res) => {
+  try {
+    console.log('Received request body:', JSON.stringify(req.body, null, 2))
 
-    try {
-      // Parse the raw request body to get the proper players array
-      const rawData = JSON.parse(req.rawBody)
-      const { numTeams, players } = rawData
+    const { numTeams, players } = req.body
 
-      // Clean up player data
-      const cleanedPlayers = players.map(player => ({
-        name: String(player.name),
-        gameKnowledgeScore: Number(player.gameKnowledgeScore),
-        goalScoringScore: Number(player.goalScoringScore),
-        attackScore: Number(player.attackScore),
-        midfieldScore: Number(player.midfieldScore),
-        defenseScore: Number(player.defenseScore),
-        fitnessScore: Number(player.fitnessScore),
+    // Validate request body
+    if (!req.body) {
+      console.error('No request body received')
+      return res.status(400).json({ error: 'No request body received' })
+    }
+
+    if (!numTeams) {
+      console.error('No numTeams provided')
+      return res.status(400).json({ error: 'Number of teams is required' })
+    }
+
+    const parsedNumTeams = parseInt(numTeams, 10)
+    if (isNaN(parsedNumTeams) || parsedNumTeams < 2) {
+      console.error('Invalid number of teams:', numTeams)
+      return res.status(400).json({ error: 'Invalid number of teams' })
+    }
+
+    if (!players) {
+      console.error('No players array provided')
+      return res.status(400).json({ error: 'Players array is required' })
+    }
+
+    // Ensure players is an array
+    let playersArray = players
+    if (typeof players === 'string') {
+      try {
+        // Try to parse the string as JSON
+        playersArray = JSON.parse(players)
+      } catch (e) {
+        console.error('Failed to parse players string:', e)
+        return res.status(400).json({ error: 'Invalid players data format' })
+      }
+    }
+
+    if (!Array.isArray(playersArray)) {
+      console.error('Players is not an array:', typeof playersArray)
+      return res.status(400).json({ error: 'Players must be an array' })
+    }
+
+    if (playersArray.length === 0) {
+      console.error('Empty players array')
+      return res.status(400).json({ error: 'Players array cannot be empty' })
+    }
+
+    // Clean up player data
+    const cleanedPlayers = playersArray.map((player, index) => {
+      if (!player || typeof player !== 'object') {
+        console.error(`Invalid player at index ${index}:`, player)
+        throw new Error(`Invalid player data structure at index ${index}`)
+      }
+
+      const cleanedPlayer = {
+        name: String(player.name || ''),
+        gameKnowledgeScore: Number(player.gameKnowledgeScore || 0),
+        goalScoringScore: Number(player.goalScoringScore || 0),
+        attackScore: Number(player.attackScore || 0),
+        midfieldScore: Number(player.midfieldScore || 0),
+        defenseScore: Number(player.defenseScore || 0),
+        fitnessScore: Number(player.fitnessScore || 0),
         gender: String(player.gender || 'male'),
         isPlayingThisWeek: Boolean(player.isPlayingThisWeek),
-      }))
+      }
 
-      console.log('=== CLEANED PLAYERS DATA ===')
-      console.log('Number of cleaned players:', cleanedPlayers.length)
-      console.log('First cleaned player:', cleanedPlayers[0])
-      console.log('===========================')
+      // Validate cleaned player data
+      if (!cleanedPlayer.name) {
+        throw new Error(`Player at index ${index} has no name`)
+      }
 
-      const { teams, totalPlayersPlaying } = balanceTeams(
-        cleanedPlayers,
-        numTeams
-      )
-      return res.json({ teams, totalPlayersPlaying })
-    } catch (error) {
-      console.error('Error processing request:', error)
-      return res.status(400).json({ error: error.message })
-    }
+      if (
+        cleanedPlayer.gameKnowledgeScore < 0 ||
+        cleanedPlayer.gameKnowledgeScore > 10 ||
+        cleanedPlayer.goalScoringScore < 0 ||
+        cleanedPlayer.goalScoringScore > 10 ||
+        cleanedPlayer.attackScore < 0 ||
+        cleanedPlayer.attackScore > 10 ||
+        cleanedPlayer.midfieldScore < 0 ||
+        cleanedPlayer.midfieldScore > 10 ||
+        cleanedPlayer.defenseScore < 0 ||
+        cleanedPlayer.defenseScore > 10 ||
+        cleanedPlayer.fitnessScore < 0 ||
+        cleanedPlayer.fitnessScore > 10
+      ) {
+        throw new Error(
+          `Player ${cleanedPlayer.name} has invalid scores (must be between 0 and 10)`
+        )
+      }
+
+      if (!['male', 'female', 'nonBinary'].includes(cleanedPlayer.gender)) {
+        throw new Error(
+          `Player ${cleanedPlayer.name} has invalid gender: ${cleanedPlayer.gender}`
+        )
+      }
+
+      return cleanedPlayer
+    })
+
+    console.log('Cleaned players:', JSON.stringify(cleanedPlayers, null, 2))
+
+    const { teams, totalPlayersPlaying } = balanceTeams(
+      cleanedPlayers,
+      parsedNumTeams
+    )
+    return res.json({ teams, totalPlayersPlaying })
+  } catch (error) {
+    console.error('Error processing request:', error)
+    return res.status(400).json({ error: error.message })
   }
-)
+})
 
 // Route for bulk updating players is playing this week
 protectedRouter.put(
@@ -316,82 +328,38 @@ protectedRouter.put(
   express.json(),
   async (req, res) => {
     try {
-      // Log the raw request body
-      console.log('Raw request body:', req.body)
-
       // Extract and validate the data
-      let { isPlayingThisWeek, playerIds } = req.body
-
-      // Convert isPlayingThisWeek to boolean if it's a string
-      if (typeof isPlayingThisWeek === 'string') {
-        isPlayingThisWeek = isPlayingThisWeek.toLowerCase() === 'true'
-      }
-
-      // Convert playerIds to array if it's a string
-      if (typeof playerIds === 'string') {
-        playerIds = playerIds.split(',').map(id => id.trim())
-      }
-
-      // console.log('Processed request data:', {
-      //   isPlayingThisWeek,
-      //   isPlayingThisWeekType: typeof isPlayingThisWeek,
-      //   playerIds,
-      //   playerIdsType: Array.isArray(playerIds) ? 'array' : typeof playerIds,
-      //   playerIdsLength: Array.isArray(playerIds) ? playerIds.length : 'N/A',
-      // })
-
-      // Validate isPlayingThisWeek
-      if (typeof isPlayingThisWeek !== 'boolean') {
-        console.log('Validation failed for isPlayingThisWeek:', {
-          value: isPlayingThisWeek,
-          type: typeof isPlayingThisWeek,
-          rawValue: req.body.isPlayingThisWeek,
-        })
-        return res.status(400).json({
-          errors: [
-            {
-              type: 'field',
-              value: isPlayingThisWeek,
-              msg: 'isPlayingThisWeek must be a boolean value',
-              path: 'isPlayingThisWeek',
-              location: 'body',
-            },
-          ],
-        })
-      }
+      const { isPlayingThisWeek, playerIds } = req.body
 
       // Validate playerIds
       if (!Array.isArray(playerIds) || playerIds.length === 0) {
-        console.log('Validation failed for playerIds:', {
-          value: playerIds,
-          isArray: Array.isArray(playerIds),
-          length: Array.isArray(playerIds) ? playerIds.length : 'N/A',
-          rawValue: req.body.playerIds,
-        })
         return res.status(400).json({
-          errors: [
-            {
-              type: 'field',
-              value: playerIds,
-              msg: 'playerIds must be a non-empty array',
-              path: 'playerIds',
-              location: 'body',
-            },
-          ],
+          success: false,
+          error: 'playerIds must be a non-empty array',
         })
       }
 
-      // Update all specified players
-      const result = await Player.updateMany(
-        { _id: { $in: playerIds } },
-        { $set: { isPlayingThisWeek } }
-      )
-      console.log('Update result:', result)
+      // Ensure all playerIds are strings
+      const sanitizedPlayerIds = playerIds.map(id => String(id))
 
-      res.json({ message: 'Players updated successfully' })
+      // Update the players
+      const result = await Player.updateMany(
+        { _id: { $in: sanitizedPlayerIds } },
+        { $set: { isPlayingThisWeek: Boolean(isPlayingThisWeek) } }
+      )
+
+      res.json({
+        success: true,
+        message: 'Players updated successfully',
+        modifiedCount: result.modifiedCount,
+      })
     } catch (error) {
       console.error('Error updating players:', error)
-      res.status(500).json({ error: 'Failed to update players' })
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update players',
+        details: error.message,
+      })
     }
   }
 )

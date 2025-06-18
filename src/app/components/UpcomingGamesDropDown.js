@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import ChevronDownIcon from './ChevronDownIcon'
 
 const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -30,14 +31,25 @@ const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
   }, [])
 
   return (
-    <div className="dropdown" ref={dropdownRef}>
-      <button onClick={handleTriggerClick}>
+    <div
+      className="border-[1px] border-loonsRed rounded-md px-3 py-1 z-50"
+      ref={dropdownRef}
+    >
+      <button
+        onClick={handleTriggerClick}
+        className="font-bold text-lg text-black flex items-center justify-between w-full"
+      >
         {selectedValue || 'Select an upcoming game'}
+        <ChevronDownIcon />
       </button>
       {isOpen && (
-        <ul>
+        <ul className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white border border-loonsRed rounded-md shadow-lg max-w-[325px] md:max-w-[800px]">
           {upcomingGames.map(game => (
-            <li key={game.value} onClick={() => handleOptionClick(game)}>
+            <li
+              className="border-2 border-white hover:border-2 hover:bg-red-200 rounded-md px-2 list-disc list-inside cursor-pointer"
+              key={game.value}
+              onClick={() => handleOptionClick(game)}
+            >
               {game.label}
             </li>
           ))}

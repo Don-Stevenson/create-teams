@@ -3,7 +3,7 @@ import Layout from '../src/app/components/Layout.js'
 import PlayerList from '../src/app/components/PlayerList'
 
 import EditPlayerModal from '../src/app/components/EditPlayerModal.js'
-import api from '../utils/api'
+import api from '../utils/FEapi.js'
 import withAuth from '@/app/components/withAuth.js'
 import DeleteConfirmationModal from '@/app/components/DeleteConfirmationModal.js'
 import AddPlayerModal from '@/app/components/AddPlayerModal.js'

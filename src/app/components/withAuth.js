@@ -1,31 +1,39 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import config_url from '../../../config'
+import { useRouter } from 'next/navigation'
+import { checkAuth } from '../../../utils/FEapi'
 
 export default function withAuth(WrappedComponent) {
   return function AuthenticatedComponent(props) {
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-      const checkAuth = async () => {
+      const verifyAuth = async () => {
         try {
-          const res = await fetch(`${config_url}/api/auth/check`, {
-            credentials: 'include',
-          })
-          if (res.ok) {
+          const authResult = await checkAuth()
+          if (authResult && authResult.success) {
             setIsAuthenticated(true)
           } else {
-            router.replace('/login')
+            router.push('/login')
           }
         } catch (error) {
           console.error('Auth check failed:', error)
-
-          router.replace('/login')
+          router.push('/login')
+        } finally {
+          setIsLoading(false)
         }
       }
-      checkAuth()
+      verifyAuth()
     }, [router])
+
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-xl">Loading...</div>
+        </div>
+      )
+    }
 
     if (!isAuthenticated) {
       return null

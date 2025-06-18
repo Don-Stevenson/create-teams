@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import CreateTeams from '../components/CreateTeams'
 import { checkAuth } from '../../../utils/FEapi'
+import Layout from '../components/Layout'
 
 export default function CreateTeamsPage() {
   const [isLoading, setIsLoading] = useState(true)

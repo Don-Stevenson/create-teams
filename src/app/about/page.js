@@ -1,18 +1,51 @@
-import Layout from '@/app/components/Layout'
-import React from 'react'
-import LoonsBadge from '../src/app/assets/img/TWSC.webp'
-import Image from 'next/image'
+'use client'
 
-const About = () => {
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { checkAuth } from '../../../utils/FEapi'
+import LoonsBadge from '../../../public/TWSC_Badge.webp'
+import Layout from '../components/Layout'
+
+export default function AboutPage() {
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const isAuthenticated = await checkAuth()
+        if (!isAuthenticated) {
+          router.push('/login')
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        router.push('/login')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    verifyAuth()
+  }, [router])
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    )
+  }
+
   return (
-    <Layout>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-4 text-loonsBrown">
+        About Loons Team Balancer
+      </h1>
       <div className="flex-col justify-center items-center max-w-4xl mx-auto gap-2 p-6">
         <div className="flex justify-center pb-4">
           <Image src={LoonsBadge} width={130} />
         </div>
-        <h1 className="text-3xl font-bold mb-4 text-loonsBrown">
-          About Loons Team Balancer
-        </h1>
         <p className="text-lg leading-relaxed mb-4">
           Loons Team Balancer is a Next.js-based solution designed to create
           fair and well-balanced soccer teams each week. The app takes into
@@ -39,8 +72,6 @@ const About = () => {
           teams in the default, printer friendly format.
         </p>
       </div>
-    </Layout>
+    </div>
   )
 }
-
-export default About

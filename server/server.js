@@ -82,12 +82,31 @@ const sanitizeInput = (req, res, next) => {
 
 app.use(sanitizeInput)
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // increase this number
-})
-app.use('/api/', limiter)
+// Rate limiting - TEMPORARILY DISABLED
+// const limiter = rateLimit({
+//   windowMs: 60 * 60 * 1000, // 1 hour
+//   max: 100, // 100 requests per hour
+//   message: 'Too many requests, please try again later.',
+//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+//   // Custom key generator - you can customize this based on your needs
+//   keyGenerator: (req) => {
+//     // Use IP address as default, but you could also use user agent or other identifiers
+//     return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket?.remoteAddress || 'unknown'
+//   },
+//   // Custom handler for when limit is exceeded
+//   handler: (req, res) => {
+//     res.status(429).json({
+//       error: 'Too many requests, please try again later.',
+//       retryAfter: Math.ceil(60 * 60 / 60), // Retry after 1 hour (in minutes)
+//     })
+//   }
+// })
+
+// Store reference to the rate limiter store for debugging
+// const limiterStore = limiter.store
+
+// app.use('/api/', limiter)
 
 // Connect to database
 connectDB()

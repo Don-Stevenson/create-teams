@@ -445,9 +445,7 @@ export default function CreateTeams() {
                           <li
                             key={index}
                             className={`text-gray-700 ${
-                              !playerExists
-                                ? 'border-2 border-loonsRed text-black p-1 rounded'
-                                : ''
+                              !playerExists ? 'text-loonsRed font-bold' : ''
                             }`}
                           >
                             {player}
@@ -467,7 +465,7 @@ export default function CreateTeams() {
                       )
                   ) && (
                     <div className="text-red-600 text-xs max-w-sm mt-2">
-                      * please double check the spelling of the name; the
+                      * please double check the player name spelling; the
                       spelling in Heja and in this application must match.
                       Alternately, player(s) may need to be added to the loons
                       team balancer.

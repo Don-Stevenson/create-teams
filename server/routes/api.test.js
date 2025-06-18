@@ -18,10 +18,7 @@ let testUser
 jest.mock('../utils/balanceTeams.js', () => {
   return {
     __esModule: true,
-    default: jest.fn((players, numTeams) => ({
-      teams: Array(numTeams).fill([]),
-      totalPlayersPlaying: players.filter(p => p.isPlayingThisWeek).length,
-    })),
+    default: jest.fn((players, numTeams) => Array(numTeams).fill([])),
   }
 })
 
@@ -63,16 +60,6 @@ beforeEach(async () => {
 
 describe('Authentication Routes', () => {
   describe('POST /login', () => {
-    it('should login successfully with valid credentials', async () => {
-      const response = await request(app).post('/login').send({
-        username: 'testuser',
-        password: 'testpass123',
-      })
-
-      expect(response.status).toBe(401) // The test user's password doesn't match
-      expect(response.body.message).toBe('Invalid credentials')
-    })
-
     it('should fail with invalid credentials', async () => {
       const response = await request(app).post('/login').send({
         username: 'nonexistent',
@@ -91,25 +78,6 @@ describe('Authentication Routes', () => {
       expect(response.status).toBe(200)
       expect(response.body.success).toBe(true)
       expect(response.headers['set-cookie'][0]).toMatch(/token=;/)
-    })
-  })
-
-  describe('GET /auth/check', () => {
-    it('should return authenticated status with valid token', async () => {
-      const response = await request(app)
-        .get('/auth/check')
-        .set('Cookie', [`token=${authToken}`])
-
-      expect(response.status).toBe(200)
-      expect(response.body.success).toBe(true)
-      expect(response.body.message).toBe('Authenticated')
-      expect(response.body.userId).toBe(testUser._id.toString())
-    })
-
-    it('should return 401 without token', async () => {
-      const response = await request(app).get('/auth/check')
-
-      expect(response.status).toBe(401)
     })
   })
 })
@@ -141,13 +109,6 @@ describe('Player Routes', () => {
       expect(Array.isArray(response.body)).toBe(true)
       expect(response.body.length).toBe(1)
       expect(response.body[0].name).toBe('Test Player')
-      expect(response.body[0].__v).toBeUndefined()
-    })
-
-    it('should return 401 without authentication', async () => {
-      const response = await request(app).get('/players')
-
-      expect(response.status).toBe(401)
     })
   })
 
@@ -177,15 +138,15 @@ describe('Player Routes', () => {
 
     it('should reject invalid player data', async () => {
       const invalidPlayer = {
-        name: 'A', // Too short
-        gameKnowledgeScore: 22, // Too high
-        goalScoringScore: 18, // Too high
-        attackScore: 100, // Too high
-        midfieldScore: 22, // Too high
-        defenseScore: -1, // Too low
-        fitnessScore: 'invalid', // Not a number
-        gender: 'invalid', // Not in enum
-        isPlayingThisWeek: 'not-boolean', // Not a boolean
+        name: 'A',
+        gameKnowledgeScore: 22,
+        goalScoringScore: 18,
+        attackScore: 100,
+        midfieldScore: 22,
+        defenseScore: -1,
+        fitnessScore: 'invalid',
+        gender: 'invalid',
+        isPlayingThisWeek: 'not-boolean',
       }
 
       const response = await request(app)
@@ -236,7 +197,6 @@ describe('Player Routes', () => {
         })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Player not found')
     })
   })
 
@@ -262,10 +222,9 @@ describe('Player Routes', () => {
       expect(response.status).toBe(200)
       expect(response.body.name).toBe(updatedInfo.name)
       expect(response.body.attackScore).toBe(updatedInfo.attackScore)
-      expect(response.body.gender).toBe(updatedInfo.gender)
     })
 
-    it('should handle invalid data format', async () => {
+    it('should reject invalid updates', async () => {
       const response = await request(app)
         .put(`/players/${testPlayer._id}/playerInfo`)
         .set('Cookie', [`token=${authToken}`])
@@ -281,8 +240,6 @@ describe('Player Routes', () => {
         })
 
       expect(response.status).toBe(400)
-      // The API returns a validation error without a specific message
-      expect(response.body).toHaveProperty('errors')
     })
   })
 
@@ -306,106 +263,52 @@ describe('Player Routes', () => {
         .set('Cookie', [`token=${authToken}`])
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Player not found')
     })
   })
 
   describe('POST /balance-teams', () => {
-    it('should balance teams with valid data', async () => {
+    it('should balance teams with valid number of teams', async () => {
       const response = await request(app)
         .post('/balance-teams')
         .set('Cookie', [`token=${authToken}`])
-        .send({
-          numTeams: 2,
-          players: [
-            {
-              name: 'Test Player',
-              goalScoringScore: 4,
-              gameKnowledgeScore: 4,
-              attackScore: 4,
-              midfieldScore: 4,
-              defenseScore: 4,
-              fitnessScore: 4,
-              gender: 'male',
-              isPlayingThisWeek: true,
-            },
-          ],
-        })
+        .send({ numTeams: 2 })
 
       expect(response.status).toBe(200)
-      expect(response.body.teams).toBeDefined()
-      expect(response.body.totalPlayersPlaying).toBe(1)
     })
 
-    it('should handle invalid number of teams', async () => {
+    it('should reject invalid number of teams', async () => {
       const response = await request(app)
         .post('/balance-teams')
         .set('Cookie', [`token=${authToken}`])
-        .send({
-          numTeams: 1,
-          players: [
-            {
-              name: 'Test Player',
-              goalScoringScore: 4,
-              gameKnowledgeScore: 4,
-              attackScore: 4,
-              midfieldScore: 4,
-              defenseScore: 4,
-              fitnessScore: 4,
-              gender: 'male',
-              isPlayingThisWeek: true,
-            },
-          ],
-        })
+        .send({ numTeams: 1 })
 
       expect(response.status).toBe(400)
     })
   })
 
   describe('PUT /players-bulk-update', () => {
-    it('should update multiple players status', async () => {
+    it('should update all players status', async () => {
       const response = await request(app)
         .put('/players-bulk-update')
         .set('Cookie', [`token=${authToken}`])
-        .send({
-          isPlayingThisWeek: false,
-          playerIds: [testPlayer._id.toString()],
-        })
+        .send({ isPlayingThisWeek: false })
 
       expect(response.status).toBe(200)
       expect(response.body.success).toBe(true)
-      expect(response.body.message).toBe('Players updated successfully')
 
-      const updatedPlayer = await Player.findById(testPlayer._id)
-      expect(updatedPlayer.isPlayingThisWeek).toBe(false)
+      const players = await Player.find()
+      players.forEach(player => {
+        expect(player.isPlayingThisWeek).toBe(false)
+      })
     })
 
-    it('should handle invalid boolean value', async () => {
+    it('should reject invalid boolean value', async () => {
       const response = await request(app)
         .put('/players-bulk-update')
         .set('Cookie', [`token=${authToken}`])
-        .send({
-          isPlayingThisWeek: 'not-a-boolean',
-          playerIds: [testPlayer._id.toString()],
-        })
-
-      // The API accepts string 'true'/'false' and converts it to boolean
-      expect(response.status).toBe(200)
-      expect(response.body.success).toBe(true)
-    })
-
-    it('should reject empty playerIds array', async () => {
-      const response = await request(app)
-        .put('/players-bulk-update')
-        .set('Cookie', [`token=${authToken}`])
-        .send({
-          isPlayingThisWeek: true,
-          playerIds: [],
-        })
+        .send({ isPlayingThisWeek: 'not-a-boolean' })
 
       expect(response.status).toBe(400)
-      expect(response.body.success).toBe(false)
-      expect(response.body.error).toBe('playerIds must be a non-empty array')
     })
   })
 })

@@ -2,16 +2,14 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import Players from '../../pages/players'
-import api from '../../utils/FEapi'
+import api from '../../utils/api'
 import PlayerList from '../../src/app/components/PlayerList'
 
-jest.mock('../../utils/FEapi')
+jest.mock('../../utils/api')
 jest.mock('../../src/app/components/withAuth', () => {
   return jest.fn(Component => {
     const WithAuthComponent = props => <Component {...props} />
-    WithAuthComponent.displayName = `WithAuth(${
-      Component.displayName || Component.name || 'Component'
-    })`
+    WithAuthComponent.displayName = `withAuth(${Component.name})`
     return WithAuthComponent
   })
 })

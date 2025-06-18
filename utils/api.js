@@ -1,30 +1,20 @@
 // utils/api.js
 import axios from 'axios'
+import config_url from '../config'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:5050/api',
-  withCredentials: true,
+  baseURL: `${config_url}/api/`,
   headers: {
     'Content-Type': 'application/json',
-    Accept: 'application/json',
   },
+  withCredentials: true,
 })
 
 // Request interceptor
 api.interceptors.request.use(
   config => {
-    // Only stringify if data exists and is an object
-    if (config.data && typeof config.data === 'object') {
-      // Ensure arrays are properly stringified
-      if (Array.isArray(config.data.players)) {
-        config.data = {
-          ...config.data,
-          players: config.data.players,
-        }
-      }
-      config.data = JSON.stringify(config.data)
-    }
+    // You can add any request modifications here if needed
     return config
   },
   error => Promise.reject(error)

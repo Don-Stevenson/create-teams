@@ -447,14 +447,14 @@ export default function CreateTeams() {
                             key={index}
                             className={`text-gray-700 ${
                               !playerExists
-                                ? 'bg-red-200 p-1 rounded text-red-500'
+                                ? 'border-2 border-loonsRed text-black p-1 rounded'
                                 : ''
                             }`}
                           >
                             {player}
                             {!playerExists && (
-                              <span className="text-red-600 text-xs ml-2">
-                                * Not in player list below
+                              <span className=" text-loonsRed text-xs ml-2">
+                                * Not in the player list below
                               </span>
                             )}
                           </li>

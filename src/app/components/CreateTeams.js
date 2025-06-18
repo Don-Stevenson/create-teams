@@ -14,7 +14,7 @@ export default function CreateTeams() {
   const [selectedPlayerCount, setSelectedPlayerCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [showLoadingMessage, setShowLoadingMessage] = useState(true)
-  const [openPlayerList, setOpenPlayerList] = useState(false)
+  const [openPlayerList, setOpenPlayerList] = useState(true)
   const [upcomingGames, setUpcomingGames] = useState([])
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [rsvpsForGame, setRsvpsForGame] = useState([])
@@ -169,6 +169,8 @@ export default function CreateTeams() {
     const fetchRsvpsForGame = async () => {
       if (!selectedGameId) return
       try {
+        // Ensure player list is open at the start
+        setOpenPlayerList(true)
         setIsLoadingRsvps(true)
         const res = await api.get(`/rsvps-for-game/${selectedGameId}`)
         setRsvpsForGame(res.data)
@@ -198,11 +200,16 @@ export default function CreateTeams() {
             throw new Error('Failed to select RSVP players')
           }
         }
+
+        // Ensure player list stays open at the end
+        setOpenPlayerList(true)
       } catch (error) {
         console.error('Failed to fetch RSVPs:', error)
         setError('Failed to fetch RSVPs for the selected game')
       } finally {
         setIsLoadingRsvps(false)
+        // Ensure player list stays open even after loading
+        setOpenPlayerList(true)
       }
     }
     fetchRsvpsForGame()
@@ -341,7 +348,6 @@ export default function CreateTeams() {
           minimumDuration,
         ])
 
-        setOpenPlayerList(true)
         setTotalPlayers(cleanPlayers.length)
         setBalancedTeams(res.data.teams)
         setIsLoading(false)
@@ -386,6 +392,16 @@ export default function CreateTeams() {
     }
   }
 
+  // Handle game selection
+  const handleGameSelect = gameId => {
+    setOpenPlayerList(true) // Set to true first
+    const selectedGame = upcomingGames.find(game => game._id === gameId)
+    setSelectedDate(new Date(selectedGame.meetdate))
+    setSelectedGameId(gameId)
+    setBalancedTeams(null)
+    setTotalPlayers(0)
+  }
+
   return (
     <div className="flex flex-col mx-2">
       <div className="flex items-center justify-center mt-4 mb-4 print:hidden">
@@ -401,16 +417,7 @@ export default function CreateTeams() {
                 game.meetdate
               ).toLocaleDateString()}`,
             }))}
-            onSelect={gameId => {
-              const selectedGame = upcomingGames.find(
-                game => game._id === gameId
-              )
-              setSelectedDate(new Date(selectedGame.meetdate))
-              setSelectedGameId(gameId)
-              // Clear the balanced teams when a new game is selected
-              setBalancedTeams(null)
-              setTotalPlayers(0)
-            }}
+            onSelect={handleGameSelect}
           />
           {selectedGameId && (
             <div className="mt-4 items-center justify-center">
@@ -480,29 +487,23 @@ export default function CreateTeams() {
         )}
         <div className="print:hidden">
           <div className="flex-col flex-wrap">
-            {openPlayerList ? (
-              <div className="h-[1.5rem]">{''}</div>
-            ) : (
-              <>
-                <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
-                  Player List
-                </h2>
-                <p className="flex text-center md:justify-center mb-4 print:hidden">
-                  <span className="font-bold text-xl text-gray-800 ">
-                    {`Total Players Selected: ${selectedPlayerCount}`}
-                  </span>
-                </p>
-              </>
-            )}
+            <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
+              Player List
+            </h2>
+            <p className="flex text-center md:justify-center mb-4 print:hidden">
+              <span className="font-bold text-xl text-gray-800 ">
+                {`Total Players Selected: ${selectedPlayerCount}`}
+              </span>
+            </p>
             <div className="flex justify-center items-center mb-2">
               <button
                 onClick={() => setOpenPlayerList(!openPlayerList)}
                 className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-red-900 mb-2 text-lg font-bold border-2  rounded-md px-2 py-1"
               >
-                {openPlayerList ? 'Show Player List' : 'Hide Player List'}
+                {openPlayerList ? 'Hide Player List' : 'Show Player List'}
               </button>
             </div>
-            {!openPlayerList && (
+            {openPlayerList && (
               <>
                 <div className="flex md:justify-center mb-4 print:hidden">
                   <label className="inline-flex items-center">

@@ -352,6 +352,7 @@ export default function CreateTeams() {
         setBalancedTeams(res.data.teams)
         setIsLoading(false)
         setShowLoadingMessage(false)
+        setOpenPlayerList(false)
       } catch (err) {
         console.error('API Error Details:', {
           status: err.response?.status,

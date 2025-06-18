@@ -14,7 +14,15 @@ import apiRoutes from './routes/api.js'
 const app = express()
 
 // Middleware
-app.use(express.json({ limit: '10kb' }))
+app.use(
+  express.json({
+    strict: false,
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString()
+    },
+  })
+)
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(helmet())
 
@@ -26,10 +34,8 @@ app.use(
 
 app.use(
   cors({
-    origin: process.env.ORIGIN_URL, // Frontend origin
-    credentials: true, // Allow sending cookies and credentials
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
   })
 )
 
@@ -42,7 +48,13 @@ const sanitizeInput = (req, res, next) => {
   if (req.body) {
     for (const key in req.body) {
       if (Object.prototype.hasOwnProperty.call(req.body, key)) {
-        req.body[key] = xss(req.body[key])
+        if (typeof req.body[key] === 'string') {
+          req.body[key] = xss(req.body[key])
+        } else if (Array.isArray(req.body[key])) {
+          req.body[key] = req.body[key].map(item =>
+            typeof item === 'string' ? xss(item) : item
+          )
+        }
       }
     }
   }
@@ -69,3 +81,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT || 5050
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+
+export default app

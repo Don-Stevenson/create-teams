@@ -155,7 +155,7 @@ const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((player, playerIndex) => (
           <li
-            key={player._id}
+            key={`${player.name}-${playerIndex}`}
             draggable="true"
             onDragStart={e =>
               handleDragStart(e, teamIndex, playerIndex, player._id)

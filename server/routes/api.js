@@ -7,6 +7,7 @@ import balanceTeams from '../utils/balanceTeams.js'
 import validate from '../middleware/validate.js'
 import User from '../models/User.js'
 import auth from '../middleware/auth.js'
+import { upcomingGamesList, rsvpsForGame } from '../utils/getUpcomingGames.js'
 
 const router = express.Router()
 
@@ -206,51 +207,178 @@ protectedRouter.delete('/players/:id', async (req, res, next) => {
 })
 
 // POST balance teams
-protectedRouter.post(
-  '/balance-teams',
-  validate([body('numTeams').isInt({ min: 2 })]),
-  async (req, res, next) => {
-    try {
-      const playingPlayers = await Player.find({ isPlayingThisWeek: true })
-      const balancedTeams = balanceTeams(playingPlayers, req.body.numTeams)
-      res.json(balancedTeams)
-    } catch (err) {
-      next(err)
+protectedRouter.post('/balance-teams', express.json(), async (req, res) => {
+  try {
+    const { numTeams, players } = req.body
+
+    // Validate request body
+    if (!req.body) {
+      console.error('No request body received')
+      return res.status(400).json({ error: 'No request body received' })
     }
+
+    if (!numTeams) {
+      console.error('No numTeams provided')
+      return res.status(400).json({ error: 'Number of teams is required' })
+    }
+
+    const parsedNumTeams = parseInt(numTeams, 10)
+    if (isNaN(parsedNumTeams) || parsedNumTeams < 2) {
+      console.error('Invalid number of teams:', numTeams)
+      return res.status(400).json({ error: 'Invalid number of teams' })
+    }
+
+    if (!players) {
+      console.error('No players array provided')
+      return res.status(400).json({ error: 'Players array is required' })
+    }
+
+    // Ensure players is an array
+    let playersArray = players
+    if (typeof players === 'string') {
+      try {
+        // Try to parse the string as JSON
+        playersArray = JSON.parse(players)
+      } catch (e) {
+        console.error('Failed to parse players string:', e)
+        return res.status(400).json({ error: 'Invalid players data format' })
+      }
+    }
+
+    if (!Array.isArray(playersArray)) {
+      console.error('Players is not an array:', typeof playersArray)
+      return res.status(400).json({ error: 'Players must be an array' })
+    }
+
+    if (playersArray.length === 0) {
+      console.error('Empty players array')
+      return res.status(400).json({ error: 'Players array cannot be empty' })
+    }
+
+    // Clean up player data
+    const cleanedPlayers = playersArray.map((player, index) => {
+      if (!player || typeof player !== 'object') {
+        console.error(`Invalid player at index ${index}:`, player)
+        throw new Error(`Invalid player data structure at index ${index}`)
+      }
+
+      const cleanedPlayer = {
+        name: String(player.name || ''),
+        gameKnowledgeScore: Number(player.gameKnowledgeScore || 0),
+        goalScoringScore: Number(player.goalScoringScore || 0),
+        attackScore: Number(player.attackScore || 0),
+        midfieldScore: Number(player.midfieldScore || 0),
+        defenseScore: Number(player.defenseScore || 0),
+        fitnessScore: Number(player.fitnessScore || 0),
+        gender: String(player.gender || 'male'),
+        isPlayingThisWeek: Boolean(player.isPlayingThisWeek),
+      }
+
+      // Validate cleaned player data
+      if (!cleanedPlayer.name) {
+        throw new Error(`Player at index ${index} has no name`)
+      }
+
+      if (
+        cleanedPlayer.gameKnowledgeScore < 0 ||
+        cleanedPlayer.gameKnowledgeScore > 10 ||
+        cleanedPlayer.goalScoringScore < 0 ||
+        cleanedPlayer.goalScoringScore > 10 ||
+        cleanedPlayer.attackScore < 0 ||
+        cleanedPlayer.attackScore > 10 ||
+        cleanedPlayer.midfieldScore < 0 ||
+        cleanedPlayer.midfieldScore > 10 ||
+        cleanedPlayer.defenseScore < 0 ||
+        cleanedPlayer.defenseScore > 10 ||
+        cleanedPlayer.fitnessScore < 0 ||
+        cleanedPlayer.fitnessScore > 10
+      ) {
+        throw new Error(
+          `Player ${cleanedPlayer.name} has invalid scores (must be between 0 and 10)`
+        )
+      }
+
+      if (!['male', 'female', 'nonBinary'].includes(cleanedPlayer.gender)) {
+        throw new Error(
+          `Player ${cleanedPlayer.name} has invalid gender: ${cleanedPlayer.gender}`
+        )
+      }
+
+      return cleanedPlayer
+    })
+
+    const { teams, totalPlayersPlaying } = balanceTeams(
+      cleanedPlayers,
+      parsedNumTeams
+    )
+    return res.json({ teams, totalPlayersPlaying })
+  } catch (error) {
+    console.error('Error processing request:', error)
+    return res.status(400).json({ error: error.message })
   }
-)
+})
 
 // Route for bulk updating players is playing this week
 protectedRouter.put(
   '/players-bulk-update',
-  [
-    body('isPlayingThisWeek')
-      .isBoolean()
-      .withMessage('isPlayingThisWeek must be a boolean value'),
-  ],
-  async (req, res, next) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
-    }
-
+  express.json(),
+  async (req, res) => {
     try {
-      const { isPlayingThisWeek } = req.body
+      // Extract and validate the data
+      const { isPlayingThisWeek, playerIds } = req.body
+
+      // Validate playerIds
+      if (!Array.isArray(playerIds) || playerIds.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'playerIds must be a non-empty array',
+        })
+      }
+
+      // Ensure all playerIds are strings
+      const sanitizedPlayerIds = playerIds.map(id => String(id))
+
+      // Update the players
       const result = await Player.updateMany(
-        {},
-        { $set: { isPlayingThisWeek: isPlayingThisWeek } }
+        { _id: { $in: sanitizedPlayerIds } },
+        { $set: { isPlayingThisWeek: Boolean(isPlayingThisWeek) } }
       )
 
-      res.status(200).json({
+      res.json({
         success: true,
-        message: 'All players updated successfully',
+        message: 'Players updated successfully',
+        modifiedCount: result.modifiedCount,
       })
     } catch (error) {
       console.error('Error updating players:', error)
-      res.status(500).json({ success: false, error: error.message })
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update players',
+        details: error.message,
+      })
     }
   }
 )
+
+// GET upcoming games
+protectedRouter.get('/upcoming-games', async (req, res) => {
+  res.json(upcomingGamesList)
+})
+
+// GET rsvps for a game
+protectedRouter.get('/rsvps-for-game/:gameId', async (req, res) => {
+  const { gameId } = req.params
+  try {
+    const rsvps = await rsvpsForGame({
+      teamId: process.env.TEAM_ID,
+      gameId,
+    })
+    res.json(rsvps)
+  } catch (error) {
+    console.error('Error fetching RSVPs:', error)
+    res.status(500).json({ error: 'Failed to fetch RSVPs' })
+  }
+})
 
 // Mount the routers
 router.use('/', publicRouter)

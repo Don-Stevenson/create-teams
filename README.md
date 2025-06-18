@@ -32,6 +32,8 @@ PORT=5050
 JWT_SECRET=SECRET
 NEXT_PUBLIC_API_URL=http://localhost:5050
 ORIGIN_URL=http://localhost:3000
+TEAM_ID=
+REFRESH_TOKEN=
 ```
 
 to generate the JWT_SECRET use:

@@ -209,8 +209,6 @@ protectedRouter.delete('/players/:id', async (req, res, next) => {
 // POST balance teams
 protectedRouter.post('/balance-teams', express.json(), async (req, res) => {
   try {
-    console.log('Received request body:', JSON.stringify(req.body, null, 2))
-
     const { numTeams, players } = req.body
 
     // Validate request body
@@ -308,8 +306,6 @@ protectedRouter.post('/balance-teams', express.json(), async (req, res) => {
 
       return cleanedPlayer
     })
-
-    console.log('Cleaned players:', JSON.stringify(cleanedPlayers, null, 2))
 
     const { teams, totalPlayersPlaying } = balanceTeams(
       cleanedPlayers,

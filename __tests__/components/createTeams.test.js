@@ -20,21 +20,13 @@ jest.mock('axios', () => ({
   }),
 }))
 
-// Mock the api module from utils/api
-jest.mock('../../utils/api', () => {
+// Mock the api module from utils/FEapi
+jest.mock('../../utils/FEapi', () => {
   const mockApi = {
     get: jest.fn(),
     post: jest.fn(),
     put: jest.fn(),
     delete: jest.fn(),
-    interceptors: {
-      request: {
-        use: jest.fn(),
-      },
-      response: {
-        use: jest.fn(),
-      },
-    },
   }
   return mockApi
 })

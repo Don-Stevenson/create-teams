@@ -289,6 +289,7 @@ export default function CreateTeams() {
       setIsLoading(true)
       setShowLoadingMessage(true)
 
+      // Minimum duration of 2 seconds for loading message
       const minimumDuration = new Promise(resolve => setTimeout(resolve, 500))
 
       // Get only the players that are marked as playing
@@ -338,8 +339,6 @@ export default function CreateTeams() {
         numTeams: parseInt(numTeams, 10),
         players: cleanPlayers,
       }
-
-      console.log('Request Payload:', JSON.stringify(requestPayload, null, 2))
 
       try {
         // Send the request with explicit content type and data transformation

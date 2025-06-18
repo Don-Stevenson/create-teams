@@ -195,6 +195,127 @@ export default function CreateTeams() {
     return () => clearTimeout(timeoutId)
   }, [selectedGameId, queryRsvpsForGame, rsvpsLoading]) // Removed players.length dependency to prevent infinite loop
 
+  const deselectAllPlayers = async () => {
+    try {
+      // Ensure we have an array of player IDs
+      const playerIds = players.map(player => player._id)
+
+      // Create the payload with explicit types
+      const payload = {
+        isPlayingThisWeek: false,
+        playerIds: playerIds,
+      }
+
+      // Update all players to not playing this week
+      const response = await api.put('/players-bulk-update', payload)
+
+      // Update local state
+      const updatedPlayers = players.map(player => ({
+        ...player,
+        isPlayingThisWeek: false,
+      }))
+      setPlayers(updatedPlayers)
+      setSelectedPlayerCount(0)
+      setSelectAll(false)
+
+      return true
+    } catch (error) {
+      console.error('Failed to deselect all players:', error)
+      if (error.response) {
+        console.error('Error response:', error.response.data)
+      }
+      setError('Failed to deselect all players')
+      return false
+    }
+  }
+
+  const selectPlayers = async playerIds => {
+    try {
+      // Ensure we have an array of player IDs
+      if (!Array.isArray(playerIds)) {
+        console.error('playerIds must be an array:', playerIds)
+        return false
+      }
+
+      // Create the payload with explicit types
+      const payload = {
+        isPlayingThisWeek: true,
+        playerIds: playerIds,
+      }
+
+      // Make the API call
+      await api.put('/players-bulk-update', payload)
+
+      // Update local state
+      const updatedPlayers = players.map(player => ({
+        ...player,
+        isPlayingThisWeek: playerIds.includes(player._id),
+      }))
+      setPlayers(updatedPlayers)
+      setSelectedPlayerCount(playerIds.length)
+      setSelectAll(playerIds.length === players.length)
+
+      return true
+    } catch (error) {
+      console.error('Failed to select players:', error)
+      if (error.response) {
+        console.error('Error response:', error.response.data)
+      }
+      setError('Failed to select players')
+      return false
+    }
+  }
+
+  useEffect(() => {
+    const fetchRsvpsForGame = async () => {
+      if (!selectedGameId) return
+      try {
+        // Ensure player list is open at the start
+        setOpenPlayerList(true)
+        setIsLoadingRsvps(true)
+        const res = await api.get(`/rsvps-for-game/${selectedGameId}`)
+        setRsvpsForGame(res.data)
+
+        // First, deselect all players
+        const deselectionComplete = await deselectAllPlayers()
+        if (!deselectionComplete) {
+          throw new Error('Failed to deselect all players')
+        }
+
+        // Then, select only the players in the RSVP list
+        const rsvpNames = new Set(res.data.map(name => normalizeName(name)))
+
+        // Find all players that should be playing
+        const playersToSelect = players
+          .filter(player => {
+            const normalizedName = normalizeName(player.name)
+            const shouldPlay = rsvpNames.has(normalizedName)
+            return shouldPlay
+          })
+          .map(player => player._id)
+
+        // Select all matching players at once
+        if (playersToSelect.length > 0) {
+          const selectionComplete = await selectPlayers(playersToSelect)
+          if (!selectionComplete) {
+            throw new Error('Failed to select RSVP players')
+          }
+        }
+
+        // Ensure player list stays open at the end
+        setOpenPlayerList(true)
+      } catch (error) {
+        console.error('Failed to fetch RSVPs:', error)
+        setError('Failed to fetch RSVPs for the selected game')
+      } finally {
+        setIsLoadingRsvps(false)
+        // Ensure player list stays open even after loading
+        setOpenPlayerList(true)
+      }
+    }
+    fetchRsvpsForGame()
+  }, [selectedGameId, players.length])
+
   const handleTogglePlayingThisWeek = async playerId => {
     const playerToUpdate = players.find(player => player._id === playerId)
     const newPlayingState = !playerToUpdate.isPlayingThisWeek

@@ -1,33 +1,11 @@
 import { screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
-import Players from '../../src/app/players/page'
-import api from '../../utils/FEapi'
+import Players from '../../pages/players'
+import api from '../../utils/api'
 import PlayerList from '../../src/app/components/PlayerList'
-import { renderWithQuery } from '../utils/test-utils'
 
-// Mock the API axios instance
-jest.mock('../../utils/FEapi', () => ({
-  __esModule: true,
-  default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-  },
-  apiService: {
-    players: {
-      getAll: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    auth: {
-      check: jest.fn(),
-    },
-  },
-}))
-
+jest.mock('../../utils/api')
 jest.mock('../../src/app/components/withAuth', () => {
   return jest.fn(Component => {
     const WithAuthComponent = props => <Component {...props} />

@@ -319,6 +319,10 @@ describe('CreateTeams Component', () => {
       error: null,
     })
 
+    expect(screen.getByText('Total Players Selected: 0')).toBeInTheDocument()
+  })
+
+  it('toggles player selection when clicked', async () => {
     await act(async () => {
       render(<CreateTeams />)
     })

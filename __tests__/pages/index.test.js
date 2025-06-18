@@ -8,6 +8,10 @@ jest.mock('next/navigation', () => ({
   }),
 }))
 
+jest.mock('../../utils/FEapi', () => ({
+  checkAuth: jest.fn(),
+}))
+
 describe('Home Page / balance teams', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -15,12 +19,12 @@ describe('Home Page / balance teams', () => {
 
   it('renders without crashing', () => {
     render(<BalanceTeamsPage />)
-    expect(screen.getByText('Redirecting...')).toBeInTheDocument()
+    expect(screen.getByText('Checking authentication...')).toBeInTheDocument()
   })
 
-  it('shows redirecting message', () => {
+  it('shows checking authentication message', () => {
     render(<BalanceTeamsPage />)
-    expect(screen.getByText('Redirecting...')).toBeInTheDocument()
+    expect(screen.getByText('Checking authentication...')).toBeInTheDocument()
   })
 
   it('applies the correct styling classes', () => {

@@ -13,21 +13,11 @@ export default function ClientLayout({ children }) {
 
   useEffect(() => {
     const verifyAuth = async () => {
-      // Don't check auth on login page
-      if (pathname === '/login') {
-        setIsAuthenticated(false)
-        setIsLoading(false)
-        return
-      }
-
       try {
         const isAuth = await checkAuth()
         setIsAuthenticated(isAuth)
       } catch (error) {
-        // Don't log 401 errors as they're expected when not authenticated
-        if (error.response?.status !== 401) {
-          console.error('Auth check failed:', error)
-        }
+        console.error('Auth check failed:', error)
         setIsAuthenticated(false)
       } finally {
         setIsLoading(false)

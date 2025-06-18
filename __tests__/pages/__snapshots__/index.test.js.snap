@@ -8,7 +8,7 @@ exports[`Home Page / balance teams matches snapshot 1`] = `
     <div
       class="text-xl"
     >
-      Redirecting...
+      Checking authentication...
     </div>
   </div>
 </div>

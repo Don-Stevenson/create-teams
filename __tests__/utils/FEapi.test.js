@@ -24,7 +24,12 @@ import api, { login, logout, checkAuth } from '../../utils/FEapi'
 // --- BEGIN: Real response interceptor logic from FEapi.js ---
 const realResponseInterceptor = async error => {
   const originalRequest = error.config
-  if (error.response?.status === 401 && !originalRequest._retry) {
+  // Handle 401 Unauthorized errors, but don't retry auth/check calls
+  if (
+    error.response?.status === 401 &&
+    !originalRequest._retry &&
+    !originalRequest.url?.includes('/auth/check')
+  ) {
     originalRequest._retry = true
     try {
       const authCheck = await api.get('/auth/check')
@@ -32,7 +37,7 @@ const realResponseInterceptor = async error => {
         return api(originalRequest)
       }
     } catch (authError) {
-      window.location.href = '/login'
+      // Don't redirect for auth/check failures, let the calling code handle it
       return Promise.reject(authError)
     }
   }
@@ -99,29 +104,17 @@ describe('API Utils', () => {
   })
 
   describe('API Interceptors', () => {
-    it('should handle 401 errors and redirect to login', async () => {
+    it('should not retry auth/check calls to prevent infinite loops', async () => {
       const mockInstance = axios.mockInstance
-      // Mock window.location
-      const originalLocation = window.location
-      delete window.location
-      window.location = { href: '' }
-
-      // Mock the auth check to fail
-      mockInstance.get.mockRejectedValueOnce({
-        response: { status: 401 },
-        config: { _retry: false },
-      })
 
       const error = {
         response: { status: 401 },
-        config: { _retry: false },
+        config: { _retry: false, url: '/api/auth/check' },
       }
 
-      await expect(realResponseInterceptor(error)).rejects.toBeDefined()
-      expect(window.location.href).toBe('/login')
-
-      // Restore window.location
-      window.location = originalLocation
+      await expect(realResponseInterceptor(error)).rejects.toEqual(error)
+      // Should not call auth/check again
+      expect(mockInstance.get).not.toHaveBeenCalled()
     })
 
     it('should retry request after successful auth check', async () => {
@@ -133,7 +126,7 @@ describe('API Utils', () => {
 
       const error = {
         response: { status: 401 },
-        config: { _retry: false },
+        config: { _retry: false, url: '/api/some-other-endpoint' },
       }
 
       const result = await realResponseInterceptor(error)
@@ -143,10 +136,27 @@ describe('API Utils', () => {
     it('should not retry if already retried', async () => {
       const error = {
         response: { status: 401 },
-        config: { _retry: true },
+        config: { _retry: true, url: '/api/some-other-endpoint' },
       }
 
       await expect(realResponseInterceptor(error)).rejects.toEqual(error)
+    })
+
+    it('should handle auth/check failures without redirecting', async () => {
+      const mockInstance = axios.mockInstance
+      // Mock auth check to fail
+      mockInstance.get.mockRejectedValueOnce({
+        response: { status: 401 },
+        config: { _retry: false },
+      })
+
+      const error = {
+        response: { status: 401 },
+        config: { _retry: false, url: '/api/some-other-endpoint' },
+      }
+
+      await expect(realResponseInterceptor(error)).rejects.toBeDefined()
+      // Should not redirect automatically, let calling code handle it
     })
   })
 })

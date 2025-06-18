@@ -3,21 +3,12 @@
 exports[`Home Page / balance teams matches snapshot 1`] = `
 <div>
   <div
-    data-testid="mock-layout"
+    class="flex items-center justify-center min-h-screen"
   >
     <div
-      class="flex-col mx-auto px-4 py-8"
+      class="text-xl"
     >
-      <h1
-        class="text-3xl font-bold mb-8 text-loonsRed print:hidden"
-      >
-        Create Teams
-      </h1>
-      <div
-        data-testid="mock-create-teams"
-      >
-        CreateTeams Component
-      </div>
+      Redirecting...
     </div>
   </div>
 </div>

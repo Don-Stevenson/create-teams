@@ -8,6 +8,28 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
+// Mock Next.js app directory components
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    refresh: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}))
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: props => {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img {...props} />
+  },
+}))
+
 // Suppress only act() warnings during tests
 const originalError = console.error
 beforeAll(() => {

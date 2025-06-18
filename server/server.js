@@ -35,19 +35,23 @@ app.use(
 const allowedOrigins = [
   'http://localhost:3000', // local dev
   'https://create-teams.vercel.app', // Vercel prod
+  // Allow all Vercel preview deploys for this project:
+  /^https:\\/\\/create-teams-git-.*\\.vercel\\.app$/,
 ]
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps, curl, etc.)
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          'The CORS policy for this site does not allow access from the specified Origin.'
-        return callback(new Error(msg), false)
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.some(o =>
+          typeof o === 'string' ? o === origin : o.test(origin)
+        )
+      ) {
+        return callback(null, true);
       }
-      return callback(null, true)
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     },
     credentials: true,
   })

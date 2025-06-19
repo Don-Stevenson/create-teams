@@ -8,6 +8,17 @@ import validate from '../middleware/validate.js'
 import User from '../models/User.js'
 import auth from '../middleware/auth.js'
 import { upcomingGamesList, rsvpsForGame } from '../utils/getUpcomingGames.js'
+import {
+  addToBlacklist,
+  isBlacklisted,
+  getBlacklist,
+} from '../utils/tokenBlacklist.js'
+import {
+  createSession,
+  invalidateSession,
+  isSessionValid,
+  getAllSessions,
+} from '../utils/sessionStore.js'
 
 const router = express.Router()
 
@@ -53,11 +64,16 @@ publicRouter.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
+
+    // Create session
+    createSession(user._id, token)
+
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: false,
+      sameSite: 'lax',
       maxAge: 3600000,
+      path: '/',
     })
     res.status(200).json({ success: true })
   } catch (error) {
@@ -66,9 +82,108 @@ publicRouter.post('/login', async (req, res) => {
   }
 })
 
+// Test endpoint to force clear all auth state
+publicRouter.post('/force-clear-auth', (req, res) => {
+  // Clear the token from cookies
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: '/',
+  })
+
+  // Force clear all sessions and blacklist (for testing)
+  const currentToken = req.cookies?.token
+  if (currentToken) {
+    addToBlacklist(currentToken)
+    invalidateSession(currentToken)
+  }
+
+  res.json({ success: true, message: 'All auth state cleared' })
+})
+
+// Debug endpoint to see blacklist and session state
+publicRouter.get('/debug-auth-state', (req, res) => {
+  const token = req.cookies?.token
+
+  if (token) {
+    const blacklisted = isBlacklisted(token)
+    const sessionValid = isSessionValid(token)
+
+    res.json({
+      hasToken: true,
+      tokenPreview: token.substring(0, 20) + '...',
+      blacklisted,
+      sessionValid,
+      blacklistSize: getBlacklist().size,
+      activeSessionsCount: getAllSessions().length,
+    })
+  } else {
+    res.json({
+      hasToken: false,
+      blacklistSize: getBlacklist().size,
+      activeSessionsCount: getAllSessions().length,
+    })
+  }
+})
+
+// Test endpoint to check auth state
+publicRouter.get('/test-auth', (req, res) => {
+  if (req.cookies?.token) {
+    const blacklisted = isBlacklisted(req.cookies.token)
+    const sessionValid = isSessionValid(req.cookies.token)
+
+    try {
+      const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
+      res.json({
+        hasToken: true,
+        blacklisted,
+        sessionValid,
+        valid: true,
+        userId: decoded.userId,
+      })
+    } catch (error) {
+      res.json({
+        hasToken: true,
+        blacklisted,
+        sessionValid,
+        valid: false,
+        error: error.message,
+      })
+    }
+  } else {
+    res.json({ hasToken: false })
+  }
+})
+
+// Test endpoint to manually clear cookies
+publicRouter.get('/clear-cookies', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: '/',
+  })
+
+  res.status(200).json({ success: true, message: 'Cookies cleared' })
+})
+
 // Logout route
 publicRouter.post('/logout', (req, res) => {
-  res.clearCookie('token')
+  // Add current token to blacklist
+  const currentToken = req.cookies?.token
+  if (currentToken) {
+    addToBlacklist(currentToken)
+    invalidateSession(currentToken)
+  }
+
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: '/',
+  })
+
   res.status(200).json({ success: true })
 })
 

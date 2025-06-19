@@ -98,8 +98,16 @@ describe('API Utils', () => {
       const mockResponse = { data: { success: true } }
       mockInstance.get.mockResolvedValue(mockResponse)
       const result = await checkAuth()
-      expect(result).toEqual({ success: true })
+      expect(result).toBe(true)
       expect(mockInstance.get).toHaveBeenCalledWith('/auth/check')
+    })
+
+    it('should handle auth check failure', async () => {
+      const mockInstance = axios.mockInstance
+      const error = { response: { status: 401 } }
+      mockInstance.get.mockRejectedValue(error)
+      const result = await checkAuth()
+      expect(result).toBe(false)
     })
   })
 

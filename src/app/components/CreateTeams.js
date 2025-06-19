@@ -450,7 +450,7 @@ export default function CreateTeams() {
                           >
                             {player}
                             {!playerExists && (
-                              <span className=" text-loonsRed text-xs ml-2">
+                              <span className=" text-loonsRed text-[0.6rem] ml-2">
                                 * Not in the player list below
                               </span>
                             )}

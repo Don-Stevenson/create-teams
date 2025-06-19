@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import Layout from '../src/app/components/Layout.js'
-import PlayerList from '../src/app/components/PlayerList'
+'use client'
 
-import EditPlayerModal from '../src/app/components/EditPlayerModal.js'
-import api from '../utils/FEapi.js'
-import withAuth from '@/app/components/withAuth.js'
-import DeleteConfirmationModal from '@/app/components/DeleteConfirmationModal.js'
-import AddPlayerModal from '@/app/components/AddPlayerModal.js'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import PlayerList from '../components/PlayerList.js'
+import EditPlayerModal from '../components/EditPlayerModal.js'
+import api from '../../../utils/FEapi.js'
+import withAuth from '../components/withAuth.js'
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal.js'
+import AddPlayerModal from '../components/AddPlayerModal.js'
+import Layout from '../components/Layout.js'
 
 function Players() {
   const [players, setPlayers] = useState([])
@@ -222,7 +223,7 @@ function Players() {
   )
 
   return (
-    <Layout>
+    <div>
       <div className="flex-col px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-loonsDarkBrown">
           Manage Players
@@ -283,7 +284,7 @@ function Players() {
         onConfirm={confirmDelete}
         playerName={deleteState.playerToDelete?.name}
       />
-    </Layout>
+    </div>
   )
 }
 

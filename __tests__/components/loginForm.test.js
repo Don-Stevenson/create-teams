@@ -6,10 +6,11 @@ import {
   createEvent,
 } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import LoginForm from '../../src/app/components/LoginForm'
+import { login } from '../../utils/FEapi'
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }))
 
@@ -25,12 +26,15 @@ jest.mock('next/image', () => ({
   default: props => <img {...props} />,
 }))
 
-jest.mock('../../config', () => 'http://test-api')
+jest.mock('../../utils/FEapi', () => ({
+  login: jest.fn(),
+}))
 
 const mockError = jest.spyOn(console, 'error').mockImplementation(() => {})
 
 describe('LoginForm', () => {
   const mockPush = jest.fn()
+  const mockRefresh = jest.fn()
   const originalConsoleError = console.error
   let mockError
 
@@ -41,9 +45,8 @@ describe('LoginForm', () => {
 
     useRouter.mockImplementation(() => ({
       push: mockPush,
+      refresh: mockRefresh,
     }))
-
-    global.fetch = jest.fn()
   })
 
   afterEach(() => {
@@ -78,14 +81,9 @@ describe('LoginForm', () => {
   })
 
   it('handles successful login correctly', async () => {
-    render(<LoginForm />)
+    login.mockResolvedValueOnce({ success: true })
 
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true }),
-      })
-    )
+    render(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -96,22 +94,8 @@ describe('LoginForm', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        'http://test-api/api/login',
-        expect.objectContaining({
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: 'testuser',
-            password: 'testpass',
-          }),
-          credentials: 'include',
-        })
-      )
-
-      expect(mockPush).toHaveBeenCalledWith('/')
+      expect(login).toHaveBeenCalledWith('testuser', 'testpass')
+      expect(mockPush).toHaveBeenCalledWith('/create-teams')
     })
 
     expect(
@@ -120,14 +104,9 @@ describe('LoginForm', () => {
   })
 
   it('handles failed login correctly', async () => {
-    render(<LoginForm />)
+    login.mockResolvedValueOnce({ success: false })
 
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ message: 'Login failed' }),
-      })
-    )
+    render(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -147,18 +126,23 @@ describe('LoginForm', () => {
   })
 
   it('clears error message when input is focused', async () => {
+    login.mockResolvedValueOnce({ success: false })
+
     render(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
+    const submitButton = screen.getByRole('button', { name: /login/i })
+
+    fireEvent.change(usernameInput, { target: { value: 'testuser' } })
+    fireEvent.change(passwordInput, { target: { value: 'testpass' } })
+    fireEvent.click(submitButton)
 
     await waitFor(() => {
-      fireEvent.submit(screen.getByRole('button', { name: /login/i }))
+      expect(
+        screen.getByText("There's been an error. Please try again")
+      ).toBeInTheDocument()
     })
-
-    expect(
-      screen.getByText("There's been an error. Please try again")
-    ).toBeInTheDocument()
 
     fireEvent.focus(usernameInput)
 
@@ -166,7 +150,13 @@ describe('LoginForm', () => {
       screen.queryByText("There's been an error. Please try again")
     ).not.toBeInTheDocument()
 
-    fireEvent.submit(screen.getByRole('button', { name: /login/i }))
+    fireEvent.click(submitButton)
+    await waitFor(() => {
+      expect(
+        screen.getByText("There's been an error. Please try again")
+      ).toBeInTheDocument()
+    })
+
     fireEvent.focus(passwordInput)
     expect(
       screen.queryByText("There's been an error. Please try again")
@@ -185,10 +175,10 @@ describe('LoginForm', () => {
   })
 
   it('handles network errors correctly', async () => {
-    render(<LoginForm />)
-
     const networkError = new Error('Network error')
-    global.fetch = jest.fn(() => Promise.reject(networkError))
+    login.mockRejectedValueOnce(networkError)
+
+    render(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -197,13 +187,14 @@ describe('LoginForm', () => {
     fireEvent.change(usernameInput, { target: { value: 'testuser' } })
     fireEvent.change(passwordInput, { target: { value: 'wrongpass' } })
 
-    await waitFor(async () => {
-      fireEvent.click(submitButton)
-      expect(mockError).toHaveBeenCalledWith('Login error:', networkError)
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("There's been an error. Please try again")
+      ).toBeInTheDocument()
     })
 
-    expect(
-      screen.getByText(/There's been an error. Please try again/i)
-    ).toBeInTheDocument()
+    expect(mockPush).not.toHaveBeenCalled()
   })
 })

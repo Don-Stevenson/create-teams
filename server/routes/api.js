@@ -85,11 +85,12 @@ publicRouter.post('/login', async (req, res) => {
 
 // Test endpoint to force clear all auth state
 publicRouter.post('/force-clear-auth', (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production'
   // Clear the token from cookies
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   })
 
@@ -159,10 +160,11 @@ publicRouter.get('/test-auth', (req, res) => {
 
 // Test endpoint to manually clear cookies
 publicRouter.get('/clear-cookies', (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production'
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   })
 
@@ -178,10 +180,11 @@ publicRouter.post('/logout', (req, res) => {
     invalidateSession(currentToken)
   }
 
+  const isProduction = process.env.NODE_ENV === 'production'
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   })
 

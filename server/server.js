@@ -37,6 +37,9 @@ const allowedOrigins = [
   'https://create-teams.vercel.app', // Vercel prod
   // Allow all Vercel preview deploys for this project:
   /^https:\/\/create-teams-git-.*\.vercel\.app$/,
+  // Add your actual production domains here
+  /^https:\/\/.*\.vercel\.app$/, // Allow all Vercel domains
+  /^https:\/\/.*\.render\.com$/, // Allow all Render domains
 ]
 
 app.use(

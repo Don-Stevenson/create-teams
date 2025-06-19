@@ -107,15 +107,20 @@ export const logout = async () => {
     logPersistent('Logout successful', response.data)
 
     // Manual cookie clearing as backup
-    document.cookie =
-      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;'
+    const isProduction = process.env.NODE_ENV === 'production'
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    document.cookie =
-      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.localhost;'
-    document.cookie =
-      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:5050;'
-    document.cookie =
-      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:3000;'
+
+    if (!isProduction) {
+      // Local development domains
+      document.cookie =
+        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;'
+      document.cookie =
+        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.localhost;'
+      document.cookie =
+        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:5050;'
+      document.cookie =
+        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:3000;'
+    }
 
     logPersistent('Manual cookie clearing attempted')
 

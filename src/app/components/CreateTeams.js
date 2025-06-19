@@ -435,7 +435,7 @@ export default function CreateTeams() {
           />
           {selectedGameId && (
             <div className="mt-4 items-center justify-center">
-              <h3 className="text-lg font-semibold mb-2 text-loonsRed">
+              <h3 className="text-xl font-bold mb-2 text-loonsRed">
                 Players RSVP'd for this game on Heja
               </h3>
               {isLoadingRsvps ? (

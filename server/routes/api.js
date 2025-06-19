@@ -72,7 +72,7 @@ publicRouter.post('/login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax', // Use 'lax' for both dev and prod - it's more compatible
+      sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-domain in production
       maxAge: 3600000,
       path: '/',
     })

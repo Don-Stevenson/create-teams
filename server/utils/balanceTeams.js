@@ -1,3 +1,33 @@
+// Add weights at the top of the file
+const WEIGHTS = {
+  gameKnowledge: 0.2,
+  goalScoring: 0.2,
+  attack: 0.135,
+  midfield: 0.133,
+  defense: 0.133,
+  fitness: 0.1,
+}
+
+// Add randomization to prevent identical team formations
+const fudge = score => score + (Math.random() - 0.5) * 1.4
+
+// Helper function to calculate weighted player score
+const calculatePlayerScore = player => {
+  return (
+    player.gameKnowledgeScore * WEIGHTS.gameKnowledge +
+    player.goalScoringScore * WEIGHTS.goalScoring +
+    player.attackScore * WEIGHTS.attack +
+    player.midfieldScore * WEIGHTS.midfield +
+    player.defenseScore * WEIGHTS.defense +
+    player.fitnessScore * WEIGHTS.fitness
+  )
+}
+
+// Helper function to calculate fudged player score for sorting
+const calculateFudgedPlayerScore = player => {
+  return fudge(calculatePlayerScore(player))
+}
+
 function balanceTeams(players, numTeams) {
   // Validate input
   if (!players || !Array.isArray(players)) {
@@ -89,25 +119,6 @@ function balanceTeams(players, numTeams) {
     throw new Error('No valid players provided')
   }
 
-  // Sort players by total score
-  const sortedPlayers = validPlayers.sort((a, b) => {
-    const aTotal =
-      a.gameKnowledgeScore +
-      a.goalScoringScore +
-      a.attackScore +
-      a.midfieldScore +
-      a.defenseScore +
-      a.fitnessScore
-    const bTotal =
-      b.gameKnowledgeScore +
-      b.goalScoringScore +
-      b.attackScore +
-      b.midfieldScore +
-      b.defenseScore +
-      b.fitnessScore
-    return bTotal - aTotal
-  })
-
   // Initialize teams
   const teams = Array.from({ length: numTeams }, () => ({
     players: [],
@@ -125,22 +136,41 @@ function balanceTeams(players, numTeams) {
     },
   }))
 
-  // Distribute players to teams
-  sortedPlayers.forEach(player => {
-    // Find the team with the lowest total score
-    const targetTeam = teams.reduce((min, team) =>
+  // Separate players by gender to distribute women and non-binary first
+  const femaleAndNonBinaryPlayers = validPlayers.filter(player =>
+    ['female', 'nonBinary'].includes(player.gender)
+  )
+  const malePlayers = validPlayers.filter(player => player.gender === 'male')
+
+  // Sort each group by fudged total score in descending order
+  femaleAndNonBinaryPlayers.sort(
+    (a, b) => calculateFudgedPlayerScore(b) - calculateFudgedPlayerScore(a)
+  )
+  malePlayers.sort(
+    (a, b) => calculateFudgedPlayerScore(b) - calculateFudgedPlayerScore(a)
+  )
+
+  // Combine lists so female and non-binary players are added first
+  const sortedPlayers = [...femaleAndNonBinaryPlayers, ...malePlayers]
+
+  // Distribute players to teams with improved balancing
+  for (let i = 0; i < sortedPlayers.length; i++) {
+    const player = sortedPlayers[i]
+
+    // Find teams with the minimum number of players
+    const eligibleTeams = teams.filter(
+      team =>
+        team.players.length === Math.min(...teams.map(t => t.players.length))
+    )
+
+    // Among eligible teams, find the one with the lowest total score
+    const targetTeam = eligibleTeams.reduce((min, team) =>
       team.totalScore < min.totalScore ? team : min
     )
 
-    // Add player to the team
+    // Add player to the team (use actual score, not fudged score for team totals)
     targetTeam.players.push(player)
-    targetTeam.totalScore +=
-      player.gameKnowledgeScore +
-      player.goalScoringScore +
-      player.attackScore +
-      player.midfieldScore +
-      player.defenseScore +
-      player.fitnessScore
+    targetTeam.totalScore += calculatePlayerScore(player)
     targetTeam.totalGameKnowledgeScore += player.gameKnowledgeScore
     targetTeam.totalGoalScoringScore += player.goalScoringScore
     targetTeam.totalAttackScore += player.attackScore
@@ -148,7 +178,7 @@ function balanceTeams(players, numTeams) {
     targetTeam.totalDefenseScore += player.defenseScore
     targetTeam.fitnessScore += player.fitnessScore
     targetTeam.genderCount[player.gender]++
-  })
+  }
 
   // Calculate final team stats
   const finalTeams = teams.map(team => ({

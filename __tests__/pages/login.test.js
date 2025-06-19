@@ -29,8 +29,16 @@ describe('Login Page', () => {
     expect(LoginForm).toHaveBeenCalledTimes(1)
   })
 
-  it('matches snapshot', () => {
-    const { container } = render(<Login />)
-    expect(container).toMatchSnapshot()
+  it('passes correct props to LoginForm', () => {
+    render(<Login />)
+    expect(LoginForm).toHaveBeenCalledWith({}, {})
+  })
+
+  it('handles component re-renders correctly', () => {
+    const { rerender } = render(<Login />)
+    expect(LoginForm).toHaveBeenCalledTimes(1)
+
+    rerender(<Login />)
+    expect(LoginForm).toHaveBeenCalledTimes(2)
   })
 })

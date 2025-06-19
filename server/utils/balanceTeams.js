@@ -1,3 +1,25 @@
+// Add weights at the top of the file
+const WEIGHTS = {
+  gameKnowledge: 0.2,
+  goalScoring: 0.2,
+  attack: 0.135,
+  midfield: 0.133,
+  defense: 0.133,
+  fitness: 0.1,
+}
+
+// Helper function to calculate weighted player score
+const calculatePlayerScore = player => {
+  return (
+    player.gameKnowledgeScore * WEIGHTS.gameKnowledge +
+    player.goalScoringScore * WEIGHTS.goalScoring +
+    player.attackScore * WEIGHTS.attack +
+    player.midfieldScore * WEIGHTS.midfield +
+    player.defenseScore * WEIGHTS.defense +
+    player.fitnessScore * WEIGHTS.fitness
+  )
+}
+
 function balanceTeams(players, numTeams) {
   // Validate input
   if (!players || !Array.isArray(players)) {
@@ -91,20 +113,8 @@ function balanceTeams(players, numTeams) {
 
   // Sort players by total score
   const sortedPlayers = validPlayers.sort((a, b) => {
-    const aTotal =
-      a.gameKnowledgeScore +
-      a.goalScoringScore +
-      a.attackScore +
-      a.midfieldScore +
-      a.defenseScore +
-      a.fitnessScore
-    const bTotal =
-      b.gameKnowledgeScore +
-      b.goalScoringScore +
-      b.attackScore +
-      b.midfieldScore +
-      b.defenseScore +
-      b.fitnessScore
+    const aTotal = calculatePlayerScore(a)
+    const bTotal = calculatePlayerScore(b)
     return bTotal - aTotal
   })
 
@@ -134,13 +144,7 @@ function balanceTeams(players, numTeams) {
 
     // Add player to the team
     targetTeam.players.push(player)
-    targetTeam.totalScore +=
-      player.gameKnowledgeScore +
-      player.goalScoringScore +
-      player.attackScore +
-      player.midfieldScore +
-      player.defenseScore +
-      player.fitnessScore
+    targetTeam.totalScore += calculatePlayerScore(player)
     targetTeam.totalGameKnowledgeScore += player.gameKnowledgeScore
     targetTeam.totalGoalScoringScore += player.goalScoringScore
     targetTeam.totalAttackScore += player.attackScore

@@ -198,6 +198,30 @@ publicRouter.get('/auth/check', auth, (req, res) => {
     .json({ success: true, message: 'Authenticated', userId: req.userId })
 })
 
+// Debug endpoint to see cookies and headers
+publicRouter.get('/debug-cookies', (req, res) => {
+  const cookieHeader = req.headers.cookie
+  const allCookies = req.cookies
+  const token = req.cookies?.token
+
+  console.log('Debug cookies request:')
+  console.log('Cookie header:', cookieHeader)
+  console.log('Parsed cookies:', allCookies)
+  console.log('Token cookie:', token)
+
+  res.json({
+    cookieHeader,
+    allCookies,
+    hasToken: !!token,
+    tokenPreview: token ? token.substring(0, 20) + '...' : null,
+    headers: {
+      origin: req.headers.origin,
+      userAgent: req.headers['user-agent'],
+      referer: req.headers.referer,
+    },
+  })
+})
+
 // Protected routes (authentication required)
 const protectedRouter = express.Router()
 protectedRouter.use(auth)

@@ -63,6 +63,25 @@ export default function DebugPage() {
           >
             Check Backend Status
           </button>
+          <button
+            onClick={async () => {
+              try {
+                const response = await fetch(
+                  'https://loons-team-balancer.onrender.com/api/debug-cookies',
+                  {
+                    credentials: 'include',
+                  }
+                )
+                const data = await response.json()
+                setBackendStatus(JSON.stringify(data, null, 2))
+              } catch (error) {
+                setBackendStatus(`Error: ${error.message}`)
+              }
+            }}
+            className="bg-purple-500 text-white px-4 py-2 rounded"
+          >
+            Check Cookies
+          </button>
           {backendStatus && (
             <pre className="bg-gray-100 p-2 mt-2 text-sm overflow-auto">
               {backendStatus}

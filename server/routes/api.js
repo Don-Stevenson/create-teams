@@ -68,10 +68,11 @@ publicRouter.post('/login', async (req, res) => {
     // Create session
     createSession(user._id, token)
 
+    const isProduction = process.env.NODE_ENV === 'production'
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isProduction,
+      sameSite: 'lax', // Use 'lax' for both dev and prod - it's more compatible
       maxAge: 3600000,
       path: '/',
     })
@@ -88,7 +89,7 @@ publicRouter.post('/force-clear-auth', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',
     path: '/',
   })
 
@@ -161,7 +162,7 @@ publicRouter.get('/clear-cookies', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',
     path: '/',
   })
 
@@ -180,7 +181,7 @@ publicRouter.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',
     path: '/',
   })
 

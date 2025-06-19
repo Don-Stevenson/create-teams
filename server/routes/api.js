@@ -72,7 +72,7 @@ publicRouter.post('/login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax', // Use 'lax' for both dev and prod - it's more compatible
+      sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-domain in production
       maxAge: 3600000,
       path: '/',
     })
@@ -105,29 +105,29 @@ publicRouter.post('/force-clear-auth', (req, res) => {
 })
 
 // Debug endpoint to see blacklist and session state
-publicRouter.get('/debug-auth-state', (req, res) => {
-  const token = req.cookies?.token
+// publicRouter.get('/debug-auth-state', (req, res) => {
+//   const token = req.cookies?.token
 
-  if (token) {
-    const blacklisted = isBlacklisted(token)
-    const sessionValid = isSessionValid(token)
+//   if (token) {
+//     const blacklisted = isBlacklisted(token)
+//     const sessionValid = isSessionValid(token)
 
-    res.json({
-      hasToken: true,
-      tokenPreview: token.substring(0, 20) + '...',
-      blacklisted,
-      sessionValid,
-      blacklistSize: getBlacklist().size,
-      activeSessionsCount: getAllSessions().length,
-    })
-  } else {
-    res.json({
-      hasToken: false,
-      blacklistSize: getBlacklist().size,
-      activeSessionsCount: getAllSessions().length,
-    })
-  }
-})
+//     res.json({
+//       hasToken: true,
+//       tokenPreview: token.substring(0, 20) + '...',
+//       blacklisted,
+//       sessionValid,
+//       blacklistSize: getBlacklist().size,
+//       activeSessionsCount: getAllSessions().length,
+//     })
+//   } else {
+//     res.json({
+//       hasToken: false,
+//       blacklistSize: getBlacklist().size,
+//       activeSessionsCount: getAllSessions().length,
+//     })
+//   }
+// })
 
 // Test endpoint to check auth state
 publicRouter.get('/test-auth', (req, res) => {

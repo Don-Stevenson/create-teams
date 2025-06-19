@@ -103,7 +103,27 @@ describe('UpcomingGamesDropDown', () => {
     expect(screen.getByText('Game 2')).toBeInTheDocument()
   })
 
-  it('applies correct styling classes', () => {
+  it('handles empty games list gracefully', () => {
+    render(<UpcomingGamesDropDown upcomingGames={[]} onSelect={mockOnSelect} />)
+
+    const trigger = screen.getByText('Select an upcoming game')
+    expect(trigger).toBeInTheDocument()
+
+    // Should still be able to click without errors
+    fireEvent.click(trigger)
+    expect(mockOnSelect).not.toHaveBeenCalled()
+  })
+
+  it('handles null or undefined props gracefully', () => {
+    render(
+      <UpcomingGamesDropDown upcomingGames={null} onSelect={mockOnSelect} />
+    )
+
+    // Should still render without crashing
+    expect(screen.getByText('Select an upcoming game')).toBeInTheDocument()
+  })
+
+  it('correctly passes event data when games are selected', () => {
     render(
       <UpcomingGamesDropDown
         upcomingGames={mockUpcomingGames}
@@ -111,13 +131,14 @@ describe('UpcomingGamesDropDown', () => {
       />
     )
 
-    const container = screen.getByText('Select an upcoming game').closest('div')
-    expect(container).toHaveClass(
-      'border-[1px]',
-      'border-loonsRed',
-      'rounded-md',
-      'px-3',
-      'py-1'
-    )
+    const trigger = screen.getByText('Select an upcoming game')
+    fireEvent.click(trigger)
+
+    // Select the second game
+    const game2Option = screen.getByText('Game 2')
+    fireEvent.click(game2Option)
+
+    // Should call onSelect with the correct value
+    expect(mockOnSelect).toHaveBeenCalledWith('game2')
   })
 })

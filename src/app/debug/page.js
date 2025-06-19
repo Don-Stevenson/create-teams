@@ -55,7 +55,7 @@ export default function DebugPage() {
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Authentication Debug</h1>
 
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div>
           <button
             onClick={checkBackend}
@@ -141,7 +141,7 @@ export default function DebugPage() {
             {'\n'}Environment: {process.env.NODE_ENV}
           </pre>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

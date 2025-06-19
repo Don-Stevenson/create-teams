@@ -441,7 +441,7 @@ export default function CreateTeams() {
           {selectedGameId && (
             <div className="mt-4 items-center justify-center">
               <h3 className="text-xl font-bold mb-2 text-loonsRed">
-                Players RSVP'd for this game on Heja
+                {rsvpsForGame.length} Players RSVP'd for this game on Heja
               </h3>
               {isLoadingRsvps ? (
                 <p className="text-gray-700 text-center text-xl py-4">
@@ -449,9 +449,6 @@ export default function CreateTeams() {
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
-                  <p className="text-lg font-semibold mb-2">
-                    No of RSVP'd players: {rsvpsForGame.length}{' '}
-                  </p>
                   <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
                     {rsvpsForGame
                       .sort((a, b) => a.localeCompare(b))

@@ -43,7 +43,7 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
   ]
 
   return (
-    <div className="flex justify-between items-center p-3 max-w-[300px] min-w-[8rem] max-h-[6rem] border-2 border-gray-200 rounded hover:border-[#c1d2f1] hover:bg-[#e2e9ef] gap-2">
+    <div className="flex justify-between items-center p-3 max-w-[300px] min-w-[8rem] max-h-[6rem] border-2 border-gray-200 rounded hover:border-[#c1d2f1] hover:bg-[#edf2f8] gap-2">
       <div className="w-2/3 mx-1">
         <div className="text-[0.9rem] mb-1">{player.name}</div>
         <div className="flex justify-between min-w-[147px]">

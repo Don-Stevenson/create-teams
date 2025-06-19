@@ -85,10 +85,11 @@ export default function CreateTeams() {
         })
 
         setPlayers(fetchedPlayers)
-        setSelectAll(false) // Always start with select all as false
-        setSelectedPlayerCount(
-          fetchedPlayers.filter(player => player.isPlayingThisWeek).length
-        )
+        const playingCount = fetchedPlayers.filter(
+          player => player.isPlayingThisWeek
+        ).length
+        setSelectAll(playingCount === fetchedPlayers.length)
+        setSelectedPlayerCount(playingCount)
         setIsLoading(false)
         setShowLoadingMessage(false)
         setInitialLoadComplete(true)
@@ -280,8 +281,12 @@ export default function CreateTeams() {
     setSelectedPlayerCount(newSelectAllState ? players.length : 0)
 
     try {
+      // Get all player IDs
+      const playerIds = players.map(player => player._id)
+
       await api.put('/players-bulk-update', {
-        isPlayingThisWeek: newSelectAllState.toString(),
+        isPlayingThisWeek: newSelectAllState,
+        playerIds: playerIds,
       })
     } catch (error) {
       console.error('Failed to update all players:', error)

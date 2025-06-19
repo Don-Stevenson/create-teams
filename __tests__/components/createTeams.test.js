@@ -234,9 +234,13 @@ describe('CreateTeams Component', () => {
       { timeout: 3000 }
     )
 
-    const selectAllCheckbox = screen.getByText(
-      'Toggle All Players Playing / Not Playing'
-    )
+    const selectAllCheckbox = screen.getByRole('checkbox')
+
+    // Initially all players should be unselected
+    expect(screen.getByText('Total Players Selected: 0')).toBeInTheDocument()
+    expect(selectAllCheckbox.checked).toBe(false)
+
+    // Click to select all players
     await act(async () => {
       fireEvent.click(selectAllCheckbox)
     })
@@ -249,6 +253,134 @@ describe('CreateTeams Component', () => {
       },
       { timeout: 3000 }
     )
+
+    // Verify API was called with correct parameters
+    expect(api.put).toHaveBeenCalledWith('/players-bulk-update', {
+      isPlayingThisWeek: true,
+      playerIds: ['1', '2'],
+    })
+
+    // Checkbox should now be checked
+    expect(selectAllCheckbox.checked).toBe(true)
+  })
+
+  it('handles toggle all functionality - deselect all', async () => {
+    // Start with all players selected by mocking them as playing
+    const playingPlayers = mockPlayers.map(player => ({
+      ...player,
+      isPlayingThisWeek: true,
+    }))
+
+    api.get.mockImplementation(url => {
+      if (url === '/players') {
+        return Promise.resolve({ data: playingPlayers })
+      }
+      if (url === '/upcoming-games') {
+        return Promise.resolve({ data: mockUpcomingGames })
+      }
+      if (url === '/rsvps-for-game/game1') {
+        return Promise.resolve({ data: mockRsvps })
+      }
+      return Promise.reject(new Error('Not found'))
+    })
+
+    await act(async () => {
+      render(<CreateTeams />)
+    })
+
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('player-list')).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
+
+    // Should show all players selected initially
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('Total Players Selected: 2')
+        ).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
+
+    const selectAllCheckbox = screen.getByRole('checkbox')
+    expect(selectAllCheckbox.checked).toBe(true)
+
+    // Click to deselect all players
+    await act(async () => {
+      fireEvent.click(selectAllCheckbox)
+    })
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('Total Players Selected: 0')
+        ).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
+
+    // Verify API was called with correct parameters to deselect all
+    expect(api.put).toHaveBeenCalledWith('/players-bulk-update', {
+      isPlayingThisWeek: false,
+      playerIds: ['1', '2'],
+    })
+
+    // Checkbox should now be unchecked
+    expect(selectAllCheckbox.checked).toBe(false)
+  })
+
+  it('handles select all API failure gracefully', async () => {
+    // Mock API to fail
+    api.put.mockImplementation(url => {
+      if (url === '/players-bulk-update') {
+        return Promise.reject(new Error('API Error'))
+      }
+      return Promise.resolve({ data: { success: true } })
+    })
+
+    await act(async () => {
+      render(<CreateTeams />)
+    })
+
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('player-list')).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
+
+    const selectAllCheckbox = screen.getByRole('checkbox')
+
+    // Click to select all players
+    await act(async () => {
+      fireEvent.click(selectAllCheckbox)
+    })
+
+    // Should revert the change on error
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('Total Players Selected: 0')
+        ).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
+
+    // Should show error message
+    await waitFor(
+      () => {
+        expect(
+          screen.getAllByText('Failed to update all players').length
+        ).toBeGreaterThan(0)
+      },
+      { timeout: 3000 }
+    )
+
+    // Checkbox should be reverted to unchecked state
+    expect(selectAllCheckbox.checked).toBe(false)
   })
 
   it('creates balanced teams when button is clicked', async () => {

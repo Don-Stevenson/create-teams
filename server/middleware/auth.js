@@ -1,4 +1,15 @@
 import jwt from 'jsonwebtoken'
+import { isBlacklisted } from '../utils/tokenBlacklist.js'
+import { isSessionValid } from '../utils/sessionStore.js'
+
+// Import the token blacklist from the API routes
+// We'll need to pass this as a parameter or use a different approach
+let tokenBlacklist = new Set()
+
+// Function to set the blacklist (will be called from API routes)
+export const setTokenBlacklist = blacklist => {
+  tokenBlacklist = blacklist
+}
 
 function auth(req, res, next) {
   try {
@@ -16,6 +27,18 @@ function auth(req, res, next) {
 
     if (!token) {
       return res.status(401).json({ message: 'Unauthenticated request' })
+    }
+
+    // Check if token is blacklisted
+    const blacklisted = isBlacklisted(token)
+    if (blacklisted) {
+      return res.status(401).json({ message: 'Token has been invalidated' })
+    }
+
+    // Check if session is valid
+    const sessionValid = isSessionValid(token)
+    if (!sessionValid) {
+      return res.status(401).json({ message: 'Session has been invalidated' })
     }
 
     try {

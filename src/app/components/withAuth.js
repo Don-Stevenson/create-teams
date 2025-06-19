@@ -12,7 +12,7 @@ export default function withAuth(WrappedComponent) {
       const verifyAuth = async () => {
         try {
           const authResult = await checkAuth()
-          if (authResult && authResult.success) {
+          if (authResult) {
             setIsAuthenticated(true)
           } else {
             router.push('/login')

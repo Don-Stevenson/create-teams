@@ -47,8 +47,16 @@ export default function CreateTeams() {
 
   useEffect(() => {
     const fetchUpcomingGames = async () => {
-      const res = await api.get('/upcoming-games')
-      setUpcomingGames(res.data)
+      try {
+        const res = await api.get('/upcoming-games')
+        setUpcomingGames(res.data)
+      } catch (error) {
+        console.error('Failed to fetch upcoming games:', error)
+        // Don't set error state for auth failures, let withAuth handle the redirect
+        if (error.response?.status !== 401) {
+          setError('Failed to fetch upcoming games')
+        }
+      }
     }
     fetchUpcomingGames()
   }, [])
@@ -86,7 +94,10 @@ export default function CreateTeams() {
         setInitialLoadComplete(true)
       } catch (error) {
         console.error('Failed to fetch players:', error)
-        setError('Failed to fetch players')
+        // Don't set error state for auth failures, let withAuth handle the redirect
+        if (error.response?.status !== 401) {
+          setError('Failed to fetch players')
+        }
         setIsLoading(false)
         setShowLoadingMessage(false)
       }
@@ -205,7 +216,10 @@ export default function CreateTeams() {
         setOpenPlayerList(true)
       } catch (error) {
         console.error('Failed to fetch RSVPs:', error)
-        setError('Failed to fetch RSVPs for the selected game')
+        // Don't set error state for auth failures, let withAuth handle the redirect
+        if (error.response?.status !== 401) {
+          setError('Failed to fetch RSVPs for the selected game')
+        }
       } finally {
         setIsLoadingRsvps(false)
         // Ensure player list stays open even after loading
@@ -421,7 +435,7 @@ export default function CreateTeams() {
           />
           {selectedGameId && (
             <div className="mt-4 items-center justify-center">
-              <h3 className="text-lg font-semibold mb-2 text-loonsRed">
+              <h3 className="text-xl font-bold mb-2 text-loonsRed">
                 Players RSVP'd for this game on Heja
               </h3>
               {isLoadingRsvps ? (

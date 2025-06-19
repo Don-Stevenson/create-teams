@@ -37,11 +37,12 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config
 
-    // Handle 401 Unauthorized errors, but don't retry auth/check calls
+    // Handle 401 Unauthorized errors, but don't retry auth/check calls or logout calls
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/check')
+      !originalRequest.url?.includes('/auth/check') &&
+      !originalRequest.url?.includes('/logout')
     ) {
       originalRequest._retry = true
 
@@ -52,21 +53,48 @@ api.interceptors.response.use(
           return api(originalRequest)
         }
       } catch (authError) {
-        // Don't redirect for auth/check failures, let the calling code handle it
-        return Promise.reject(authError)
+        // Auth check failed, user is likely logged out
+        // Just return the original error instead of the auth error
+        console.log('Auth check failed during retry, user likely logged out')
+        return Promise.reject(error)
       }
     }
 
-    console.error('API Error:', error.response)
+    // Only log errors that aren't expected 401s after logout
+    if (
+      !(
+        error.response?.status === 401 &&
+        (originalRequest.url?.includes('/auth/check') ||
+          originalRequest.url?.includes('/logout'))
+      )
+    ) {
+      console.error('API Error:', error.response)
+    }
+
     return Promise.reject(error)
   }
 )
 
+// Helper function to log persistently
+const logPersistent = (message, data = null) => {
+  const timestamp = new Date().toISOString()
+  const logEntry = { timestamp, message, data }
+
+  // Store in localStorage
+  const logs = JSON.parse(localStorage.getItem('authLogs') || '[]')
+  logs.push(logEntry)
+  if (logs.length > 50) logs.shift() // Keep only last 50 entries
+  localStorage.setItem('authLogs', JSON.stringify(logs))
+}
+
 export const login = async (username, password) => {
   try {
+    logPersistent('Login attempt', { username })
     const response = await api.post('/login', { username, password })
+    logPersistent('Login successful', response.data)
     return response.data
   } catch (error) {
+    logPersistent('Login failed', { error: error.message })
     console.error('Login Error:', error)
     throw error
   }
@@ -74,9 +102,26 @@ export const login = async (username, password) => {
 
 export const logout = async () => {
   try {
+    logPersistent('Logout attempt')
     const response = await api.post('/logout')
+    logPersistent('Logout successful', response.data)
+
+    // Manual cookie clearing as backup
+    document.cookie =
+      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;'
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    document.cookie =
+      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.localhost;'
+    document.cookie =
+      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:5050;'
+    document.cookie =
+      'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:3000;'
+
+    logPersistent('Manual cookie clearing attempted')
+
     return response.data
   } catch (error) {
+    logPersistent('Logout failed', { error: error.message })
     console.error('Logout Error:', error)
     throw error
   }
@@ -84,10 +129,72 @@ export const logout = async () => {
 
 export const checkAuth = async () => {
   try {
+    logPersistent('Auth check attempt')
     const response = await api.get('/auth/check')
+    logPersistent('Auth check successful', response.data)
+    return response.data.success
+  } catch (error) {
+    logPersistent('Auth check failed', {
+      status: error.response?.status,
+      data: error.response?.data,
+    })
+    return false
+  }
+}
+
+export const debugAuthState = async () => {
+  try {
+    logPersistent('Debug auth state attempt')
+    const response = await api.get('/debug-auth-state')
+    logPersistent('Debug auth state successful', response.data)
     return response.data
   } catch (error) {
+    logPersistent('Debug auth state failed', {
+      status: error.response?.status,
+      data: error.response?.data,
+    })
     throw error
+  }
+}
+
+export const forceClearAuth = async () => {
+  try {
+    logPersistent('Force clear auth attempt')
+    const response = await api.post('/force-clear-auth')
+    logPersistent('Force clear auth successful', response.data)
+    return response.data
+  } catch (error) {
+    logPersistent('Force clear auth failed', {
+      status: error.response?.status,
+      data: error.response?.data,
+    })
+    throw error
+  }
+}
+
+// Function to get auth logs
+export const getAuthLogs = () => {
+  return JSON.parse(localStorage.getItem('authLogs') || '[]')
+}
+
+// Function to clear auth logs
+export const clearAuthLogs = () => {
+  localStorage.removeItem('authLogs')
+}
+
+// Make auth logs available globally for debugging
+if (typeof window !== 'undefined') {
+  window.clearAuthLogs = clearAuthLogs
+
+  window.forceClearAuth = async () => {
+    try {
+      const result = await forceClearAuth()
+
+      return result
+    } catch (error) {
+      console.error('Force clear auth error:', error)
+      throw error
+    }
   }
 }
 

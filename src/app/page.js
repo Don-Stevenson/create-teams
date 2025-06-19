@@ -30,7 +30,35 @@ export default function Home() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="text-xl">Checking authentication...</div>
+      <div className="text-2xl">
+        Checking authentication
+        <span className="ml-1">
+          <span
+            className="dot-flash"
+            style={{
+              animationDelay: '0s',
+            }}
+          >
+            .
+          </span>
+          <span
+            className="dot-flash"
+            style={{
+              animationDelay: '0.3s',
+            }}
+          >
+            .
+          </span>
+          <span
+            className="dot-flash"
+            style={{
+              animationDelay: '0.6s',
+            }}
+          >
+            .
+          </span>
+        </span>
+      </div>
     </div>
   )
 }

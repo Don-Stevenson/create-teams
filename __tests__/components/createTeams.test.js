@@ -441,9 +441,8 @@ describe('CreateTeams Component', () => {
     await waitFor(
       () => {
         expect(
-          screen.getByText("Players RSVP'd for this game on Heja")
+          screen.getByText("2 Players RSVP'd for this game on Heja")
         ).toBeInTheDocument()
-        expect(screen.getByText("No of RSVP'd players: 2")).toBeInTheDocument()
       },
       { timeout: 3000 }
     )

@@ -449,9 +449,6 @@ export default function CreateTeams() {
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
-                  {/* <p className="text-lg font-semibold mb-2">
-                    No of RSVP'd players: {rsvpsForGame.length}{' '}
-                  </p> */}
                   <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
                     {rsvpsForGame
                       .sort((a, b) => a.localeCompare(b))

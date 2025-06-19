@@ -12,25 +12,45 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const [error, setError] = useState(false)
+  const [errorDetails, setErrorDetails] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async e => {
     e.preventDefault()
     setIsLoading(true)
+    console.log('🔍 Login attempt starting...')
+    console.log('Username:', username)
+    console.log('Password length:', password.length)
+
     try {
+      console.log('🌐 Calling login API...')
       const data = await login(username, password)
+      console.log('✅ Login API response:', data)
+
       if (data.success) {
+        console.log('🎉 Login successful!')
         setError(false)
         router.push('/create-teams')
         router.refresh() // Force a refresh of the page to update authentication state
       } else {
+        console.log('❌ Login failed - data.success is false')
         setError(true)
+        setErrorDetails('Login failed - invalid response')
       }
     } catch (error) {
+      console.error('💥 Login error caught:', error)
+      console.error('Error message:', error.message)
+      console.error('Error response:', error.response?.data)
+      console.error('Error status:', error.response?.status)
       setError(true)
-      console.error('Login error:', error)
+      setErrorDetails(
+        `Error: ${error.message} (Status: ${
+          error.response?.status || 'unknown'
+        })`
+      )
     } finally {
       setIsLoading(false)
+      console.log('🏁 Login attempt finished')
     }
   }
 
@@ -58,7 +78,10 @@ export default function LoginForm() {
             type="text"
             value={username}
             onChange={e => setUsername(e.target.value)}
-            onFocus={() => setError(false)}
+            onFocus={() => {
+              setError(false)
+              setErrorDetails('')
+            }}
             placeholder="Username"
             required
             disabled={isLoading}
@@ -68,7 +91,10 @@ export default function LoginForm() {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            onFocus={() => setError(false)}
+            onFocus={() => {
+              setError(false)
+              setErrorDetails('')
+            }}
             placeholder="Password"
             required
             disabled={isLoading}
@@ -85,8 +111,19 @@ export default function LoginForm() {
           </button>
         </div>
       </div>
-      <div className="flex justify-center text-center items-center text-loonsRed h-10">
-        {error ? "There's been an error. Please try again" : ''}
+      <div className="flex flex-col justify-center text-center items-center text-loonsRed min-h-10">
+        {error ? (
+          <>
+            <div>"There's been an error. Please try again"</div>
+            {errorDetails && (
+              <div className="text-xs mt-1 text-gray-600">
+                Debug: {errorDetails}
+              </div>
+            )}
+          </>
+        ) : (
+          ''
+        )}
       </div>
     </form>
   )

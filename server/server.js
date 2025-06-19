@@ -35,19 +35,24 @@ app.use(
 const allowedOrigins = [
   'http://localhost:3000', // local dev
   'https://create-teams.vercel.app', // Vercel prod
+  // Allow all Vercel preview deploys for this project:
+  /^https:\/\/create-teams-git-.*\.vercel\.app$/,
 ]
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps, curl, etc.)
       if (!origin) return callback(null, true)
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          'The CORS policy for this site does not allow access from the specified Origin.'
-        return callback(new Error(msg), false)
+      if (
+        allowedOrigins.some(o =>
+          typeof o === 'string' ? o === origin : o.test(origin)
+        )
+      ) {
+        return callback(null, true)
       }
-      return callback(null, true)
+      const msg =
+        'The CORS policy for this site does not allow access from the specified Origin.'
+      return callback(new Error(msg), false)
     },
     credentials: true,
   })
@@ -77,12 +82,31 @@ const sanitizeInput = (req, res, next) => {
 
 app.use(sanitizeInput)
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // increase this number
-})
-app.use('/api/', limiter)
+// Rate limiting - TEMPORARILY DISABLED
+// const limiter = rateLimit({
+//   windowMs: 60 * 60 * 1000, // 1 hour
+//   max: 100, // 100 requests per hour
+//   message: 'Too many requests, please try again later.',
+//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+//   // Custom key generator - you can customize this based on your needs
+//   keyGenerator: (req) => {
+//     // Use IP address as default, but you could also use user agent or other identifiers
+//     return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket?.remoteAddress || 'unknown'
+//   },
+//   // Custom handler for when limit is exceeded
+//   handler: (req, res) => {
+//     res.status(429).json({
+//       error: 'Too many requests, please try again later.',
+//       retryAfter: Math.ceil(60 * 60 / 60), // Retry after 1 hour (in minutes)
+//     })
+//   }
+// })
+
+// Store reference to the rate limiter store for debugging
+// const limiterStore = limiter.store
+
+// app.use('/api/', limiter)
 
 // Connect to database
 connectDB()

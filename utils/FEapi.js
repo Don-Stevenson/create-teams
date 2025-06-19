@@ -36,8 +36,12 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config
 
-    // Handle 401 Unauthorized errors
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Handle 401 Unauthorized errors, but don't retry auth/check calls
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/check')
+    ) {
       originalRequest._retry = true
 
       try {
@@ -47,7 +51,7 @@ api.interceptors.response.use(
           return api(originalRequest)
         }
       } catch (authError) {
-        window.location.href = '/login'
+        // Don't redirect for auth/check failures, let the calling code handle it
         return Promise.reject(authError)
       }
     }

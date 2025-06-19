@@ -35,11 +35,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      data-testid="login-form"
-      className="min-h-screen bg-background"
-    >
+    <form onSubmit={handleSubmit} data-testid="login-form">
       <div className="flex flex-col items-center justify-center mt-20 gap-2">
         <Image
           width={100}

@@ -5,3 +5,17 @@
 body {
   @apply bg-gray-100;
 }
+
+@keyframes flash {
+  0%,
+  50% {
+    opacity: 0.3;
+  }
+  25% {
+    opacity: 1;
+  }
+}
+
+.dot-flash {
+  animation: flash 1.5s infinite;
+}

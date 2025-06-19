@@ -1,42 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { checkAuth } from '../../../utils/FEapi'
 import LoonsBadge from '../../../public/TWSC_Badge.webp'
-import Layout from '../components/Layout'
+import withAuth from '../components/withAuth'
 
-export default function AboutPage() {
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
-
-  useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const isAuthenticated = await checkAuth()
-        if (!isAuthenticated) {
-          router.push('/login')
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error)
-        router.push('/login')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    verifyAuth()
-  }, [router])
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading...</div>
-      </div>
-    )
-  }
-
+function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
@@ -160,3 +128,5 @@ export default function AboutPage() {
     </div>
   )
 }
+
+export default withAuth(AboutPage)

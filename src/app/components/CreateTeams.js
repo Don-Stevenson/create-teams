@@ -478,7 +478,7 @@ export default function CreateTeams() {
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
-                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center justify-center">
+                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
                     {rsvpsForGame
                       .sort((a, b) => a.localeCompare(b))
                       .map((player, index) => {

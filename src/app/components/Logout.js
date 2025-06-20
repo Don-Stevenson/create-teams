@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { logout } from '../../../utils/FEapi'
+import { PulseLoader } from 'react-spinners'
 
 export default function Logout() {
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +28,14 @@ export default function Logout() {
         disabled={isLoading}
         className="text-loonsBeige hover:text-white transition-colors disabled:opacity-50"
       >
-        {isLoading ? 'Logging out...' : 'Logout'}
+        {isLoading ? (
+          <p className="flex justify-center items-center gap-2 py-4">
+            Logging out
+            <PulseLoader color="white" size={6} />
+          </p>
+        ) : (
+          'Logout'
+        )}
       </button>
     </div>
   )

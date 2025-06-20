@@ -8,6 +8,7 @@ import withAuth from '../components/withAuth.js'
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal.js'
 import AddPlayerModal from '../components/AddPlayerModal.js'
 import Layout from '../components/Layout.js'
+import { PulseLoader } from 'react-spinners'
 
 function Players() {
   const [players, setPlayers] = useState([])
@@ -261,35 +262,10 @@ function Players() {
             </p>
           </div>
           {showLoadingMessage && players.length === 0 ? (
-            <div className="text-center text-xl py-4">
-              Loading players{' '}
-              <span className="ml-1">
-                <span
-                  className="dot-flash text-2xl"
-                  style={{
-                    animationDelay: '0s',
-                  }}
-                >
-                  .
-                </span>
-                <span
-                  className="dot-flash text-2xl"
-                  style={{
-                    animationDelay: '0.3s',
-                  }}
-                >
-                  .
-                </span>
-                <span
-                  className="dot-flash text-2xl"
-                  style={{
-                    animationDelay: '0.6s',
-                  }}
-                >
-                  .
-                </span>
-              </span>
-            </div>
+            <p className="flex justify-center items-center gap-2 text-gray-700 text-xl py-4">
+              Loading players
+              <PulseLoader color="black" size={6} />
+            </p>
           ) : (
             <PlayerList
               players={sortedPlayers}

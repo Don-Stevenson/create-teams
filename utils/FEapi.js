@@ -4,7 +4,9 @@ import axios from 'axios'
 // Create axios instance
 const api = axios.create({
   baseURL:
-    (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050') + '/api',
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000/api'
+      : '/api', // Use relative URL in production to avoid CORS issues
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -15,6 +17,19 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   config => {
+    // Add cache-busting headers for GET requests in production
+    if (config.method === 'get' && process.env.NODE_ENV === 'production') {
+      config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+      config.headers['Pragma'] = 'no-cache'
+      config.headers['Expires'] = '0'
+
+      // Add timestamp to prevent caching
+      if (!config.params) {
+        config.params = {}
+      }
+      config.params._t = Date.now()
+    }
+
     // Only stringify if data exists and is an object
     if (config.data && typeof config.data === 'object') {
       // Ensure arrays are properly stringified
@@ -139,10 +154,13 @@ export const checkAuth = async () => {
     logPersistent('Auth check successful', response.data)
     return response.data.success
   } catch (error) {
-    logPersistent('Auth check failed', {
-      status: error.response?.status,
-      data: error.response?.data,
-    })
+    // Don't log 401 errors for auth checks as they are expected when user is not authenticated
+    if (error.response?.status !== 401) {
+      logPersistent('Auth check failed', {
+        status: error.response?.status,
+        data: error.response?.data,
+      })
+    }
     return false
   }
 }

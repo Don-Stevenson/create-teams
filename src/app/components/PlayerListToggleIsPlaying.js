@@ -23,7 +23,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
           <div className="text-2xl font-bold text-slate-700 px-2">
             {initial}
           </div>
-          <ul className="grid grid-cols-[repeat(auto-fill,_minmax(15rem,_1fr))] gap-4 w-full p-2 ">
+          <ul className="grid grid-cols-[repeat(auto-fill,_minmax(15rem,_max-content))] gap-4 w-full p-2 ">
             {playersByInitial[initial].map(player => (
               <li
                 key={player._id}

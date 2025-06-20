@@ -478,7 +478,7 @@ export default function CreateTeams() {
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
-                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center justify-center">
+                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
                     {rsvpsForGame
                       .sort((a, b) => a.localeCompare(b))
                       .map((player, index) => {
@@ -511,7 +511,7 @@ export default function CreateTeams() {
                         p => normalizeName(p.name) === normalizeName(player)
                       )
                   ) && (
-                    <div className="text-red-600 text-xs max-w-sm mt-2">
+                    <div className="text-red-600 text-xs max-w-sm mt-5">
                       * please double check the player name spelling; the
                       spelling in Heja and in this application must match.
                       Alternately, player(s) may need to be added to the loons

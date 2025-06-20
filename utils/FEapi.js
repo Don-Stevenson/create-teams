@@ -142,10 +142,13 @@ export const checkAuth = async () => {
     logPersistent('Auth check successful', response.data)
     return response.data.success
   } catch (error) {
-    logPersistent('Auth check failed', {
-      status: error.response?.status,
-      data: error.response?.data,
-    })
+    // Don't log 401 errors for auth checks as they are expected when user is not authenticated
+    if (error.response?.status !== 401) {
+      logPersistent('Auth check failed', {
+        status: error.response?.status,
+        data: error.response?.data,
+      })
+    }
     return false
   }
 }

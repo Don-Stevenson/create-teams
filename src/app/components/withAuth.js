@@ -9,6 +9,11 @@ export default function withAuth(WrappedComponent) {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [loadingMessage, setLoadingMessage] = useState(() => {
+      // Check if we're in the browser environment
+      if (typeof window === 'undefined') {
+        return 'Loading Create Teams' // Default for SSR
+      }
+
       // Check if server was recently accessed
       const lastAccess = localStorage.getItem('lastServerAccess')
       const now = Date.now()
@@ -26,6 +31,10 @@ export default function withAuth(WrappedComponent) {
           const authResult = await checkAuth()
           if (authResult) {
             setIsAuthenticated(true)
+            // Record successful server access
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('lastServerAccess', Date.now().toString())
+            }
           } else {
             router.push('/login')
           }

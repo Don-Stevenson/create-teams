@@ -65,7 +65,17 @@ export async function GET(request) {
         '../../../lib/utils/getUpcomingGames'
       )
       const games = await getUpcomingGamesList()
-      return NextResponse.json(games)
+
+      // Create response with no-cache headers to prevent browser caching
+      const response = NextResponse.json(games)
+      response.headers.set(
+        'Cache-Control',
+        'no-store, no-cache, must-revalidate, proxy-revalidate'
+      )
+      response.headers.set('Pragma', 'no-cache')
+      response.headers.set('Expires', '0')
+
+      return response
     } catch (gamesError) {
       console.error('Games API error:', gamesError)
       return NextResponse.json({

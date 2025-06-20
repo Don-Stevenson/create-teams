@@ -422,7 +422,10 @@ export default function CreateTeams() {
   }
 
   return (
-    <div className="flex flex-col mx-2">
+    <div className="flex flex-col mx-6">
+      <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown mt-6">
+        Create Teams
+      </h2>
       <div className="flex items-center justify-center mt-4 mb-4 print:hidden">
         <div className="flex-col justify-center items-center">
           <div className="text-lg mb-4">
@@ -440,7 +443,7 @@ export default function CreateTeams() {
           />
           {selectedGameId && (
             <div className="mt-4 items-center justify-center">
-              <h3 className="text-xl font-bold mb-2 text-loonsRed">
+              <h3 className="text-xl font-bold text-loonsRed my-6">
                 {rsvpsForGame.length} Players RSVP'd for this game on Heja
               </h3>
               {isLoadingRsvps ? (
@@ -475,7 +478,7 @@ export default function CreateTeams() {
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
-                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
+                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-5 items-center justify-center">
                     {rsvpsForGame
                       .sort((a, b) => a.localeCompare(b))
                       .map((player, index) => {
@@ -487,7 +490,9 @@ export default function CreateTeams() {
                           <li
                             key={index}
                             className={`text-gray-700 ${
-                              !playerExists ? 'text-loonsRed font-bold' : ''
+                              !playerExists
+                                ? 'text-loonsRed font-bold bg-red-200 rounded-md p-1 max-w-[16.5rem]'
+                                : ''
                             }`}
                           >
                             {player}
@@ -560,7 +565,33 @@ export default function CreateTeams() {
                 </div>
                 {showLoadingMessage && players.length === 0 ? (
                   <div className="text-center text-xl py-4">
-                    Loading players...
+                    Loading players
+                    <span className="ml-1">
+                      <span
+                        className="dot-flash text-2xl"
+                        style={{
+                          animationDelay: '0s',
+                        }}
+                      >
+                        .
+                      </span>
+                      <span
+                        className="dot-flash text-2xl"
+                        style={{
+                          animationDelay: '0.3s',
+                        }}
+                      >
+                        .
+                      </span>
+                      <span
+                        className="dot-flash text-2xl"
+                        style={{
+                          animationDelay: '0.6s',
+                        }}
+                      >
+                        .
+                      </span>
+                    </span>
                   </div>
                 ) : (
                   <PlayerListToggleIsPlaying

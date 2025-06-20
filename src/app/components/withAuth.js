@@ -34,7 +34,7 @@ export default function withAuth(WrappedComponent) {
             Loading Loons Team Balancer
             <span className="ml-1">
               <span
-                className="dot-flash"
+                className="dot-flash text-2xl"
                 style={{
                   animationDelay: '0s',
                 }}
@@ -42,7 +42,7 @@ export default function withAuth(WrappedComponent) {
                 .
               </span>
               <span
-                className="dot-flash"
+                className="dot-flash text-2xl"
                 style={{
                   animationDelay: '0.3s',
                 }}
@@ -50,7 +50,7 @@ export default function withAuth(WrappedComponent) {
                 .
               </span>
               <span
-                className="dot-flash"
+                className="dot-flash text-2xl"
                 style={{
                   animationDelay: '0.6s',
                 }}

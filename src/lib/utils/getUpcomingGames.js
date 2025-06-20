@@ -196,7 +196,7 @@ async function getUpcomingGames() {
     }
 
     const games = await upcomingGames({ teamId })
-    return games
+    return games.slice(0, 5)
   } catch (error) {
     console.error('Error getting upcoming games:', error)
     throw error

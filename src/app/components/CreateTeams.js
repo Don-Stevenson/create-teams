@@ -445,7 +445,33 @@ export default function CreateTeams() {
               </h3>
               {isLoadingRsvps ? (
                 <p className="text-gray-700 text-center text-xl py-4">
-                  Loading RSVPs and updating player list...
+                  Loading RSVPs and updating player list
+                  <span className="ml-1">
+                    <span
+                      className="dot-flash text-2xl"
+                      style={{
+                        animationDelay: '0s',
+                      }}
+                    >
+                      .
+                    </span>
+                    <span
+                      className="dot-flash text-2xl"
+                      style={{
+                        animationDelay: '0.3s',
+                      }}
+                    >
+                      .
+                    </span>
+                    <span
+                      className="dot-flash text-2xl"
+                      style={{
+                        animationDelay: '0.6s',
+                      }}
+                    >
+                      .
+                    </span>
+                  </span>
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">

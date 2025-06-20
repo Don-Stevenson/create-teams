@@ -9,7 +9,7 @@ body {
 @keyframes flash {
   0%,
   50% {
-    opacity: 0.3;
+    opacity: 0.15;
   }
   25% {
     opacity: 1;
@@ -17,5 +17,5 @@ body {
 }
 
 .dot-flash {
-  animation: flash 1.5s infinite;
+  animation: flash 1.8s infinite;
 }

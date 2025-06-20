@@ -490,7 +490,7 @@ export default function CreateTeams() {
                     <div className="text-red-600 text-xs max-w-sm mt-5">
                       * please double check the player name spelling; the
                       spelling in Heja and in this application must match.
-                      Alternately, player(s) may need to be added to the loons
+                      Alternately, this player may need to be added to the loons
                       team balancer.
                     </div>
                   )}
@@ -579,7 +579,14 @@ export default function CreateTeams() {
               onClick={handleBalanceTeams}
               disabled={isLoading}
             >
-              {'Create Balanced Teams'}
+              {isLoading ? (
+                <div className="flex justify-center items-center gap-2 text-loonsBeige">
+                  Creating teams
+                  <PulseLoader color="#C4B098" size={6} />
+                </div>
+              ) : (
+                'Create Balanced Teams'
+              )}
             </button>
           </div>
           {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}

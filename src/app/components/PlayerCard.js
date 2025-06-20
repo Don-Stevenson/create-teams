@@ -43,15 +43,15 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
   ]
 
   return (
-    <div className="flex justify-between items-center p-3 max-w-[300px] min-w-[16rem] max-h-[6rem] border-2 border-gray-200 rounded hover:border-[#c1d2f1] hover:bg-[#edf2f8] gap-2">
-      <div className="w-2/3 mx-1">
-        <div className="text-[0.9rem] mb-1">{player.name}</div>
-        <div className="flex justify-between min-w-[147px]">
+    <div className="flex justify-between items-center p-3 w-full max-w-[17.5rem] min-w-[16rem] max-h-[6rem] border-2 border-gray-200 rounded hover:border-[#c1d2f1] hover:bg-[#edf2f8] gap-2">
+      <div className="flex-1 min-w-0 mx-1">
+        <div className="text-[0.9rem] mb-1 truncate">{player.name}</div>
+        <div className="flex justify-between gap-1">
           {scores.slice(0, 3).map((score, index) => (
             <ScoreItem key={index} label={score.label} value={score.value} />
           ))}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-1">
           {scores.slice(3).map((score, index) => (
             <ScoreItem
               key={index + 3}
@@ -61,7 +61,7 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
           ))}
         </div>
       </div>
-      <div className="w-1/3 flex gap-2 items-center justify-center pt-3.5">
+      <div className="flex gap-1 items-center justify-center pt-3.5 flex-shrink-0">
         <ActionButton
           onClick={() => onEditPlayer(player._id)}
           variant="edit"

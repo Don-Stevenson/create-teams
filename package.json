@@ -6,16 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "server": "node server/server.js",
     "lint": "next lint",
     "test": "npm run test:FE",
     "test:FE": "jest --updateSnapshot",
     "test:FE:watch": "jest --watch --updateSnapshot",
-    "test:FE:coverage": "npm run test:FE -- --coverage --updateSnapshot",
-    "test:BE": "cd server && node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
-    "test:BE:watch": "cd server && node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --detectOpenHandles",
-    "test:BE:coverage": "cd server && node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --detectOpenHandles",
-    "dev:old": "node server/server.js"
+    "test:FE:coverage": "npm run test:FE -- --coverage --updateSnapshot"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.6.1",

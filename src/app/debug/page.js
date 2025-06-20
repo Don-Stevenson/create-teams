@@ -137,7 +137,7 @@ export default function DebugPage() {
           <h3 className="font-bold">Current Environment:</h3>
           <pre className="bg-gray-100 p-2 text-sm">
             API URL:{' '}
-            {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}
+            {'/api'}
             {'\n'}Environment: {process.env.NODE_ENV}
           </pre>
         </div>

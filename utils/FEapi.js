@@ -132,8 +132,6 @@ export const logout = async () => {
       document.cookie =
         'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.localhost;'
       document.cookie =
-        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:5050;'
-      document.cookie =
         'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost:3000;'
     }
 

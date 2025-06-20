@@ -22,17 +22,19 @@ export default function Logout() {
   }
 
   return (
-    <div className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900  font-semibold py-1 px-2 w-full sm:w-auto min-w-[150px] rounded text-center items-center h-[35px] flex justify-center">
+    <div
+      className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900  font-semibold py-1 px-2 w-full sm:w-auto min-w-[150px] rounded text-center items-center h-[35px] flex justify-center hover:cursor-pointer"
+      onClick={handleLogout}
+    >
       <button
-        onClick={handleLogout}
         disabled={isLoading}
         className="text-loonsBeige hover:text-white transition-colors disabled:opacity-50"
       >
         {isLoading ? (
-          <p className="flex justify-center items-center gap-2 py-4">
+          <div className="flex justify-center items-center gap-2 py-4">
             Logging out
             <PulseLoader color="white" size={6} />
-          </p>
+          </div>
         ) : (
           'Logout'
         )}

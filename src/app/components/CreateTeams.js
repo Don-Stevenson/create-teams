@@ -511,7 +511,7 @@ export default function CreateTeams() {
                         p => normalizeName(p.name) === normalizeName(player)
                       )
                   ) && (
-                    <div className="text-red-600 text-xs max-w-sm mt-2">
+                    <div className="text-red-600 text-xs max-w-sm mt-5">
                       * please double check the player name spelling; the
                       spelling in Heja and in this application must match.
                       Alternately, player(s) may need to be added to the loons

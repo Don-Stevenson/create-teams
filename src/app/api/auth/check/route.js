@@ -98,6 +98,14 @@ export async function GET(request) {
         response.headers.set(key, value)
       })
 
+      // Prevent caching of auth check
+      response.headers.set(
+        'Cache-Control',
+        'no-store, no-cache, must-revalidate, proxy-revalidate'
+      )
+      response.headers.set('Pragma', 'no-cache')
+      response.headers.set('Expires', '0')
+
       return response
     } catch (error) {
       if (error.name === 'TokenExpiredError') {

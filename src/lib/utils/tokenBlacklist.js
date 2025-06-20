@@ -6,12 +6,9 @@ export const addToBlacklist = token => {
 }
 
 export const isBlacklisted = token => {
-  // In development, skip blacklist checks since in-memory store gets cleared on hot reload
-  if (process.env.NODE_ENV === 'development') {
-    return false
-  }
-
-  return tokenBlacklist.has(token)
+  // Always return false for now since in-memory blacklist doesn't work reliably in serverless
+  // We're relying on JWT expiration for security instead
+  return false
 }
 
 export const getBlacklist = () => {

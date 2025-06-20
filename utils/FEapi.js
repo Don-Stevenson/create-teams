@@ -17,6 +17,19 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   config => {
+    // Add cache-busting headers for GET requests in production
+    if (config.method === 'get' && process.env.NODE_ENV === 'production') {
+      config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+      config.headers['Pragma'] = 'no-cache'
+      config.headers['Expires'] = '0'
+
+      // Add timestamp to prevent caching
+      if (!config.params) {
+        config.params = {}
+      }
+      config.params._t = Date.now()
+    }
+
     // Only stringify if data exists and is an object
     if (config.data && typeof config.data === 'object') {
       // Ensure arrays are properly stringified

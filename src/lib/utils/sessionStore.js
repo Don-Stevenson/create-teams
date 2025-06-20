@@ -22,22 +22,9 @@ export const invalidateSession = token => {
 }
 
 export const isSessionValid = token => {
-  // In development, skip session validation since in-memory store gets cleared on hot reload
-  if (process.env.NODE_ENV === 'development') {
-    return true
-  }
-
-  const session = sessions.get(token)
-  if (!session) return false
-
-  // Check if session is older than 1 hour
-  const oneHour = 60 * 60 * 1000
-  if (Date.now() - session.createdAt > oneHour) {
-    sessions.delete(token)
-    return false
-  }
-
-  return session.active
+  // Always return true for now since we're relying on JWT validation
+  // In-memory sessions don't work reliably in serverless environments
+  return true
 }
 
 export const getAllSessions = () => {

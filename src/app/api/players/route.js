@@ -58,7 +58,17 @@ export async function GET(request) {
     await connectDB()
 
     const players = await Player.find().select('-__v')
-    return NextResponse.json(players)
+
+    // Create response with no-cache headers to prevent browser caching
+    const response = NextResponse.json(players)
+    response.headers.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    )
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+
+    return response
   } catch (error) {
     console.error('Get players error:', error)
     if (

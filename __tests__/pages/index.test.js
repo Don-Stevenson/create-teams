@@ -25,7 +25,7 @@ describe('Home Page / balance teams', () => {
       render(<BalanceTeamsPage />)
     })
 
-    expect(screen.getByText('Checking authentication...')).toBeInTheDocument()
+    expect(screen.getByText('Checking authentication')).toBeInTheDocument()
   })
 
   it('shows checking authentication message initially', async () => {
@@ -35,7 +35,7 @@ describe('Home Page / balance teams', () => {
       render(<BalanceTeamsPage />)
     })
 
-    expect(screen.getByText('Checking authentication...')).toBeInTheDocument()
+    expect(screen.getByText('Checking authentication')).toBeInTheDocument()
   })
 
   it('calls checkAuth on mount', async () => {

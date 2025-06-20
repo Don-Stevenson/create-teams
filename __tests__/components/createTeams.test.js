@@ -177,7 +177,7 @@ describe('CreateTeams Component', () => {
     await act(async () => {
       render(<CreateTeams />)
     })
-    expect(screen.getByText('Loading players...')).toBeInTheDocument()
+    expect(screen.getByText('Loading players')).toBeInTheDocument()
   })
 
   it('loads and displays players after initial load', async () => {

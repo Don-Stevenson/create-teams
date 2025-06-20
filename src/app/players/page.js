@@ -223,8 +223,8 @@ function Players() {
   )
 
   return (
-    <div>
-      <div className="flex-col px-4 py-8">
+    <div className="mx-6">
+      <div className="flex-col py-8">
         <h1 className="text-3xl font-bold mb-8 text-loonsDarkBrown">
           Manage Players
         </h1>
@@ -261,7 +261,35 @@ function Players() {
             </p>
           </div>
           {showLoadingMessage && players.length === 0 ? (
-            <div className="text-center text-xl py-4">Loading players...</div>
+            <div className="text-center text-xl py-4">
+              Loading players{' '}
+              <span className="ml-1">
+                <span
+                  className="dot-flash text-2xl"
+                  style={{
+                    animationDelay: '0s',
+                  }}
+                >
+                  .
+                </span>
+                <span
+                  className="dot-flash text-2xl"
+                  style={{
+                    animationDelay: '0.3s',
+                  }}
+                >
+                  .
+                </span>
+                <span
+                  className="dot-flash text-2xl"
+                  style={{
+                    animationDelay: '0.6s',
+                  }}
+                >
+                  .
+                </span>
+              </span>
+            </div>
           ) : (
             <PlayerList
               players={sortedPlayers}

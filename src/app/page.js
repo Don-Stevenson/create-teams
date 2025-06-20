@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { checkAuth } from '../../utils/FEapi'
+import { PulseLoader } from 'react-spinners'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
@@ -30,35 +31,10 @@ export default function Home() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="text-2xl">
+      <p className="flex justify-center items-center gap-2 text-gray-700 text-xl">
         Checking authentication
-        <span className="ml-1">
-          <span
-            className="dot-flash text-2xl"
-            style={{
-              animationDelay: '0s',
-            }}
-          >
-            .
-          </span>
-          <span
-            className="dot-flash text-2xl"
-            style={{
-              animationDelay: '0.3s',
-            }}
-          >
-            .
-          </span>
-          <span
-            className="dot-flash text-2xl"
-            style={{
-              animationDelay: '0.6s',
-            }}
-          >
-            .
-          </span>
-        </span>
-      </div>
+        <PulseLoader color="black" size={6} />
+      </p>
     </div>
   )
 }

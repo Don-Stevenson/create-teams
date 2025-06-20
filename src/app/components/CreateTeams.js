@@ -3,6 +3,7 @@ import api from '../../../utils/FEapi'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import Teams from './Teams'
 import UpcomingGamesDropDown from './UpcomingGamesDropDown'
+import { PulseLoader } from 'react-spinners'
 
 export default function CreateTeams() {
   const [numTeams, setNumTeams] = useState(2)
@@ -309,7 +310,7 @@ export default function CreateTeams() {
       setShowLoadingMessage(true)
 
       // Minimum duration of 2 seconds for loading message
-      const minimumDuration = new Promise(resolve => setTimeout(resolve, 500))
+      const minimumDuration = new Promise(resolve => setTimeout(resolve, 2000))
 
       // Get only the players that are marked as playing
       const playingPlayers = players.filter(player => player.isPlayingThisWeek)
@@ -447,34 +448,9 @@ export default function CreateTeams() {
                 {rsvpsForGame.length} Players RSVP'd for this game on Heja
               </h3>
               {isLoadingRsvps ? (
-                <p className="text-gray-700 text-center text-xl py-4">
-                  Loading RSVPs and updating player list
-                  <span className="ml-1">
-                    <span
-                      className="dot-flash text-2xl"
-                      style={{
-                        animationDelay: '0s',
-                      }}
-                    >
-                      .
-                    </span>
-                    <span
-                      className="dot-flash text-2xl"
-                      style={{
-                        animationDelay: '0.3s',
-                      }}
-                    >
-                      .
-                    </span>
-                    <span
-                      className="dot-flash text-2xl"
-                      style={{
-                        animationDelay: '0.6s',
-                      }}
-                    >
-                      .
-                    </span>
-                  </span>
+                <p className="flex justify-start items-center gap-2 text-gray-700 text-xl py-4">
+                  Loading RSVPs and updating player list{' '}
+                  <PulseLoader color="black" size={6} />
                 </p>
               ) : rsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
@@ -564,35 +540,10 @@ export default function CreateTeams() {
                   </label>
                 </div>
                 {showLoadingMessage && players.length === 0 ? (
-                  <div className="text-center text-xl py-4">
+                  <p className="flex justify-center items-center gap-2 text-gray-700 text-xl py-4">
                     Loading players
-                    <span className="ml-1">
-                      <span
-                        className="dot-flash text-2xl"
-                        style={{
-                          animationDelay: '0s',
-                        }}
-                      >
-                        .
-                      </span>
-                      <span
-                        className="dot-flash text-2xl"
-                        style={{
-                          animationDelay: '0.3s',
-                        }}
-                      >
-                        .
-                      </span>
-                      <span
-                        className="dot-flash text-2xl"
-                        style={{
-                          animationDelay: '0.6s',
-                        }}
-                      >
-                        .
-                      </span>
-                    </span>
-                  </div>
+                    <PulseLoader color="black" size={6} />
+                  </p>
                 ) : (
                   <PlayerListToggleIsPlaying
                     players={players}

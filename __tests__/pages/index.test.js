@@ -16,6 +16,17 @@ jest.mock('../../utils/FEapi', () => ({
 describe('Home Page / balance teams', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Mock localStorage to ensure consistent test environment
+    const mockLocalStorage = {
+      getItem: jest.fn(() => null),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+    }
+    Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+      writable: true,
+    })
   })
 
   it('renders without crashing', async () => {
@@ -25,17 +36,17 @@ describe('Home Page / balance teams', () => {
       render(<BalanceTeamsPage />)
     })
 
-    expect(screen.getByText('Checking authentication')).toBeInTheDocument()
+    expect(screen.getByText('Loading Create Teams')).toBeInTheDocument()
   })
 
-  it('shows checking authentication message initially', async () => {
+  it('shows loading message initially', async () => {
     checkAuth.mockResolvedValue(true)
 
     await act(async () => {
       render(<BalanceTeamsPage />)
     })
 
-    expect(screen.getByText('Checking authentication')).toBeInTheDocument()
+    expect(screen.getByText('Loading Create Teams')).toBeInTheDocument()
   })
 
   it('calls checkAuth on mount', async () => {

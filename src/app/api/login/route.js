@@ -4,8 +4,19 @@ import jwt from 'jsonwebtoken'
 import connectDB from '../../../lib/db/connection'
 import User from '../../../lib/models/User'
 import { createSession } from '../../../lib/utils/sessionStore'
+import { corsHeaders } from '../../../lib/utils/cors'
+
+export async function OPTIONS(request) {
+  const origin = request.headers.get('origin')
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders(origin),
+  })
+}
 
 export async function POST(request) {
+  const origin = request.headers.get('origin')
+
   try {
     await connectDB()
 
@@ -13,18 +24,32 @@ export async function POST(request) {
 
     const user = await User.findOne({ username })
     if (!user) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { message: 'Invalid credentials' },
         { status: 401 }
       )
+
+      const headers = corsHeaders(origin)
+      Object.entries(headers).forEach(([key, value]) => {
+        response.headers.set(key, value)
+      })
+
+      return response
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { message: 'Invalid credentials' },
         { status: 401 }
       )
+
+      const headers = corsHeaders(origin)
+      Object.entries(headers).forEach(([key, value]) => {
+        response.headers.set(key, value)
+      })
+
+      return response
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -38,10 +63,16 @@ export async function POST(request) {
 
     const response = NextResponse.json({ success: true })
 
+    // Add CORS headers
+    const headers = corsHeaders(origin)
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: false, // Set to false for localhost development
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 3600000,
       path: '/',
     })
@@ -49,9 +80,16 @@ export async function POST(request) {
     return response
   } catch (error) {
     console.error('Login error:', error)
-    return NextResponse.json(
+    const response = NextResponse.json(
       { success: false, error: error.message },
       { status: 400 }
     )
+
+    const headers = corsHeaders(origin)
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+
+    return response
   }
 }

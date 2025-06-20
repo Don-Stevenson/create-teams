@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { checkAuth } from '../../../utils/FEapi'
+import { PulseLoader } from 'react-spinners'
 
 export default function withAuth(WrappedComponent) {
   return function AuthenticatedComponent(props) {
@@ -30,34 +31,9 @@ export default function withAuth(WrappedComponent) {
     if (isLoading) {
       return (
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-2xl flex items-center">
-            Loading Loons Team Balancer
-            <span className="ml-1">
-              <span
-                className="dot-flash text-2xl"
-                style={{
-                  animationDelay: '0s',
-                }}
-              >
-                .
-              </span>
-              <span
-                className="dot-flash text-2xl"
-                style={{
-                  animationDelay: '0.3s',
-                }}
-              >
-                .
-              </span>
-              <span
-                className="dot-flash text-2xl"
-                style={{
-                  animationDelay: '0.6s',
-                }}
-              >
-                .
-              </span>
-            </span>
+          <div className="flex items-center gap-2 text-gray-700 text-xl py-4">
+            Loading Players
+            <PulseLoader color="black" size={6} />
           </div>
         </div>
       )

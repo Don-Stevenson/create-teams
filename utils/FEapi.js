@@ -4,7 +4,10 @@ import axios from 'axios'
 // Create axios instance
 const api = axios.create({
   baseURL:
-    (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050') + '/api',
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000/api'
+      : (process.env.NEXT_PUBLIC_SITE_URL ||
+          'https://create-teams.vercel.app') + '/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

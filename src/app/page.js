@@ -7,23 +7,21 @@ import { PulseLoader } from 'react-spinners'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
-  const [loadingMessage] = useState(() => {
-    // Check if we're in the browser environment
-    if (typeof window === 'undefined') {
-      return 'Loading Create Teams' // Default for SSR
-    }
+  const [loadingMessage, setLoadingMessage] = useState('Loading Create Teams') // Always start with same message for SSR
+  const router = useRouter()
 
+  // Update loading message after component mounts (client-side only)
+  useEffect(() => {
     // Check if server was recently accessed
     const lastAccess = localStorage.getItem('lastServerAccess')
     const now = Date.now()
     const fiveMinutesAgo = now - 5 * 60 * 1000
 
-    if (!lastAccess || parseInt(lastAccess) < fiveMinutesAgo) {
-      return 'Loading Create Teams' // Likely cold start
+    if (lastAccess && parseInt(lastAccess) >= fiveMinutesAgo) {
+      setLoadingMessage('Checking authentication') // Server probably warm
     }
-    return 'Checking authentication' // Server probably warm
-  })
-  const router = useRouter()
+    // Otherwise keep 'Loading Create Teams' for likely cold start
+  }, [])
 
   useEffect(() => {
     const verifyAuth = async () => {

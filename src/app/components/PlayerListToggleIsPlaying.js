@@ -35,7 +35,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
                 <div className="flex-1 min-w-0">
                   <span
                     className={`block truncate cursor-pointer ${
-                      player.isPlayingThisWeek ? 'text-black' : 'text-gray-400'
+                      player.isPlayingThisWeek ? 'text-black' : 'text-gray-500'
                     }`}
                     title={player.name}
                   >
@@ -51,7 +51,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
                   />
                   <span
                     className={`text-xs whitespace-nowrap ${
-                      player.isPlayingThisWeek ? 'text-black' : 'text-gray-400'
+                      player.isPlayingThisWeek ? 'text-black' : 'text-gray-500'
                     }`}
                   >
                     Playing

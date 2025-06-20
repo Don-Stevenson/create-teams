@@ -262,10 +262,10 @@ function Players() {
             </p>
           </div>
           {showLoadingMessage && players.length === 0 ? (
-            <p className="flex justify-center items-center gap-2 text-gray-700 text-xl py-4">
+            <div className="flex justify-center items-center gap-2 text-gray-700 text-xl py-4">
               Loading players
               <PulseLoader color="black" size={6} />
-            </p>
+            </div>
           ) : (
             <PlayerList
               players={sortedPlayers}

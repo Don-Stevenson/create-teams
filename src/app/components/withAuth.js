@@ -8,6 +8,17 @@ export default function withAuth(WrappedComponent) {
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const [loadingMessage, setLoadingMessage] = useState(() => {
+      // Check if server was recently accessed
+      const lastAccess = localStorage.getItem('lastServerAccess')
+      const now = Date.now()
+      const fiveMinutesAgo = now - 5 * 60 * 1000
+
+      if (!lastAccess || parseInt(lastAccess) < fiveMinutesAgo) {
+        return 'Loading Create Teams' // Likely cold start
+      }
+      return 'Loading' // Server probably warm
+    })
 
     useEffect(() => {
       const verifyAuth = async () => {
@@ -25,6 +36,7 @@ export default function withAuth(WrappedComponent) {
           setIsLoading(false)
         }
       }
+
       verifyAuth()
     }, [router])
 
@@ -32,7 +44,7 @@ export default function withAuth(WrappedComponent) {
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="flex items-center gap-2 text-gray-700 text-xl py-4">
-            Loading Players
+            {loadingMessage}
             <PulseLoader color="black" size={6} />
           </div>
         </div>

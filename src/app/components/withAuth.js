@@ -8,22 +8,23 @@ export default function withAuth(WrappedComponent) {
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const [loadingMessage, setLoadingMessage] = useState(() => {
-      // Check if we're in the browser environment
-      if (typeof window === 'undefined') {
-        return 'Loading Create Teams' // Default for SSR
-      }
+    const [loadingMessage, setLoadingMessage] = useState('Loading Create Teams') // Always start with same message for SSR
+    const [hasMounted, setHasMounted] = useState(false)
+
+    // Update loading message after component mounts (client-side only)
+    useEffect(() => {
+      setHasMounted(true)
 
       // Check if server was recently accessed
       const lastAccess = localStorage.getItem('lastServerAccess')
       const now = Date.now()
       const fiveMinutesAgo = now - 5 * 60 * 1000
 
-      if (!lastAccess || parseInt(lastAccess) < fiveMinutesAgo) {
-        return 'Loading Create Teams' // Likely cold start
+      if (lastAccess && parseInt(lastAccess) >= fiveMinutesAgo) {
+        setLoadingMessage('Loading') // Server probably warm
       }
-      return 'Loading' // Server probably warm
-    })
+      // Otherwise keep 'Loading Create Teams' for likely cold start
+    }, [])
 
     useEffect(() => {
       const verifyAuth = async () => {

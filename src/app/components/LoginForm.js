@@ -58,6 +58,7 @@ export default function LoginForm() {
             placeholder="Username"
             required
             disabled={isLoading}
+            autoComplete="current-username"
             className="border border-gray-300 rounded w-40 h-8 text-center focus:outline-none focus:ring-2 focus:ring-loonsRed disabled:opacity-50"
           />
           <input
@@ -68,6 +69,7 @@ export default function LoginForm() {
             placeholder="Password"
             required
             disabled={isLoading}
+            autoComplete="current-password"
             className="border border-gray-300 rounded w-40 h-8 text-center focus:outline-none focus:ring-2 focus:ring-loonsRed disabled:opacity-50"
           />
         </div>

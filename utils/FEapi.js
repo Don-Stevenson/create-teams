@@ -4,7 +4,10 @@ import axios from 'axios'
 // Create axios instance
 const api = axios.create({
   baseURL:
-    (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050') + '/api',
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000/api'
+      : (process.env.NEXT_PUBLIC_SITE_URL ||
+          'https://create-teams.vercel.app') + '/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -139,10 +142,13 @@ export const checkAuth = async () => {
     logPersistent('Auth check successful', response.data)
     return response.data.success
   } catch (error) {
-    logPersistent('Auth check failed', {
-      status: error.response?.status,
-      data: error.response?.data,
-    })
+    // Don't log 401 errors for auth checks as they are expected when user is not authenticated
+    if (error.response?.status !== 401) {
+      logPersistent('Auth check failed', {
+        status: error.response?.status,
+        data: error.response?.data,
+      })
+    }
     return false
   }
 }

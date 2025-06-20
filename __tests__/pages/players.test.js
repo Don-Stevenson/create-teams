@@ -76,7 +76,7 @@ describe('Players Page', () => {
         render(<Players />)
       })
 
-      expect(screen.getByText('Loading players...')).toBeInTheDocument()
+      expect(screen.getByText('Loading players')).toBeInTheDocument()
     })
 
     it('hides loading message after players are loaded', async () => {
@@ -85,7 +85,7 @@ describe('Players Page', () => {
       })
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+        expect(screen.queryByText('Loading players')).not.toBeInTheDocument()
       })
     })
 
@@ -99,10 +99,10 @@ describe('Players Page', () => {
         render(<Players />)
       })
 
-      expect(screen.getByText('Loading players...')).toBeInTheDocument()
+      expect(screen.getByText('Loading players')).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+        expect(screen.queryByText('Loading players')).not.toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
       })
     })
@@ -118,7 +118,7 @@ describe('Players Page', () => {
       })
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading players...')).not.toBeInTheDocument()
+        expect(screen.queryByText('Loading players')).not.toBeInTheDocument()
       })
 
       expect(consoleSpy).toHaveBeenCalledWith(

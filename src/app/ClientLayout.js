@@ -47,7 +47,9 @@ export default function ClientLayout({ children }) {
         <main className="flex-grow">{children}</main>
         <Footer />
       </div>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <div className="print:hidden">
+        <ReactQueryDevtools initialIsOpen={false} />
+      </div>
     </QueryClientProvider>
   )
 }

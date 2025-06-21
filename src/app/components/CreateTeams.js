@@ -26,6 +26,7 @@ export default function CreateTeams() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedGameId, setSelectedGameId] = useState(null)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+  const [selectedGameInfo, setSelectedGameInfo] = useState(null)
 
   // React Query hooks
   const {
@@ -377,6 +378,7 @@ export default function CreateTeams() {
     const selectedGame = upcomingGames.find(game => game._id === gameId)
     setSelectedDate(new Date(selectedGame.meetdate))
     setSelectedGameId(gameId)
+    setSelectedGameInfo(selectedGame) // Store the full game info for printout
     setProcessedGameId(null) // Reset processed game ID to allow processing of new game
     setBalancedTeams(null)
     setTotalPlayers(0)
@@ -556,6 +558,7 @@ export default function CreateTeams() {
               balancedTeams={balancedTeams}
               setBalancedTeams={setBalancedTeams}
               totalPlayers={totalPlayers}
+              selectedGameInfo={selectedGameInfo}
             />
           )}
         </div>

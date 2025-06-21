@@ -28,9 +28,10 @@ function Players() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isAddPlayerModalOpen, setIsAddPlayerModalOpen] = useState(false)
-  const [playerAdded, setPlayerAdded] = useState(false)
   const [showLoadingMessage, setShowLoadingMessage] = useState(true)
   const [dataLoaded, setDataLoaded] = useState(false)
+
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const [deleteState, setDeleteState] = useState({
     isDeleting: false,
@@ -124,8 +125,7 @@ function Players() {
         })
 
         setIsAddPlayerModalOpen(false)
-        setPlayerAdded(true)
-        setTimeout(() => setPlayerAdded(false), 2500)
+        showSuccessMessage('Player added successfully!')
 
         return formattedPlayer
       }
@@ -158,6 +158,7 @@ function Players() {
     if (deleteState.playerToDelete) {
       try {
         await onDeletePlayer(deleteState.playerToDelete._id)
+        showSuccessMessage('Player deleted successfully!')
       } catch (error) {
         console.error('Delete failed', error)
       } finally {
@@ -201,6 +202,7 @@ function Players() {
       setIsEditModalOpen(false)
       setPlayerToEdit(null)
       await fetchPlayers(true)
+      showSuccessMessage('Player updated successfully!')
     } catch (error) {
       console.error('Failed to update player:', error)
     }
@@ -232,6 +234,23 @@ function Players() {
     })
   }
 
+  const showSuccessMessage = message => {
+    setSuccessMessage(message)
+    setTimeout(() => {
+      setSuccessMessage(null)
+    }, 2500)
+  }
+
+  const SuccessMessage = ({ isVisible, message, marginTop = 'mt-4' }) => (
+    <p
+      className={`italic ${marginTop} h-6 ${
+        isVisible ? 'text-green-600' : 'text-transparent'
+      }`}
+    >
+      {isVisible && message ? message : ''}
+    </p>
+  )
+
   const sortedPlayers = [...players].sort((a, b) =>
     a.name.localeCompare(b.name)
   )
@@ -252,16 +271,13 @@ function Players() {
           <AddPlayerModal
             isOpen={isAddPlayerModalOpen}
             onAddPlayer={addPlayer}
-            playerAdded={playerAdded}
+            playerAdded={!!successMessage}
             onClose={() => setIsAddPlayerModalOpen(false)}
           />
-          <p
-            className={`italic mt-4 ${
-              playerAdded ? 'text-green-600' : 'text-background'
-            }`}
-          >
-            {playerAdded ? 'Player added successfully!' : 'placeholder'}
-          </p>
+          <SuccessMessage
+            isVisible={!!successMessage}
+            message={successMessage}
+          />
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-4 text-black">

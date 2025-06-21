@@ -3,26 +3,16 @@
 Install
 
 ```bash
-npm i --legacy-peer-deps
+npm i
 ```
 
---legacy-peer-deps flag required for pragmatic-dnd-drop library
-
-First, run the development server:
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-#### Start server
-
-```bash
-npm run server
-```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
 You will require a`.env` at root level:
 
@@ -46,13 +36,9 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ### Testing:
 
-##### FE
+#####
 
-`npm run test:FE` or `npm run test:FE:coverage` or `npm run test:FE:watch`
-
-##### FE
-
-`cd server` then `npm run test:BE` or `npm run test:BE:coverage` or `npm run test:BE:watch`
+`npm run test`
 
 ### Deployment:
 

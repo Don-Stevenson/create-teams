@@ -1,14 +1,11 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  createEvent,
-} from '@testing-library/react'
+import { screen, fireEvent, waitFor, createEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { useRouter } from 'next/navigation'
 import LoginForm from '../../src/app/components/LoginForm'
-import { login } from '../../utils/FEapi'
+import { apiService } from '../../utils/FEapi'
+import { renderWithQuery } from '../utils/test-utils'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useLogin } from '../../src/app/hooks/useApi'
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
@@ -21,16 +18,25 @@ jest.mock('next/head', () => {
   }
 })
 
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: props => <img {...props} />,
-}))
+jest.mock('next/image', () => {
+  return function Image({ src, alt, ...props }) {
+    return <img src={src} alt={alt} {...props} />
+  }
+})
 
+// Mock the API service
 jest.mock('../../utils/FEapi', () => ({
-  login: jest.fn(),
+  apiService: {
+    auth: {
+      login: jest.fn(),
+    },
+  },
 }))
 
-const mockError = jest.spyOn(console, 'error').mockImplementation(() => {})
+// Mock React Query hooks
+jest.mock('../../src/app/hooks/useApi', () => ({
+  useLogin: jest.fn(),
+}))
 
 describe('LoginForm', () => {
   const mockPush = jest.fn()
@@ -47,6 +53,14 @@ describe('LoginForm', () => {
       push: mockPush,
       refresh: mockRefresh,
     }))
+
+    // Mock useLogin hook
+    useLogin.mockReturnValue({
+      mutate: jest.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+    })
   })
 
   afterEach(() => {
@@ -54,7 +68,7 @@ describe('LoginForm', () => {
   })
 
   it('renders all form elements correctly', () => {
-    render(<LoginForm />)
+    renderWithQuery(<LoginForm />)
 
     expect(screen.getByPlaceholderText('Username')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument()
@@ -68,7 +82,7 @@ describe('LoginForm', () => {
   })
 
   it('updates input values on change', () => {
-    render(<LoginForm />)
+    renderWithQuery(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -81,9 +95,20 @@ describe('LoginForm', () => {
   })
 
   it('handles successful login correctly', async () => {
-    login.mockResolvedValueOnce({ success: true })
+    const mockMutate = jest.fn(credentials => {
+      // Simulate successful login by calling onSuccess
+      const mockOnSuccess = useLogin.mock.calls[0][0].onSuccess
+      mockOnSuccess({ success: true })
+    })
 
-    render(<LoginForm />)
+    useLogin.mockReturnValue({
+      mutate: mockMutate,
+      isPending: false,
+      isError: false,
+      error: null,
+    })
+
+    renderWithQuery(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -94,7 +119,10 @@ describe('LoginForm', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(login).toHaveBeenCalledWith('testuser', 'testpass')
+      expect(mockMutate).toHaveBeenCalledWith({
+        username: 'testuser',
+        password: 'testpass',
+      })
       expect(mockPush).toHaveBeenCalledWith('/create-teams')
     })
 
@@ -104,9 +132,20 @@ describe('LoginForm', () => {
   })
 
   it('handles failed login correctly', async () => {
-    login.mockResolvedValueOnce({ success: false })
+    const mockMutate = jest.fn(credentials => {
+      // Simulate failed login by calling onSuccess with failure
+      const mockOnSuccess = useLogin.mock.calls[0][0].onSuccess
+      mockOnSuccess({ success: false })
+    })
 
-    render(<LoginForm />)
+    useLogin.mockReturnValue({
+      mutate: mockMutate,
+      isPending: false,
+      isError: false,
+      error: null,
+    })
+
+    renderWithQuery(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -126,9 +165,20 @@ describe('LoginForm', () => {
   })
 
   it('clears error message when input is focused', async () => {
-    login.mockResolvedValueOnce({ success: false })
+    const mockMutate = jest.fn(credentials => {
+      // Simulate failed login by calling onSuccess with failure
+      const mockOnSuccess = useLogin.mock.calls[0][0].onSuccess
+      mockOnSuccess({ success: false })
+    })
 
-    render(<LoginForm />)
+    useLogin.mockReturnValue({
+      mutate: mockMutate,
+      isPending: false,
+      isError: false,
+      error: null,
+    })
+
+    renderWithQuery(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -164,7 +214,7 @@ describe('LoginForm', () => {
   })
 
   it('prevents default form submission', () => {
-    render(<LoginForm />)
+    renderWithQuery(<LoginForm />)
 
     const form = screen.getByTestId('login-form')
     const submitEvent = createEvent.submit(form)
@@ -175,10 +225,20 @@ describe('LoginForm', () => {
   })
 
   it('handles network errors correctly', async () => {
-    const networkError = new Error('Network error')
-    login.mockRejectedValueOnce(networkError)
+    const mockMutate = jest.fn(credentials => {
+      // Simulate network error by calling onError
+      const mockOnError = useLogin.mock.calls[0][0].onError
+      mockOnError(new Error('Network error'))
+    })
 
-    render(<LoginForm />)
+    useLogin.mockReturnValue({
+      mutate: mockMutate,
+      isPending: false,
+      isError: false,
+      error: null,
+    })
+
+    renderWithQuery(<LoginForm />)
 
     const usernameInput = screen.getByPlaceholderText('Username')
     const passwordInput = screen.getByPlaceholderText('Password')
@@ -196,5 +256,33 @@ describe('LoginForm', () => {
     })
 
     expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('shows loading state while login is in progress', async () => {
+    // Mock the login mutation to be in pending state
+    const mockMutate = jest.fn()
+    useLogin.mockReturnValue({
+      mutate: mockMutate,
+      isPending: true,
+      isError: false,
+      error: null,
+    })
+
+    renderWithQuery(<LoginForm />)
+
+    const usernameInput = screen.getByPlaceholderText('Username')
+    const passwordInput = screen.getByPlaceholderText('Password')
+    const submitButton = screen.getByRole('button', { name: /logging in/i })
+
+    fireEvent.change(usernameInput, { target: { value: 'testuser' } })
+    fireEvent.change(passwordInput, { target: { value: 'testpass' } })
+
+    // The button should be disabled during loading
+    expect(submitButton).toBeDisabled()
+    expect(submitButton).toHaveTextContent('Logging in...')
+
+    // Inputs should also be disabled
+    expect(usernameInput).toBeDisabled()
+    expect(passwordInput).toBeDisabled()
   })
 })

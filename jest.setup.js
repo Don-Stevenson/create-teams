@@ -30,23 +30,58 @@ jest.mock('next/image', () => ({
   },
 }))
 
-// Suppress only act() warnings during tests
+// Suppress React Query and act() warnings during tests
 const originalError = console.error
+const originalWarn = console.warn
+
 beforeAll(() => {
   console.error = (...args) => {
-    // Only suppress act() warnings
+    // Suppress act() warnings
     if (
       typeof args[0] === 'string' &&
-      args[0].includes(
+      (args[0].includes(
         'Warning: The current testing environment is not configured to support act'
-      )
+      ) ||
+        args[0].includes('act(...)'))
     ) {
       return
     }
     originalError.call(console, ...args)
   }
+
+  console.warn = (...args) => {
+    // Suppress React Query warnings that are expected during tests
+    if (
+      typeof args[0] === 'string' &&
+      (args[0].includes('Query data cannot be undefined') ||
+        args[0].includes('No QueryClient set') ||
+        args[0].includes('Missing queryFn'))
+    ) {
+      return
+    }
+    originalWarn.call(console, ...args)
+  }
 })
 
 afterAll(() => {
   console.error = originalError
+  console.warn = originalWarn
 })
+
+// Mock localStorage globally for tests
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+global.localStorage = localStorageMock
+
+// Mock sessionStorage globally for tests
+const sessionStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+global.sessionStorage = sessionStorageMock

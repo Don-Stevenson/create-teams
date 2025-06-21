@@ -1,7 +1,8 @@
-import { render, screen, waitFor, act } from '@testing-library/react'
+import { screen, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import BalanceTeamsPage from '../../src/app/page'
 import { checkAuth } from '../../utils/FEapi'
+import { renderWithQuery } from '../utils/test-utils'
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -33,7 +34,7 @@ describe('Home Page / balance teams', () => {
     checkAuth.mockResolvedValue(true)
 
     await act(async () => {
-      render(<BalanceTeamsPage />)
+      renderWithQuery(<BalanceTeamsPage />)
     })
 
     expect(screen.getByText('Loading Create Teams')).toBeInTheDocument()
@@ -43,28 +44,29 @@ describe('Home Page / balance teams', () => {
     checkAuth.mockResolvedValue(true)
 
     await act(async () => {
-      render(<BalanceTeamsPage />)
+      renderWithQuery(<BalanceTeamsPage />)
     })
 
     expect(screen.getByText('Loading Create Teams')).toBeInTheDocument()
   })
 
-  it('calls checkAuth on mount', async () => {
+  it('calls auth check on mount', async () => {
     checkAuth.mockResolvedValue(true)
 
     await act(async () => {
-      render(<BalanceTeamsPage />)
+      renderWithQuery(<BalanceTeamsPage />)
     })
 
-    // In development mode with React.StrictMode, effects run twice
-    expect(checkAuth).toHaveBeenCalledWith()
+    await waitFor(() => {
+      expect(checkAuth).toHaveBeenCalled()
+    })
   })
 
   it('handles authentication success', async () => {
     checkAuth.mockResolvedValue(true)
 
     await act(async () => {
-      render(<BalanceTeamsPage />)
+      renderWithQuery(<BalanceTeamsPage />)
     })
 
     await waitFor(() => {
@@ -76,7 +78,7 @@ describe('Home Page / balance teams', () => {
     checkAuth.mockResolvedValue(false)
 
     await act(async () => {
-      render(<BalanceTeamsPage />)
+      renderWithQuery(<BalanceTeamsPage />)
     })
 
     await waitFor(() => {
@@ -89,7 +91,36 @@ describe('Home Page / balance teams', () => {
     checkAuth.mockRejectedValue(new Error('Network error'))
 
     await act(async () => {
-      render(<BalanceTeamsPage />)
+      renderWithQuery(<BalanceTeamsPage />)
+    })
+
+    await waitFor(() => {
+      expect(checkAuth).toHaveBeenCalled()
+    })
+
+    consoleSpy.mockRestore()
+  })
+
+  it('uses direct auth check function', async () => {
+    checkAuth.mockResolvedValue(true)
+
+    await act(async () => {
+      renderWithQuery(<BalanceTeamsPage />)
+    })
+
+    await waitFor(() => {
+      expect(checkAuth).toHaveBeenCalled()
+    })
+  })
+
+  it('handles auth check retry logic', async () => {
+    // Mock the auth check to fail once
+    checkAuth.mockRejectedValueOnce(new Error('Network error'))
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+
+    await act(async () => {
+      renderWithQuery(<BalanceTeamsPage />)
     })
 
     await waitFor(() => {

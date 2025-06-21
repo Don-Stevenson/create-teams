@@ -5,20 +5,16 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import LoonsBadge from '../assets/img/TWSC.webp'
 import Image from 'next/image'
-import { login } from '../../../utils/FEapi'
+import { useLogin } from '../hooks/useApi'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const router = useRouter()
   const [error, setError] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-    setIsLoading(true)
-    try {
-      const data = await login(username, password)
+  const loginMutation = useLogin({
+    onSuccess: data => {
       if (data.success) {
         setError(false)
         router.push('/create-teams')
@@ -26,12 +22,16 @@ export default function LoginForm() {
       } else {
         setError(true)
       }
-    } catch (error) {
+    },
+    onError: error => {
       setError(true)
       console.error('Login error:', error)
-    } finally {
-      setIsLoading(false)
-    }
+    },
+  })
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    loginMutation.mutate({ username, password })
   }
 
   return (
@@ -57,7 +57,7 @@ export default function LoginForm() {
             onFocus={() => setError(false)}
             placeholder="Username"
             required
-            disabled={isLoading}
+            disabled={loginMutation.isPending}
             autoComplete="current-username"
             className="border border-gray-300 rounded w-40 h-8 text-center focus:outline-none focus:ring-2 focus:ring-loonsRed disabled:opacity-50"
           />
@@ -68,7 +68,7 @@ export default function LoginForm() {
             onFocus={() => setError(false)}
             placeholder="Password"
             required
-            disabled={isLoading}
+            disabled={loginMutation.isPending}
             autoComplete="current-password"
             className="border border-gray-300 rounded w-40 h-8 text-center focus:outline-none focus:ring-2 focus:ring-loonsRed disabled:opacity-50"
           />
@@ -76,10 +76,10 @@ export default function LoginForm() {
         <div className="flex justify-center items-center">
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={loginMutation.isPending}
             className="border border-gray-400 rounded w-36 h-8 bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {loginMutation.isPending ? 'Logging in...' : 'Login'}
           </button>
         </div>
       </div>

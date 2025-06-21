@@ -284,6 +284,120 @@ describe('Players Page', () => {
     })
   })
 
+  describe('Success Message Functionality', () => {
+    it('shows success message after adding a player', async () => {
+      const newPlayer = {
+        _id: '3',
+        name: 'New Player',
+        gameKnowledgeScore: 5,
+        goalScoringScore: 6,
+        attackScore: 7,
+        midfieldScore: 8,
+        defenseScore: 9,
+        fitnessScore: 10,
+        isPlayingThisWeek: true,
+      }
+
+      api.post.mockResolvedValueOnce({ data: newPlayer })
+
+      await act(async () => {
+        renderWithQuery(<Players />)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument()
+      })
+
+      // Open add player modal
+      const addButton = screen.getByText('Add A New Player')
+      await act(async () => {
+        userEvent.click(addButton)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByTestId('add-player-form')).toBeInTheDocument()
+      })
+
+      // Fill out form
+      const nameInput = screen.getByLabelText(/name/i)
+      const gameKnowledgeInput = screen.getByLabelText(/game knowledge score/i)
+      const goalScoringInput = screen.getByLabelText(/goal scoring score/i)
+      const attackInput = screen.getByLabelText(/attack score/i)
+      const midfieldInput = screen.getByLabelText(/midfield score/i)
+      const defenseInput = screen.getByLabelText(/defense score/i)
+      const fitnessInput = screen.getByLabelText(/mobility\/stamina/i)
+
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: newPlayer.name } })
+        fireEvent.change(gameKnowledgeInput, {
+          target: { value: newPlayer.gameKnowledgeScore.toString() },
+        })
+        fireEvent.change(goalScoringInput, {
+          target: { value: newPlayer.goalScoringScore.toString() },
+        })
+        fireEvent.change(attackInput, {
+          target: { value: newPlayer.attackScore.toString() },
+        })
+        fireEvent.change(midfieldInput, {
+          target: { value: newPlayer.midfieldScore.toString() },
+        })
+        fireEvent.change(defenseInput, {
+          target: { value: newPlayer.defenseScore.toString() },
+        })
+        fireEvent.change(fitnessInput, {
+          target: { value: newPlayer.fitnessScore.toString() },
+        })
+      })
+
+      const form = screen.getByTestId('add-player-form')
+      await act(async () => {
+        fireEvent.submit(form)
+      })
+
+      // Check that success message appears
+      await waitFor(() => {
+        expect(
+          screen.getByText('Player added successfully!')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('success message has correct styling', async () => {
+      await act(async () => {
+        renderWithQuery(<Players />)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument()
+      })
+
+      // Find the success message container directly
+      const container = screen.getByText('Manage Players').closest('div')
+      const successMessageElement = container.querySelector('p.italic.h-6')
+
+      expect(successMessageElement).toBeTruthy()
+      expect(successMessageElement).toHaveClass('italic')
+      expect(successMessageElement).toHaveClass('h-6')
+      expect(successMessageElement).toHaveClass('text-transparent')
+    })
+
+    it('only one success message container exists', async () => {
+      await act(async () => {
+        renderWithQuery(<Players />)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument()
+      })
+
+      // Find all success message containers
+      const container = screen.getByText('Manage Players').closest('div')
+      const successMessageElements = container.querySelectorAll('p.italic.h-6')
+
+      expect(successMessageElements).toHaveLength(1)
+    })
+  })
+
   describe('Error Handling', () => {
     it('handles fetch error gracefully', async () => {
       const consoleSpy = jest

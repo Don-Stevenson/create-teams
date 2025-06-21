@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react'
-import api from '../../../utils/FEapi'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import Teams from './Teams'
 import UpcomingGamesDropDown from './UpcomingGamesDropDown'
 import { PulseLoader } from 'react-spinners'
+import {
+  usePlayers,
+  useUpcomingGames,
+  useGameRsvps,
+  useBulkUpdatePlayers,
+  useBalanceTeams,
+} from '../hooks/useApi'
 
 export default function CreateTeams() {
   const [numTeams, setNumTeams] = useState(2)
@@ -18,10 +24,23 @@ export default function CreateTeams() {
   const [openPlayerList, setOpenPlayerList] = useState(true)
   const [upcomingGames, setUpcomingGames] = useState([])
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [rsvpsForGame, setRsvpsForGame] = useState([])
   const [selectedGameId, setSelectedGameId] = useState(null)
-  const [isLoadingRsvps, setIsLoadingRsvps] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+
+  // React Query hooks
+  const {
+    data: queryPlayers = [],
+    isLoading: playersLoading,
+    error: playersError,
+  } = usePlayers()
+  const { data: queryUpcomingGames = [], isLoading: gamesLoading } =
+    useUpcomingGames()
+  const { data: queryRsvpsForGame = [], isLoading: rsvpsLoading } =
+    useGameRsvps(selectedGameId, {
+      enabled: !!selectedGameId,
+    })
+  const bulkUpdateMutation = useBulkUpdatePlayers()
+  const balanceTeamsMutation = useBalanceTeams()
 
   const normalizeName = name => {
     return name.toLowerCase().trim().replace(/\s+/g, ' ')
@@ -46,190 +65,134 @@ export default function CreateTeams() {
     setSelectAll(rsvps.length === players.length)
   }
 
+  // Sync React Query data with local state
   useEffect(() => {
-    const fetchUpcomingGames = async () => {
-      try {
-        const res = await api.get('/upcoming-games')
-        setUpcomingGames(res.data)
-      } catch (error) {
-        console.error('Failed to fetch upcoming games:', error)
-        // Don't set error state for auth failures, let withAuth handle the redirect
-        if (error.response?.status !== 401) {
-          setError('Failed to fetch upcoming games')
+    if (queryUpcomingGames.length > 0) {
+      setUpcomingGames(queryUpcomingGames)
+    }
+  }, [queryUpcomingGames])
+
+  useEffect(() => {
+    if (queryPlayers.length > 0 || !playersLoading) {
+      // Initialize players with their current playing status from the database
+      const fetchedPlayers = queryPlayers.map(player => {
+        // Default to false unless explicitly set to true in the database
+        const isPlaying =
+          player.isPlayingThisWeek === true ||
+          player.isPlayingThisWeek === 'true'
+
+        return {
+          ...player,
+          isPlayingThisWeek: isPlaying,
         }
-      }
+      })
+
+      setPlayers(fetchedPlayers)
+      const playingCount = fetchedPlayers.filter(
+        player => player.isPlayingThisWeek
+      ).length
+      setSelectAll(playingCount === fetchedPlayers.length)
+      setSelectedPlayerCount(playingCount)
+      setIsLoading(false)
+      setShowLoadingMessage(false)
+      setInitialLoadComplete(true)
     }
-    fetchUpcomingGames()
-  }, [])
+  }, [queryPlayers, playersLoading])
+
+  // Use queryRsvpsForGame directly instead of maintaining separate state
+
+  // Track if we've already processed RSVPs for this game to prevent re-processing
+  const [processedGameId, setProcessedGameId] = useState(null)
 
   useEffect(() => {
-    const fetchPlayers = async () => {
-      try {
-        setIsLoading(true)
-        setShowLoadingMessage(true)
-
-        const minimumDuration = new Promise(resolve => setTimeout(resolve, 400))
-
-        const [res] = await Promise.all([api.get('/players'), minimumDuration])
-
-        // Initialize players with their current playing status from the database
-        const fetchedPlayers = res.data.map(player => {
-          // Default to false unless explicitly set to true in the database
-          const isPlaying =
-            player.isPlayingThisWeek === true ||
-            player.isPlayingThisWeek === 'true'
-
-          return {
-            ...player,
-            isPlayingThisWeek: isPlaying,
-          }
-        })
-
-        setPlayers(fetchedPlayers)
-        const playingCount = fetchedPlayers.filter(
-          player => player.isPlayingThisWeek
-        ).length
-        setSelectAll(playingCount === fetchedPlayers.length)
-        setSelectedPlayerCount(playingCount)
-        setIsLoading(false)
-        setShowLoadingMessage(false)
-        setInitialLoadComplete(true)
-      } catch (error) {
-        console.error('Failed to fetch players:', error)
-        // Don't set error state for auth failures, let withAuth handle the redirect
-        if (error.response?.status !== 401) {
-          setError('Failed to fetch players')
-        }
-        setIsLoading(false)
-        setShowLoadingMessage(false)
-      }
+    // Only process when we have a selected game, RSVP data, and players data
+    // and we haven't already processed this game
+    if (
+      !selectedGameId ||
+      !queryRsvpsForGame ||
+      players.length === 0 ||
+      processedGameId === selectedGameId ||
+      rsvpsLoading
+    ) {
+      return
     }
-    fetchPlayers()
-  }, [])
 
-  const deselectAllPlayers = async () => {
-    try {
-      // Ensure we have an array of player IDs
-      const playerIds = players.map(player => player._id)
-
-      // Create the payload with explicit types
-      const payload = {
-        isPlayingThisWeek: false,
-        playerIds: playerIds,
-      }
-
-      // Update all players to not playing this week
-      const response = await api.put('/players-bulk-update', payload)
-
-      // Update local state
-      const updatedPlayers = players.map(player => ({
-        ...player,
-        isPlayingThisWeek: false,
-      }))
-      setPlayers(updatedPlayers)
-      setSelectedPlayerCount(0)
-      setSelectAll(false)
-
-      return true
-    } catch (error) {
-      console.error('Failed to deselect all players:', error)
-      if (error.response) {
-        console.error('Error response:', error.response.data)
-      }
-      setError('Failed to deselect all players')
-      return false
-    }
-  }
-
-  const selectPlayers = async playerIds => {
-    try {
-      // Ensure we have an array of player IDs
-      if (!Array.isArray(playerIds)) {
-        console.error('playerIds must be an array:', playerIds)
-        return false
-      }
-
-      // Create the payload with explicit types
-      const payload = {
-        isPlayingThisWeek: true,
-        playerIds: playerIds,
-      }
-
-      // Make the API call
-      await api.put('/players-bulk-update', payload)
-
-      // Update local state
-      const updatedPlayers = players.map(player => ({
-        ...player,
-        isPlayingThisWeek: playerIds.includes(player._id),
-      }))
-      setPlayers(updatedPlayers)
-      setSelectedPlayerCount(playerIds.length)
-      setSelectAll(playerIds.length === players.length)
-
-      return true
-    } catch (error) {
-      console.error('Failed to select players:', error)
-      if (error.response) {
-        console.error('Error response:', error.response.data)
-      }
-      setError('Failed to select players')
-      return false
-    }
-  }
-
-  useEffect(() => {
-    const fetchRsvpsForGame = async () => {
-      if (!selectedGameId) return
+    const processRsvpsForGame = async () => {
       try {
         // Ensure player list is open at the start
         setOpenPlayerList(true)
-        setIsLoadingRsvps(true)
-        const res = await api.get(`/rsvps-for-game/${selectedGameId}`)
-        setRsvpsForGame(res.data)
 
-        // First, deselect all players
-        const deselectionComplete = await deselectAllPlayers()
-        if (!deselectionComplete) {
-          throw new Error('Failed to deselect all players')
-        }
+        // Don't set isLoadingRsvps to true here - process silently in background
+        // This prevents the flashing between loading and list states
 
-        // Then, select only the players in the RSVP list
-        const rsvpNames = new Set(res.data.map(name => normalizeName(name)))
+        // Create a Set of normalized RSVP'd player names for faster lookup
+        const rsvpNames = new Set(
+          queryRsvpsForGame.map(name => normalizeName(name))
+        )
 
-        // Find all players that should be playing
-        const playersToSelect = players
+        // Update local state immediately to prevent re-renders during API calls
+        const updatedPlayers = players.map(player => {
+          const normalizedName = normalizeName(player.name)
+          return {
+            ...player,
+            isPlayingThisWeek: rsvpNames.has(normalizedName),
+          }
+        })
+
+        setPlayers(updatedPlayers)
+        const selectedCount = updatedPlayers.filter(
+          p => p.isPlayingThisWeek
+        ).length
+        setSelectedPlayerCount(selectedCount)
+        setSelectAll(selectedCount === players.length)
+
+        // Mark this game as processed BEFORE making API calls to prevent duplicate processing
+        setProcessedGameId(selectedGameId)
+
+        // First, set all players to not playing
+        const allPlayerIds = players.map(player => player._id)
+
+        await bulkUpdateMutation.mutateAsync({
+          isPlayingThisWeek: false,
+          playerIds: allPlayerIds,
+        })
+
+        // Then set only RSVP'd players to playing (if any)
+        const playingPlayerIds = players
           .filter(player => {
             const normalizedName = normalizeName(player.name)
-            const shouldPlay = rsvpNames.has(normalizedName)
-            return shouldPlay
+            return rsvpNames.has(normalizedName)
           })
           .map(player => player._id)
 
-        // Select all matching players at once
-        if (playersToSelect.length > 0) {
-          const selectionComplete = await selectPlayers(playersToSelect)
-          if (!selectionComplete) {
-            throw new Error('Failed to select RSVP players')
-          }
+        if (playingPlayerIds.length > 0) {
+          await bulkUpdateMutation.mutateAsync({
+            isPlayingThisWeek: true,
+            playerIds: playingPlayerIds,
+          })
         }
 
         // Ensure player list stays open at the end
         setOpenPlayerList(true)
       } catch (error) {
-        console.error('Failed to fetch RSVPs:', error)
+        console.error('Failed to process RSVPs:', error)
+        // Reset processed game ID on error so user can retry
+        setProcessedGameId(null)
         // Don't set error state for auth failures, let withAuth handle the redirect
         if (error.response?.status !== 401) {
-          setError('Failed to fetch RSVPs for the selected game')
+          setError('Failed to process RSVPs for the selected game')
         }
-      } finally {
-        setIsLoadingRsvps(false)
-        // Ensure player list stays open even after loading
-        setOpenPlayerList(true)
       }
+      // Removed finally block that was setting isLoadingRsvps to false
     }
-    fetchRsvpsForGame()
-  }, [selectedGameId, players.length])
+
+    // Add a small delay to prevent rapid-fire calls
+    const timeoutId = setTimeout(() => {
+      processRsvpsForGame()
+    }, 100)
+
+    return () => clearTimeout(timeoutId)
+  }, [selectedGameId, queryRsvpsForGame, rsvpsLoading]) // Removed players.length dependency to prevent infinite loop
 
   const handleTogglePlayingThisWeek = async playerId => {
     const playerToUpdate = players.find(player => player._id === playerId)
@@ -248,9 +211,9 @@ export default function CreateTeams() {
     setSelectAll(updatedPlayers.every(player => player.isPlayingThisWeek))
 
     try {
-      await api.put(`/players/${playerId}`, {
-        ...playerToUpdate,
-        isPlayingThisWeek: newPlayingState.toString(),
+      await bulkUpdateMutation.mutateAsync({
+        isPlayingThisWeek: newPlayingState,
+        playerIds: [playerId],
       })
     } catch (error) {
       console.error('Failed to update player:', error)
@@ -285,7 +248,7 @@ export default function CreateTeams() {
       // Get all player IDs
       const playerIds = players.map(player => player._id)
 
-      await api.put('/players-bulk-update', {
+      await bulkUpdateMutation.mutateAsync({
         isPlayingThisWeek: newSelectAllState,
         playerIds: playerIds,
       })
@@ -354,21 +317,18 @@ export default function CreateTeams() {
         }
       })
 
-      // Create the request payload
-      const requestPayload = {
-        numTeams: parseInt(numTeams, 10),
-        players: cleanPlayers,
-      }
-
       try {
-        // Send the request with explicit content type and data transformation
+        // Send the request using React Query mutation
         const [res] = await Promise.all([
-          api.post('/balance-teams', requestPayload),
+          balanceTeamsMutation.mutateAsync({
+            numTeams: parseInt(numTeams, 10),
+            players: cleanPlayers,
+          }),
           minimumDuration,
         ])
 
         setTotalPlayers(cleanPlayers.length)
-        setBalancedTeams(res.data.teams)
+        setBalancedTeams(res.teams)
         setIsLoading(false)
         setShowLoadingMessage(false)
         setOpenPlayerList(false)
@@ -378,7 +338,6 @@ export default function CreateTeams() {
           data: err.response?.data,
           errors: err.response?.data?.errors,
           message: err.message,
-          requestData: requestPayload,
           headers: err.response?.headers,
           config: err.config,
         })
@@ -418,6 +377,7 @@ export default function CreateTeams() {
     const selectedGame = upcomingGames.find(game => game._id === gameId)
     setSelectedDate(new Date(selectedGame.meetdate))
     setSelectedGameId(gameId)
+    setProcessedGameId(null) // Reset processed game ID to allow processing of new game
     setBalancedTeams(null)
     setTotalPlayers(0)
   }
@@ -445,17 +405,17 @@ export default function CreateTeams() {
           {selectedGameId && (
             <div className="mt-4 items-center justify-center">
               <h3 className="text-xl font-bold text-loonsRed my-6">
-                {rsvpsForGame.length} Players RSVP'd for this game on Heja
+                {queryRsvpsForGame.length} Players RSVP'd for this game on Heja
               </h3>
-              {isLoadingRsvps ? (
+              {rsvpsLoading ? (
                 <p className="flex justify-start items-center gap-2 text-gray-700 text-xl py-4">
                   Loading RSVPs and updating player list{' '}
                   <PulseLoader color="black" size={6} />
                 </p>
-              ) : rsvpsForGame.length > 0 ? (
+              ) : queryRsvpsForGame.length > 0 ? (
                 <div className="flex flex-col">
                   <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
-                    {rsvpsForGame
+                    {queryRsvpsForGame
                       .sort((a, b) => a.localeCompare(b))
                       .map((player, index) => {
                         // Check if the player exists in the players list
@@ -481,7 +441,7 @@ export default function CreateTeams() {
                         )
                       })}
                   </ul>
-                  {rsvpsForGame.some(
+                  {queryRsvpsForGame.some(
                     player =>
                       !players.some(
                         p => normalizeName(p.name) === normalizeName(player)
@@ -533,6 +493,7 @@ export default function CreateTeams() {
                       className="form-checkbox h-5 w-5 text-loonsRed"
                       checked={selectAll}
                       onChange={handleSelectAll}
+                      disabled={bulkUpdateMutation.isPending}
                     />
                     <span className="ml-2 text-gray-700 text-sm">
                       Toggle All Players Playing / Not Playing
@@ -547,7 +508,7 @@ export default function CreateTeams() {
                 ) : (
                   <PlayerListToggleIsPlaying
                     players={players}
-                    rsvpsForGame={rsvpsForGame}
+                    rsvpsForGame={queryRsvpsForGame}
                     onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
                   />
                 )}

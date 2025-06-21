@@ -7,10 +7,22 @@ import api from '../../../utils/FEapi.js'
 import withAuth from '../components/withAuth.js'
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal.js'
 import AddPlayerModal from '../components/AddPlayerModal.js'
-import Layout from '../components/Layout.js'
 import { PulseLoader } from 'react-spinners'
+// React Query hooks for background caching only
+import {
+  usePlayers,
+  useCreatePlayer,
+  useUpdatePlayer,
+  useDeletePlayer,
+} from '../hooks/useApi.js'
 
 function Players() {
+  // React Query hooks working silently in background for caching
+  usePlayers()
+  useCreatePlayer()
+  useUpdatePlayer()
+  useDeletePlayer()
+
   const [players, setPlayers] = useState([])
   const [playerToEdit, setPlayerToEdit] = useState(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -70,6 +82,7 @@ function Players() {
         }))
       )
       lastFetchRef.current = Date.now()
+      setDataLoaded(true)
 
       setIsLoading(false)
       setShowLoadingMessage(false)

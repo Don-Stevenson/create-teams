@@ -28,11 +28,49 @@ jest.mock('../../utils/FEapi', () => {
     put: jest.fn(),
     delete: jest.fn(),
   }
-  return mockApi
+
+  const mockApiService = {
+    players: {
+      getAll: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      bulkUpdate: jest.fn(),
+    },
+    games: {
+      getUpcoming: jest.fn(),
+      getRsvps: jest.fn(),
+    },
+    teams: {
+      balance: jest.fn(),
+    },
+  }
+
+  return {
+    __esModule: true,
+    default: mockApi,
+    apiService: mockApiService,
+  }
 })
 
-// Import the mocked api
-import api from '../../utils/FEapi'
+// Mock React Query hooks
+jest.mock('../../src/app/hooks/useApi', () => ({
+  usePlayers: jest.fn(),
+  useUpcomingGames: jest.fn(),
+  useGameRsvps: jest.fn(),
+  useBulkUpdatePlayers: jest.fn(),
+  useBalanceTeams: jest.fn(),
+}))
+
+// Import the mocked api and hooks
+import api, { apiService } from '../../utils/FEapi'
+import {
+  usePlayers,
+  useUpcomingGames,
+  useGameRsvps,
+  useBulkUpdatePlayers,
+  useBalanceTeams,
+} from '../../src/app/hooks/useApi'
 
 // Mock the child components
 jest.mock('../../src/app/components/PlayerListToggleIsPlaying', () => {
@@ -134,7 +172,47 @@ describe('CreateTeams Component', () => {
     // Reset all mocks before each test
     jest.clearAllMocks()
 
-    // Mock API responses
+    // Mock React Query hooks
+    usePlayers.mockReturnValue({
+      data: mockPlayers,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    useUpcomingGames.mockReturnValue({
+      data: mockUpcomingGames,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    useGameRsvps.mockReturnValue({
+      data: mockRsvps,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    useBulkUpdatePlayers.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: jest.fn().mockResolvedValue({ success: true }),
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    useBalanceTeams.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: jest.fn().mockResolvedValue({
+        teams: [{ players: [mockPlayers[0]] }, { players: [mockPlayers[1]] }],
+      }),
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    // Mock API responses (keeping for backward compatibility)
     api.get.mockImplementation(url => {
       if (url === '/players') {
         return Promise.resolve({ data: mockPlayers })
@@ -174,6 +252,14 @@ describe('CreateTeams Component', () => {
   })
 
   it('renders loading state initially', async () => {
+    // Override the default mock to show loading state
+    usePlayers.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      error: null,
+    })
+
     await act(async () => {
       render(<CreateTeams />)
     })
@@ -223,6 +309,16 @@ describe('CreateTeams Component', () => {
   })
 
   it('handles select all functionality', async () => {
+    const mockMutateAsync = jest.fn().mockResolvedValue({ success: true })
+
+    useBulkUpdatePlayers.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: mockMutateAsync,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
     await act(async () => {
       render(<CreateTeams />)
     })
@@ -254,8 +350,8 @@ describe('CreateTeams Component', () => {
       { timeout: 3000 }
     )
 
-    // Verify API was called with correct parameters
-    expect(api.put).toHaveBeenCalledWith('/players-bulk-update', {
+    // Verify React Query mutation was called with correct parameters
+    expect(mockMutateAsync).toHaveBeenCalledWith({
       isPlayingThisWeek: true,
       playerIds: ['1', '2'],
     })
@@ -271,17 +367,21 @@ describe('CreateTeams Component', () => {
       isPlayingThisWeek: true,
     }))
 
-    api.get.mockImplementation(url => {
-      if (url === '/players') {
-        return Promise.resolve({ data: playingPlayers })
-      }
-      if (url === '/upcoming-games') {
-        return Promise.resolve({ data: mockUpcomingGames })
-      }
-      if (url === '/rsvps-for-game/game1') {
-        return Promise.resolve({ data: mockRsvps })
-      }
-      return Promise.reject(new Error('Not found'))
+    const mockMutateAsync = jest.fn().mockResolvedValue({ success: true })
+
+    usePlayers.mockReturnValue({
+      data: playingPlayers,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    useBulkUpdatePlayers.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: mockMutateAsync,
+      isLoading: false,
+      isError: false,
+      error: null,
     })
 
     await act(async () => {
@@ -322,8 +422,8 @@ describe('CreateTeams Component', () => {
       { timeout: 3000 }
     )
 
-    // Verify API was called with correct parameters to deselect all
-    expect(api.put).toHaveBeenCalledWith('/players-bulk-update', {
+    // Verify React Query mutation was called with correct parameters to deselect all
+    expect(mockMutateAsync).toHaveBeenCalledWith({
       isPlayingThisWeek: false,
       playerIds: ['1', '2'],
     })
@@ -333,12 +433,15 @@ describe('CreateTeams Component', () => {
   })
 
   it('handles select all API failure gracefully', async () => {
-    // Mock API to fail
-    api.put.mockImplementation(url => {
-      if (url === '/players-bulk-update') {
-        return Promise.reject(new Error('API Error'))
-      }
-      return Promise.resolve({ data: { success: true } })
+    // Mock mutation to fail
+    const mockMutateAsync = jest.fn().mockRejectedValue(new Error('API Error'))
+
+    useBulkUpdatePlayers.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: mockMutateAsync,
+      isLoading: false,
+      isError: false,
+      error: null,
     })
 
     await act(async () => {
@@ -384,6 +487,27 @@ describe('CreateTeams Component', () => {
   })
 
   it('creates balanced teams when button is clicked', async () => {
+    const mockBulkMutateAsync = jest.fn().mockResolvedValue({ success: true })
+    const mockBalanceMutateAsync = jest.fn().mockResolvedValue({
+      teams: [{ players: [mockPlayers[0]] }, { players: [mockPlayers[1]] }],
+    })
+
+    useBulkUpdatePlayers.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: mockBulkMutateAsync,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
+    useBalanceTeams.mockReturnValue({
+      mutate: jest.fn(),
+      mutateAsync: mockBalanceMutateAsync,
+      isLoading: false,
+      isError: false,
+      error: null,
+    })
+
     await act(async () => {
       render(<CreateTeams />)
     })
@@ -395,13 +519,20 @@ describe('CreateTeams Component', () => {
       { timeout: 3000 }
     )
 
-    // Select all players
-    const selectAllCheckbox = screen.getByText(
-      'Toggle All Players Playing / Not Playing'
-    )
+    // Select all players first
+    const selectAllCheckbox = screen.getByRole('checkbox')
     await act(async () => {
       fireEvent.click(selectAllCheckbox)
     })
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('Total Players Selected: 2')
+        ).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
 
     // Click create teams button
     const createTeamsButton = screen.getByText('Create Balanced Teams')

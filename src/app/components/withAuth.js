@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { checkAuth } from '../../../utils/FEapi'
 import { PulseLoader } from 'react-spinners'
+import { useAuthCheck } from '../hooks/useApi'
 
 export default function withAuth(WrappedComponent) {
   return function AuthenticatedComponent(props) {
@@ -10,6 +10,15 @@ export default function withAuth(WrappedComponent) {
     const [isLoading, setIsLoading] = useState(true)
     const [loadingMessage, setLoadingMessage] = useState('Loading Create Teams') // Always start with same message for SSR
     const [hasMounted, setHasMounted] = useState(false)
+
+    // React Query auth check hook - but only call once we've mounted
+    const {
+      data: authResult,
+      isLoading: queryLoading,
+      error,
+    } = useAuthCheck({
+      enabled: hasMounted,
+    })
 
     // Update loading message after component mounts (client-side only)
     useEffect(() => {
@@ -27,30 +36,32 @@ export default function withAuth(WrappedComponent) {
     }, [])
 
     useEffect(() => {
-      const verifyAuth = async () => {
-        try {
-          const authResult = await checkAuth()
-          if (authResult) {
-            setIsAuthenticated(true)
-            // Record successful server access
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('lastServerAccess', Date.now().toString())
-            }
-          } else {
-            router.push('/login')
+      if (!hasMounted) return
+
+      if (!queryLoading) {
+        setIsLoading(false)
+
+        if (authResult) {
+          setIsAuthenticated(true)
+          // Record successful server access
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('lastServerAccess', Date.now().toString())
           }
-        } catch (error) {
-          console.error('Auth check failed:', error)
+        } else {
           router.push('/login')
-        } finally {
-          setIsLoading(false)
         }
       }
+    }, [authResult, queryLoading, error, router, hasMounted])
 
-      verifyAuth()
-    }, [router])
+    // Handle error case
+    useEffect(() => {
+      if (error && !queryLoading) {
+        console.error('Auth check failed:', error)
+        router.push('/login')
+      }
+    }, [error, queryLoading, router])
 
-    if (isLoading) {
+    if (isLoading || !hasMounted) {
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="flex items-center gap-2 text-gray-700 text-xl py-4">

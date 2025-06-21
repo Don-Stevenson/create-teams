@@ -19,7 +19,7 @@ jest.mock('axios', () => {
 })
 
 import axios from 'axios'
-import api, { login, logout, checkAuth } from '../../utils/FEapi'
+import api, { login, logout, checkAuth, apiService } from '../../utils/FEapi'
 
 // --- BEGIN: Real response interceptor logic from FEapi.js ---
 const realResponseInterceptor = async error => {
@@ -57,7 +57,7 @@ describe('API Utils', () => {
     mockInstance.delete.mockClear()
   })
 
-  describe('API Functions', () => {
+  describe('Legacy API Functions (Backward Compatibility)', () => {
     it('should handle login', async () => {
       const mockInstance = axios.mockInstance
       const mockResponse = { data: { success: true } }
@@ -108,6 +108,156 @@ describe('API Utils', () => {
       mockInstance.get.mockRejectedValue(error)
       const result = await checkAuth()
       expect(result).toBe(false)
+    })
+  })
+
+  describe('New API Service Structure', () => {
+    describe('Auth Service', () => {
+      it('should handle login via apiService', async () => {
+        const mockInstance = axios.mockInstance
+        const mockResponse = { data: { success: true } }
+        mockInstance.post.mockResolvedValue(mockResponse)
+
+        const result = await apiService.auth.login({
+          username: 'testuser',
+          password: 'testpass',
+        })
+        expect(result).toEqual({ success: true })
+        expect(mockInstance.post).toHaveBeenCalledWith('/login', {
+          username: 'testuser',
+          password: 'testpass',
+        })
+      })
+
+      it('should handle logout via apiService', async () => {
+        const mockInstance = axios.mockInstance
+        const mockResponse = { data: { success: true } }
+        mockInstance.post.mockResolvedValue(mockResponse)
+
+        const result = await apiService.auth.logout()
+        expect(result).toEqual({ success: true })
+        expect(mockInstance.post).toHaveBeenCalledWith('/logout')
+      })
+
+      it('should handle auth check via apiService', async () => {
+        const mockInstance = axios.mockInstance
+        const mockResponse = { data: { success: true } }
+        mockInstance.get.mockResolvedValue(mockResponse)
+
+        const result = await apiService.auth.check()
+        expect(result).toBe(true)
+        expect(mockInstance.get).toHaveBeenCalledWith('/auth/check')
+      })
+    })
+
+    describe('Players Service', () => {
+      it('should fetch all players', async () => {
+        const mockInstance = axios.mockInstance
+        const mockPlayers = [
+          { _id: '1', name: 'Player 1', isPlayingThisWeek: 1 },
+          { _id: '2', name: 'Player 2', isPlayingThisWeek: 0 },
+        ]
+        mockInstance.get.mockResolvedValue({ data: mockPlayers })
+
+        const result = await apiService.players.getAll()
+        expect(mockInstance.get).toHaveBeenCalledWith('/players')
+        expect(result).toEqual([
+          { _id: '1', name: 'Player 1', isPlayingThisWeek: true },
+          { _id: '2', name: 'Player 2', isPlayingThisWeek: false },
+        ])
+      })
+
+      it('should fetch player by ID', async () => {
+        const mockInstance = axios.mockInstance
+        const mockPlayer = { _id: '1', name: 'Player 1' }
+        mockInstance.get.mockResolvedValue({ data: mockPlayer })
+
+        const result = await apiService.players.getById('1')
+        expect(mockInstance.get).toHaveBeenCalledWith('/players/1')
+        expect(result).toEqual(mockPlayer)
+      })
+
+      it('should create a new player', async () => {
+        const mockInstance = axios.mockInstance
+        const newPlayer = { name: 'New Player', attackScore: 5 }
+        const mockResponse = {
+          _id: '3',
+          name: 'New Player',
+          attackScore: 5,
+          defenseScore: 0,
+          fitnessScore: 0,
+          gameKnowledgeScore: 0,
+          goalScoringScore: 0,
+          midfieldScore: 0,
+          isPlayingThisWeek: 0,
+        }
+        mockInstance.post.mockResolvedValue({ data: mockResponse })
+
+        const result = await apiService.players.create(newPlayer)
+        expect(mockInstance.post).toHaveBeenCalledWith('/players', newPlayer)
+        expect(result).toEqual({
+          _id: '3',
+          name: 'New Player',
+          attackScore: 5,
+          defenseScore: 0,
+          fitnessScore: 0,
+          gameKnowledgeScore: 0,
+          goalScoringScore: 0,
+          midfieldScore: 0,
+          isPlayingThisWeek: false,
+        })
+      })
+
+      it('should update a player', async () => {
+        const mockInstance = axios.mockInstance
+        const updatedPlayer = {
+          name: 'Updated Player',
+          attackScore: 8,
+          defenseScore: 7,
+          fitnessScore: 6,
+          gameKnowledgeScore: 5,
+          goalScoringScore: 4,
+          midfieldScore: 3,
+          isPlayingThisWeek: true,
+        }
+        const mockResponse = { _id: '1', ...updatedPlayer }
+        mockInstance.put.mockResolvedValue({ data: mockResponse })
+
+        const result = await apiService.players.update({
+          id: '1',
+          ...updatedPlayer,
+        })
+        expect(mockInstance.put).toHaveBeenCalledWith('/players/1/playerInfo', {
+          name: 'Updated Player',
+          attackScore: 8,
+          defenseScore: 7,
+          fitnessScore: 6,
+          gameKnowledgeScore: 5,
+          goalScoringScore: 4,
+          midfieldScore: 3,
+          isPlayingThisWeek: 'true',
+        })
+        expect(result).toEqual({
+          _id: '1',
+          name: 'Updated Player',
+          attackScore: 8,
+          defenseScore: 7,
+          fitnessScore: 6,
+          gameKnowledgeScore: 5,
+          goalScoringScore: 4,
+          midfieldScore: 3,
+          isPlayingThisWeek: true,
+        })
+      })
+
+      it('should delete a player', async () => {
+        const mockInstance = axios.mockInstance
+        mockInstance.delete.mockResolvedValue({ data: { success: true } })
+
+        const result = await apiService.players.delete('1')
+        expect(mockInstance.delete).toHaveBeenCalledWith('/players/1')
+        expect(result).toEqual({ id: '1' })
+      })
     })
   })
 

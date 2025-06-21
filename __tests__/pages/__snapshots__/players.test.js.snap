@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Players Page Add Player Functionality matches snapshot 1`] = `<div />`;
+exports[`Players Page matches snapshot 1`] = `<div />`;

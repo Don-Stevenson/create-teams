@@ -37,7 +37,7 @@ describe('Home Page / balance teams', () => {
       renderWithQuery(<BalanceTeamsPage />)
     })
 
-    expect(screen.getByText('Loading Create Teams')).toBeInTheDocument()
+    expect(screen.getByText('Loading Loons Team Balancer')).toBeInTheDocument()
   })
 
   it('shows loading message initially', async () => {
@@ -47,7 +47,7 @@ describe('Home Page / balance teams', () => {
       renderWithQuery(<BalanceTeamsPage />)
     })
 
-    expect(screen.getByText('Loading Create Teams')).toBeInTheDocument()
+    expect(screen.getByText('Loading Loons Team Balancer')).toBeInTheDocument()
   })
 
   it('calls auth check on mount', async () => {

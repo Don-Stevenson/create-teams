@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
+import GameSelector from './GameSelector'
+import PlayerListManager from './PlayerListManager'
+import TeamGenerator from './TeamGenerator'
 import Teams from './Teams'
-import UpcomingGamesDropDown from './UpcomingGamesDropDown'
-import { PulseLoader } from 'react-spinners'
 import {
   usePlayers,
   useUpcomingGames,
@@ -384,184 +384,60 @@ export default function CreateTeams() {
     setTotalPlayers(0)
   }
 
+  const handleTogglePlayerList = () => {
+    setOpenPlayerList(!openPlayerList)
+  }
+
   return (
     <div className="flex flex-col mx-6">
       <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown mt-6">
         Create Teams
       </h2>
-      <div className="flex items-center justify-center mt-4 mb-4 print:hidden">
-        <div className="flex-col justify-center items-center">
-          <div className="text-lg mb-4">
-            Choose an upcoming game to see the players RSVP'd from Heja for that
-            game
-          </div>
-          <UpcomingGamesDropDown
-            upcomingGames={upcomingGames.map(game => ({
-              value: game._id,
-              label: `${game.title} - ${new Date(
-                game.meetdate
-              ).toLocaleDateString()}`,
-            }))}
-            onSelect={handleGameSelect}
-          />
-          {selectedGameId && (
-            <div className="mt-4 items-center justify-center">
-              <h3 className="text-xl font-bold text-loonsRed my-6">
-                {queryRsvpsForGame.length} Players RSVP'd for this game on Heja
-              </h3>
-              {rsvpsLoading ? (
-                <p className="flex justify-start items-center gap-2 text-gray-700 text-xl py-4">
-                  Loading RSVPs and updating player list{' '}
-                  <PulseLoader color="black" size={6} />
-                </p>
-              ) : queryRsvpsForGame.length > 0 ? (
-                <div className="flex flex-col">
-                  <ul className="list-disc pl-5 grid grid-cols-1 sm:grid-cols-2 gap-2 items-center justify-center">
-                    {queryRsvpsForGame
-                      .sort((a, b) => a.localeCompare(b))
-                      .map((player, index) => {
-                        // Check if the player exists in the players list
-                        const playerExists = players.some(
-                          p => normalizeName(p.name) === normalizeName(player)
-                        )
-                        return (
-                          <li
-                            key={index}
-                            className={`text-gray-700 ${
-                              !playerExists
-                                ? 'text-loonsRed font-bold bg-red-200 rounded-md p-1 max-w-[16.5rem]'
-                                : ''
-                            }`}
-                          >
-                            {player}
-                            {!playerExists && (
-                              <span className=" text-loonsRed text-[0.6rem] ml-2">
-                                * Not in the player list below
-                              </span>
-                            )}
-                          </li>
-                        )
-                      })}
-                  </ul>
-                  {queryRsvpsForGame.some(
-                    player =>
-                      !players.some(
-                        p => normalizeName(p.name) === normalizeName(player)
-                      )
-                  ) && (
-                    <div className="text-red-600 text-xs max-w-sm mt-5">
-                      * please double check the player name spelling; the
-                      spelling in Heja and in this application must match.
-                      Alternately, this player may need to be added to the loons
-                      team balancer.
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p>No players have RSVP'd for this game yet.</p>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+
+      <GameSelector
+        upcomingGames={upcomingGames}
+        selectedGameId={selectedGameId}
+        queryRsvpsForGame={queryRsvpsForGame}
+        rsvpsLoading={rsvpsLoading}
+        players={players}
+        onGameSelect={handleGameSelect}
+        normalizeName={normalizeName}
+      />
+
       <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
         {error && (
           <p className="text-center text-red-500 text-sm mt-2">{error}</p>
         )}
-        <div className="print:hidden">
-          <div className="flex-col flex-wrap">
-            <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
-              Player List
-            </h2>
-            <p className="flex text-center md:justify-center mb-4 print:hidden">
-              <span className="font-bold text-xl text-gray-800 ">
-                {`Total Players Selected: ${selectedPlayerCount}`}
-              </span>
-            </p>
-            <div className="flex justify-center items-center mb-2">
-              <button
-                onClick={() => setOpenPlayerList(!openPlayerList)}
-                className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-red-900 mb-2 text-lg font-bold border-2  rounded-md px-2 py-1"
-              >
-                {openPlayerList ? 'Hide Player List' : 'Show Player List'}
-              </button>
-            </div>
-            {openPlayerList && (
-              <>
-                <div className="flex md:justify-center mb-4 print:hidden">
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-loonsRed"
-                      checked={selectAll}
-                      onChange={handleSelectAll}
-                      disabled={bulkUpdateMutation.isPending}
-                    />
-                    <span className="ml-2 text-gray-700 text-sm">
-                      Toggle All Players Playing / Not Playing
-                    </span>
-                  </label>
-                </div>
-                {showLoadingMessage && players.length === 0 ? (
-                  <p className="flex justify-center items-center gap-2 text-gray-700 text-xl py-4">
-                    Loading players
-                    <PulseLoader color="black" size={6} />
-                  </p>
-                ) : (
-                  <PlayerListToggleIsPlaying
-                    players={players}
-                    rsvpsForGame={queryRsvpsForGame}
-                    onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
-                  />
-                )}
-              </>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col mt-10 items-center">
-          <div className="flex flex-col items-center mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2 print:hidden"
-              htmlFor="numTeams"
-            >
-              Number of Teams
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-15 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline print:hidden"
-              id="numTeams"
-              type="number"
-              min="2"
-              max="10"
-              value={numTeams}
-              onChange={e => setNumTeams(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center justify-between print:hidden">
-            <button
-              className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden mb-4"
-              onClick={handleBalanceTeams}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex justify-center items-center gap-2 text-loonsBeige">
-                  Creating teams
-                  <PulseLoader color="#C4B098" size={6} />
-                </div>
-              ) : (
-                'Create Balanced Teams'
-              )}
-            </button>
-          </div>
-          {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
-          {balancedTeams && (
-            <Teams
-              balancedTeams={balancedTeams}
-              setBalancedTeams={setBalancedTeams}
-              totalPlayers={totalPlayers}
-              selectedGameInfo={selectedGameInfo}
-            />
-          )}
-        </div>
+
+        <PlayerListManager
+          players={players}
+          selectedPlayerCount={selectedPlayerCount}
+          selectAll={selectAll}
+          openPlayerList={openPlayerList}
+          showLoadingMessage={showLoadingMessage}
+          queryRsvpsForGame={queryRsvpsForGame}
+          bulkUpdateMutation={bulkUpdateMutation}
+          onTogglePlayingThisWeek={handleTogglePlayingThisWeek}
+          onSelectAll={handleSelectAll}
+          onTogglePlayerList={handleTogglePlayerList}
+        />
+
+        <TeamGenerator
+          numTeams={numTeams}
+          isLoading={isLoading}
+          error={error}
+          onNumTeamsChange={setNumTeams}
+          onBalanceTeams={handleBalanceTeams}
+        />
+
+        {balancedTeams && (
+          <Teams
+            balancedTeams={balancedTeams}
+            setBalancedTeams={setBalancedTeams}
+            totalPlayers={totalPlayers}
+            selectedGameInfo={selectedGameInfo}
+          />
+        )}
       </div>
     </div>
   )

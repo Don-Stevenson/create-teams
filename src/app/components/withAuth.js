@@ -8,7 +8,9 @@ export default function withAuth(WrappedComponent) {
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const [loadingMessage, setLoadingMessage] = useState('Loading Create Teams') // Always start with same message for SSR
+    const [loadingMessage, setLoadingMessage] = useState(
+      'Loading Loons Team Balancer'
+    ) // Always start with same message for SSR
     const [hasMounted, setHasMounted] = useState(false)
 
     // React Query auth check hook - but only call once we've mounted
@@ -32,7 +34,6 @@ export default function withAuth(WrappedComponent) {
       if (lastAccess && parseInt(lastAccess) >= fiveMinutesAgo) {
         setLoadingMessage('Loading') // Server probably warm
       }
-      // Otherwise keep 'Loading Create Teams' for likely cold start
     }, [])
 
     useEffect(() => {

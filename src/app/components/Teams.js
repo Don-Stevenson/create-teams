@@ -161,7 +161,7 @@ const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
               handleDragStart(e, teamIndex, playerIndex, player._id)
             }
             onDragEnd={handleDragEnd}
-            className="border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl cursor-grab active:cursor-grabbing"
+            className="list-disc ml-4 border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl cursor-grab active:cursor-grabbing"
           >
             {player.name}
           </li>
@@ -239,17 +239,42 @@ const Teams = ({
     <>
       {/* Game name for print - only visible when printing */}
       {selectedGameInfo && (
-        <div className="hidden print:block text-center mb-6">
+        <div className="print:block text-center mb-6">
           <h2 className="text-2xl font-bold text-black">
             {selectedGameInfo.title}
           </h2>
           <p className="text-lg text-gray-700 mt-1">
-            {new Date(selectedGameInfo.meetdate).toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+            {!selectedGameInfo.meetdate
+              ? new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              : new Date(selectedGameInfo.meetdate).toLocaleDateString(
+                  'en-US',
+                  {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }
+                ) === 'Wednesday, December 31, 1969'
+              ? new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              : new Date(selectedGameInfo.meetdate).toLocaleDateString(
+                  'en-US',
+                  {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }
+                )}
           </p>
         </div>
       )}

@@ -197,7 +197,12 @@ const TeamHeader = ({ team, index, getTeamName }) => {
   )
 }
 
-const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
+const Teams = ({
+  balancedTeams,
+  setBalancedTeams,
+  totalPlayers,
+  selectedGameInfo,
+}) => {
   const {
     handleDragStart,
     handleDragEnd,
@@ -232,6 +237,22 @@ const Teams = ({ balancedTeams, setBalancedTeams, totalPlayers }) => {
 
   return (
     <>
+      {/* Game name for print - only visible when printing */}
+      {selectedGameInfo && (
+        <div className="hidden print:block text-center mb-6">
+          <h2 className="text-2xl font-bold text-black">
+            {selectedGameInfo.title}
+          </h2>
+          <p className="text-lg text-gray-700 mt-1">
+            {new Date(selectedGameInfo.meetdate).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+        </div>
+      )}
       <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">
         Total Number of People Playing: {totalPlayers}
       </div>

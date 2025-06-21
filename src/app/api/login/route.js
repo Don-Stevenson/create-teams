@@ -38,7 +38,10 @@ export async function POST(request) {
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
+    console.log('Password match:', isMatch)
+
     if (!isMatch) {
+      console.log('Password mismatch for user:', username)
       const response = NextResponse.json(
         { message: 'Invalid credentials' },
         { status: 401 }

@@ -3,8 +3,9 @@
 import Image from 'next/image'
 import LoonsBadge from '../../../public/TWSC_Badge.webp'
 import withAuth from '../components/withAuth'
+import Link from 'next/link'
 
-function AboutPage() {
+function AboutPage({ loggedIn }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
@@ -125,8 +126,16 @@ function AboutPage() {
           </div>
         </div>
       </div>
+      {!loggedIn && (
+        <Link
+          href={'/'}
+          className="flex justify-center text-center items-center text-loonsRed h-10"
+        >
+          <div>home</div>
+        </Link>
+      )}
     </div>
   )
 }
 
-export default withAuth(AboutPage)
+export default withAuth(AboutPage, { requireAuth: false })

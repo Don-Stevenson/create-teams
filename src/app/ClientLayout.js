@@ -36,7 +36,7 @@ export default function ClientLayout({ children }) {
   useEffect(() => {
     // Show NavBar on protected routes (these routes use withAuth HOC which handles authentication)
     // Don't show on login page or root page (which handles its own auth and redirect)
-    const protectedRoutes = ['/create-teams', '/players', '/about']
+    const protectedRoutes = ['/create-teams', '/players']
     setShowNavBar(protectedRoutes.includes(pathname))
   }, [pathname])
 

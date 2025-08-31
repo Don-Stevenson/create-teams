@@ -16,6 +16,25 @@ const geistMono = localFont({
 export const metadata = {
   title: 'Loons Team Balancer',
   description: 'Loons Team Balancer',
+  icons: [
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '16x16',
+      url: '/favicon-16x16.png',
+    },
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '32x32',
+      url: '/favicon-32x32.png',
+    },
+    {
+      rel: 'apple-touch-icon',
+      type: 'image/webp',
+      url: '/TWSC_Badge.webp',
+    },
+  ],
 }
 
 export default function RootLayout({ children }) {

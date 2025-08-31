@@ -25,7 +25,7 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
           </div>
           <ul className="grid grid-cols-[repeat(auto-fill,_minmax(15rem,_1fr))] xl:grid-cols-[repeat(auto-fill,_minmax(16rem,_max-content))] gap-4 w-full p-2">
             {playersByInitial[initial].map(player => (
-              <li
+              <button
                 key={player._id}
                 className={`flex items-center gap-4 p-3 w-full max-w-[20rem] min-w-[15rem] border-2 border-gray-300 rounded hover:border-[#b1c1de] cursor-pointer ${
                   player.isPlayingThisWeek ? 'bg-gray-100' : 'bg-gray-200'
@@ -42,22 +42,25 @@ const PlayerListToggleIsPlaying = ({ players, onTogglePlayingThisWeek }) => {
                     {player.name}
                   </span>
                 </div>
-                <label className="flex items-center gap-2 flex-shrink-0">
+                <span
+                  className="flex items-center gap-2 flex-shrink-0
+                 onClick={() => onTogglePlayingThisWeek(player._id)}"
+                >
                   <input
                     type="checkbox"
                     checked={player.isPlayingThisWeek}
                     className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     readOnly
                   />
-                  <span
+                  <p
                     className={`text-xs whitespace-nowrap ${
                       player.isPlayingThisWeek ? 'text-black' : 'text-gray-500'
                     }`}
                   >
                     Playing
-                  </span>
-                </label>
-              </li>
+                  </p>
+                </span>
+              </button>
             ))}
           </ul>
         </div>

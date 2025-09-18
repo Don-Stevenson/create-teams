@@ -46,7 +46,7 @@ const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
         <ul className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white border border-loonsRed rounded-md shadow-lg max-w-[325px] md:max-w-[800px]">
           {upcomingGames.map(game => (
             <li
-              className="border-2 border-white hover:border-2 hover:bg-red-200 rounded-md px-2 list-disc list-inside cursor-pointer"
+              className="border-2 border-white hover:border-2 hover:bg-[#cedaf0] rounded-md px-2 list-disc list-inside cursor-pointer"
               key={game.value}
               onClick={() => handleOptionClick(game)}
             >

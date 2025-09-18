@@ -1,5 +1,7 @@
-import { PulseLoader } from 'react-spinners'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
+import { lazy, Suspense } from 'react'
+
+const LoadingPlayers = lazy(() => import('./LoadingPlayers'))
 
 export default function PlayerListManager({
   players,
@@ -48,17 +50,14 @@ export default function PlayerListManager({
                 </span>
               </label>
             </div>
-            {showLoadingMessage && players.length === 0 ? (
-              <p className="flex justify-center items-center gap-2 text-gray-700 text-xl py-4">
-                Loading players
-                <PulseLoader color="black" size={6} />
-              </p>
-            ) : (
-              <PlayerListToggleIsPlaying
-                players={players}
-                rsvpsForGame={queryRsvpsForGame}
-                onTogglePlayingThisWeek={onTogglePlayingThisWeek}
-              />
+            {players.length !== 0 && (
+              <Suspense fallback={<LoadingPlayers />}>
+                <PlayerListToggleIsPlaying
+                  players={players}
+                  rsvpsForGame={queryRsvpsForGame}
+                  onTogglePlayingThisWeek={onTogglePlayingThisWeek}
+                />
+              </Suspense>
             )}
           </>
         )}

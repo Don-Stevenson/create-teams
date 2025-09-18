@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import GameSelector from './GameSelector'
 import PlayerListManager from './PlayerListManager'
 import TeamGenerator from './TeamGenerator'

@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react'
+import { useState } from 'react'
 import { calculateTeamStats } from '../utils/teamStats'
+import MeetDate from './MeetDate'
 
 // Custom hook for drag and drop functionality
 const useDragAndDrop = (balancedTeams, setBalancedTeams) => {
@@ -243,39 +244,7 @@ const Teams = ({
           <h2 className="text-2xl font-bold text-black">
             {selectedGameInfo.title}
           </h2>
-          <p className="text-lg text-gray-700 mt-1">
-            {!selectedGameInfo.meetdate
-              ? new Date().toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })
-              : new Date(selectedGameInfo.meetdate).toLocaleDateString(
-                  'en-US',
-                  {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  }
-                ) === 'Wednesday, December 31, 1969'
-              ? new Date().toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })
-              : new Date(selectedGameInfo.meetdate).toLocaleDateString(
-                  'en-US',
-                  {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  }
-                )}
-          </p>
+          <MeetDate meetdate={selectedGameInfo.meetdate} />
         </div>
       )}
       <div className="flex justify-center mb-4 flex-wrap text-xl print:hidden text-center sm:text-start">

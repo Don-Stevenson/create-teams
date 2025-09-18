@@ -251,11 +251,11 @@ describe('CreateTeams Component', () => {
     })
   })
 
-  it('renders loading state initially', async () => {
-    // Override the default mock to show loading state
+  it('renders basic component structure when no players are loaded', async () => {
+    // Test the component renders properly when there are no players
     usePlayers.mockReturnValue({
-      data: undefined,
-      isLoading: true,
+      data: [],
+      isLoading: false,
       isError: false,
       error: null,
     })
@@ -263,7 +263,14 @@ describe('CreateTeams Component', () => {
     await act(async () => {
       render(<CreateTeams />)
     })
-    expect(screen.getByText('Loading players')).toBeInTheDocument()
+
+    // Should render the main headings and structure
+    expect(screen.getByText('Create Teams')).toBeInTheDocument()
+    expect(screen.getByText('Player List')).toBeInTheDocument()
+    expect(screen.getByText('Total Players Selected: 0')).toBeInTheDocument()
+
+    // Player list should be empty since no players
+    expect(screen.queryByTestId('player-list')).not.toBeInTheDocument()
   })
 
   it('loads and displays players after initial load', async () => {

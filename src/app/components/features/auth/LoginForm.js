@@ -3,9 +3,9 @@
 // components/LoginForm.js
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import LoonsBadge from '../assets/img/TWSC.webp'
+import LoonsBadge from '../../../assets/img/TWSC.webp'
 import Image from 'next/image'
-import { useLogin } from '../hooks/useApi'
+import { useLogin } from '../../../hooks/useApi'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')

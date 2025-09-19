@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
-import GameSelector from './GameSelector'
-import PlayerListManager from './PlayerListManager'
+import GameSelector from '../GamesSelector/GameSelector'
+import PlayerListManager from '../PlayerList/PlayerListManager'
 import TeamGenerator from './TeamGenerator'
 import Teams from './Teams'
 import {
@@ -9,7 +9,7 @@ import {
   useGameRsvps,
   useBulkUpdatePlayers,
   useBalanceTeams,
-} from '../hooks/useApi'
+} from '../../../hooks/useApi'
 
 export default function CreateTeams() {
   const [numTeams, setNumTeams] = useState(2)

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import NavBar from './components/NavBar'
-import Footer from './components/Footer'
+import NavBar from './NavBar'
+import Footer from './Footer'
 
 // Create a client
 const queryClient = new QueryClient({

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Logout from './Logout'
+import Logout from '../features/auth/Logout'
 export default function NavBar() {
   return (
     <div className="flex z-0 bg-loonsDarkBrown items-center justify-center min-w-[auto]">

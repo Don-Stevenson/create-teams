@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import UpcomingGamesDropDown from '../../src/app/components/UpcomingGamesDropDown'
+import UpcomingGamesDropDown from '../../src/app/components/ui/GamesSelector/UpcomingGamesDropDown/UpcomingGamesDropDown'
 
 describe('UpcomingGamesDropDown', () => {
   const mockUpcomingGames = [

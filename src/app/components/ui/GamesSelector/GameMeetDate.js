@@ -26,6 +26,6 @@ export const getMeetDate = meetdate => {
   return formattedMeetDate
 }
 
-export default function MeetDate({ meetdate }) {
+export default function GameMeetDate({ meetdate }) {
   return <p className="text-lg text-gray-700 mt-1">{getMeetDate(meetdate)}</p>
 }

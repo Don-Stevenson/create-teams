@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import ChevronDownIcon from './ChevronDownIcon'
+import ChevronDownIcon from '../../Chevron/ChevronDownIcon'
 
 const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -32,7 +32,7 @@ const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
 
   return (
     <div
-      className="border-[1px] border-loonsRed rounded-md px-3 py-1 z-50"
+      className="border-[1px] border-black rounded-md px-3 py-1 z-50"
       ref={dropdownRef}
     >
       <button
@@ -43,7 +43,7 @@ const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
         <ChevronDownIcon />
       </button>
       {isOpen && (
-        <ul className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white border border-loonsRed rounded-md shadow-lg max-w-[325px] md:max-w-[800px]">
+        <ul className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white border border-black rounded-md shadow-lg w-[80%] md:w-[60%] lg:w-[40%]">
           {upcomingGames.map(game => (
             <li
               className="border-2 border-white hover:border-2 hover:bg-[#cedaf0] rounded-md px-2 list-disc list-inside cursor-pointer"

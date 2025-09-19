@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import PlayerList from '../components/PlayerList.js'
-import EditPlayerModal from '../components/EditPlayerModal.js'
+import PlayerList from '../components/ui/PlayerList/PlayerList.js'
+import EditPlayerModal from '../components/ui/Modal/EditPlayerModal.js'
 import api from '../../../utils/FEapi.js'
-import withAuth from '../components/withAuth.js'
-import DeleteConfirmationModal from '../components/DeleteConfirmationModal.js'
-import AddPlayerModal from '../components/AddPlayerModal.js'
+import withAuth from '../components/features/auth/withAuth.js'
+import DeleteConfirmationModal from '../components/ui/Modal/DeleteConfirmationModal.js'
+import AddPlayerModal from '../components/ui/Modal/AddPlayerModal.js'
 import { PulseLoader } from 'react-spinners'
 // React Query hooks for background caching only
 import {

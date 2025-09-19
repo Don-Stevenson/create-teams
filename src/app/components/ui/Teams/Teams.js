@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { calculateTeamStats } from '../utils/teamStats'
-import MeetDate from './MeetDate'
+import { calculateTeamStats } from '../../../utils/teamStats'
+import MeetDate from '../GamesSelector/GameMeetDate'
 
 // Custom hook for drag and drop functionality
 const useDragAndDrop = (balancedTeams, setBalancedTeams) => {

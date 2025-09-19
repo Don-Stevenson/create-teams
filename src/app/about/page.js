@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import LoonsBadge from '../../../public/TWSC_Badge.webp'
-import withAuth from '../components/withAuth'
+import withAuth from '../components/features/auth/withAuth'
 
 function AboutPage() {
   return (

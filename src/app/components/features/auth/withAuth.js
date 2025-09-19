@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PulseLoader } from 'react-spinners'
-import { useAuthCheck } from '../hooks/useApi'
+import { useAuthCheck } from '../../../hooks/useApi'
 
 export default function withAuth(WrappedComponent) {
   return function AuthenticatedComponent(props) {

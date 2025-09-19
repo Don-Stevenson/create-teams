@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import CreateTeams from '../../src/app/components/CreateTeams'
+import CreateTeams from '../../src/app/components/ui/Teams/CreateTeams'
 
 // Mock axios
 jest.mock('axios', () => ({
@@ -73,26 +73,29 @@ import {
 } from '../../src/app/hooks/useApi'
 
 // Mock the child components
-jest.mock('../../src/app/components/PlayerListToggleIsPlaying', () => {
-  return function MockPlayerListToggleIsPlaying({
-    players,
-    onTogglePlayingThisWeek,
-  }) {
-    return (
-      <div data-testid="player-list">
-        {players.map(player => (
-          <div key={player._id} data-testid={`player-${player._id}`}>
-            <button onClick={() => onTogglePlayingThisWeek(player._id)}>
-              Toggle {player.name}
-            </button>
-          </div>
-        ))}
-      </div>
-    )
+jest.mock(
+  '../../src/app/components/ui/PlayerList/PlayerListToggleIsPlaying',
+  () => {
+    return function MockPlayerListToggleIsPlaying({
+      players,
+      onTogglePlayingThisWeek,
+    }) {
+      return (
+        <div data-testid="player-list">
+          {players.map(player => (
+            <div key={player._id} data-testid={`player-${player._id}`}>
+              <button onClick={() => onTogglePlayingThisWeek(player._id)}>
+                Toggle {player.name}
+              </button>
+            </div>
+          ))}
+        </div>
+      )
+    }
   }
-})
+)
 
-jest.mock('../../src/app/components/Teams', () => {
+jest.mock('../../src/app/components/ui/Teams/Teams', () => {
   return function MockTeams({ balancedTeams, totalPlayers }) {
     return (
       <div data-testid="teams">
@@ -114,17 +117,30 @@ jest.mock('../../src/app/components/Teams', () => {
   }
 })
 
-jest.mock('../../src/app/components/UpcomingGamesDropDown', () => {
-  return function MockUpcomingGamesDropDown({ upcomingGames, onSelect }) {
+jest.mock('../../src/app/components/ui/GamesSelector/GameSelector', () => {
+  return function MockGameSelector({
+    upcomingGames,
+    onGameSelect,
+    selectedGameId,
+    queryRsvpsForGame,
+  }) {
     return (
       <div data-testid="upcoming-games">
-        <select onChange={e => onSelect(e.target.value)}>
+        <select onChange={e => onGameSelect && onGameSelect(e.target.value)}>
+          <option value="">Select a game</option>
           {upcomingGames.map(game => (
-            <option key={game.value} value={game.value}>
-              {game.label}
+            <option key={game._id} value={game._id}>
+              {game.title} - {new Date(game.meetdate).toLocaleDateString()}
             </option>
           ))}
         </select>
+        {selectedGameId && (
+          <div>
+            <h3>
+              {queryRsvpsForGame.length} Players RSVP'd for this game on Heja
+            </h3>
+          </div>
+        )}
       </div>
     )
   }

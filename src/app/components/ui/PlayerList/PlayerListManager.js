@@ -1,7 +1,7 @@
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import { lazy, Suspense } from 'react'
 
-const LoadingPlayers = lazy(() => import('./LoadingPlayers'))
+const LoadingPlayers = lazy(() => import('../Loading/LoadingPlayers'))
 
 export default function PlayerListManager({
   players,

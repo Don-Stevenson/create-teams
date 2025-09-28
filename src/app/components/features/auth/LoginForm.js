@@ -37,15 +37,15 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} data-testid="login-form">
       <div className="flex flex-col items-center justify-center mt-20 gap-2">
-        <Image
-          width={100}
-          height={125}
-          src={LoonsBadge}
-          alt="Toronto Walking Soccer Loons Club Logo"
-          priority
-        />
-        <div className="flex bg-loonsDarkBrown z-0 w-[248px] justify-center h-[168px] items-center rounded mb-4">
-          <div className="flex items-center justify-center text-3xl font-bold border-[8px] border-loonsRed rounded bg-loonsBrown w-60 text-loonsBeige text-center h-40 z-10">
+        <div className="relative z-10 w-[100px] h-[125px] top-7">
+          <Image
+            src={LoonsBadge}
+            alt="Toronto Walking Soccer Loons Club Logo"
+            priority
+          />
+        </div>
+        <div className="flex bg-loonsDarkBrown z-0 w-[285px] justify-center h-[70px] items-center mb-4">
+          <div className="flex items-center justify-center text-2xl border-[5px] border-loonsRed bg-loonsBrown w-[277px] text-loonsBeige text-center h-[62px] z-10 font-oswald font-[400] uppercase tracking-wider">
             Loons Team Balancer
           </div>
         </div>

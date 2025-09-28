@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import connectDB from '../../../lib/db/connection'
+import connectDB from '../../../lib/db/connectDB'
 import User from '../../../lib/models/User'
 import { createSession } from '../../../lib/utils/sessionStore'
 import { corsHeaders } from '../../../lib/utils/cors'

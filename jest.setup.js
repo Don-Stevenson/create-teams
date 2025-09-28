@@ -1,6 +1,9 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Set NODE_ENV to test to enable React's development mode
+process.env.NODE_ENV = 'test'
+
 // Configure the global test environment for React's concurrent mode
 global.ResizeObserver = class ResizeObserver {
   observe() {}

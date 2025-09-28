@@ -28,6 +28,9 @@ module.exports = {
       '3xl': '1.8rem',
     },
     extend: {
+      fontFamily: {
+        oswald: ['var(--font-oswald)', 'sans-serif'],
+      },
       colors: {
         background: '#F3F4F6',
         loonsRed: '#C42728',

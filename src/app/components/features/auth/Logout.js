@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { logout } from '../../../utils/FEapi'
+import { logout } from '../../../../../utils/FEapi'
 import { PulseLoader } from 'react-spinners'
 
 export default function Logout() {

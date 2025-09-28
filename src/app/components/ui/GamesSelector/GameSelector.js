@@ -1,5 +1,5 @@
 import { PulseLoader } from 'react-spinners'
-import UpcomingGamesDropDown from './UpcomingGamesDropDown'
+import UpcomingGamesDropDown from './UpcomingGamesDropDown/UpcomingGamesDropDown'
 
 export default function GameSelector({
   upcomingGames,

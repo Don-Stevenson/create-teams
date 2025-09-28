@@ -1,5 +1,5 @@
 import React from 'react'
-import PlayerCard from './PlayerCard'
+import PlayerCard from '../Card/PlayerCard'
 
 const PlayerList = ({ players, onEditPlayer, onDeletePlayer }) => {
   const playersByInitial = players.reduce((acc, player) => {

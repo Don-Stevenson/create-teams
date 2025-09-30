@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import GameSelector from '../GamesSelector/GameSelector'
 import PlayerListManager from '../PlayerList/PlayerListManager'
 import TeamGenerator from './TeamGenerator'
@@ -45,25 +45,6 @@ export default function CreateTeams() {
 
   const normalizeName = name => {
     return name.toLowerCase().trim().replace(/\s+/g, ' ')
-  }
-
-  const updatePlayersBasedOnRsvps = rsvps => {
-    // Create a Set of normalized RSVP'd player names for faster lookup
-    const rsvpNames = new Set(rsvps.map(name => normalizeName(name)))
-
-    const updatedPlayers = players.map(player => {
-      const normalizedPlayerName = normalizeName(player.name)
-      const isPlaying = rsvpNames.has(normalizedPlayerName)
-
-      return {
-        ...player,
-        isPlayingThisWeek: isPlaying,
-      }
-    })
-
-    setPlayers(updatedPlayers)
-    setSelectedPlayerCount(rsvps.length)
-    setSelectAll(rsvps.length === players.length)
   }
 
   // Sync React Query data with local state
@@ -184,7 +165,6 @@ export default function CreateTeams() {
           setError('Failed to process RSVPs for the selected game')
         }
       }
-      // Removed finally block that was setting isLoadingRsvps to false
     }
 
     // Add a small delay to prevent rapid-fire calls

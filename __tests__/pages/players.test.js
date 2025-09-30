@@ -16,7 +16,7 @@ jest.mock('../../utils/FEapi', () => ({
   },
 }))
 
-jest.mock('../../src/app/components/features/auth/withAuth', () => {
+jest.mock('../../src/app/components/features/auth/withAuthWrapper', () => {
   return jest.fn(Component => {
     const WithAuthComponent = props => <Component {...props} />
     WithAuthComponent.displayName = `WithAuth(${
@@ -26,7 +26,7 @@ jest.mock('../../src/app/components/features/auth/withAuth', () => {
   })
 })
 
-jest.mock('../../src/app/components/layout/Layout', () => {
+jest.mock('../../src/app/components/layout/ClientLayout', () => {
   return jest.fn(({ children }) => (
     <div data-testid="mock-layout">{children}</div>
   ))

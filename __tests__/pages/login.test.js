@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Login from '../../src/app/login/page'
-import LoginForm from '../../src/app/components/features/auth/LoginForm'
+import LoginForm from '../../src/app/components/ui/LoginForm/LoginForm'
 
-jest.mock('../../src/app/components/features/auth/LoginForm', () => {
+jest.mock('../../src/app/components/ui/LoginForm/LoginForm', () => {
   return jest.fn(() => (
     <div data-testid="mocked-login-form">Mocked Login Form</div>
   ))

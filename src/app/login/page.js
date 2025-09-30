@@ -1,4 +1,4 @@
-import LoginForm from '../components/features/auth/LoginForm'
+import LoginForm from '../components/ui/LoginForm/LoginForm'
 
 export const metadata = {
   title: 'Loons Team Balancer App',

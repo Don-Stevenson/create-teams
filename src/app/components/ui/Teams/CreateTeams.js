@@ -412,6 +412,7 @@ export default function CreateTeams() {
 
         {balancedTeams && (
           <Teams
+            players={players}
             balancedTeams={balancedTeams}
             setBalancedTeams={setBalancedTeams}
             totalPlayers={totalPlayers}

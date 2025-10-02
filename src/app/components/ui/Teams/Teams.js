@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { calculateTeamStats } from '../../../utils/teamStats'
 import MeetDate from '../GamesSelector/GameMeetDate'
+import HoverPlayerStats from '../HoverPlayerStats/HoverPlayerStats'
 
 // Custom hook for drag and drop functionality
 const useDragAndDrop = (balancedTeams, setBalancedTeams) => {
@@ -149,7 +150,15 @@ const TeamStats = ({ team, index }) => {
   )
 }
 
-const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
+const PlayerList = ({
+  team,
+  teamIndex,
+  handleDragStart,
+  handleDragEnd,
+  hoveredPlayer,
+  handleMouseEnter,
+  handleMouseLeave,
+}) => {
   return (
     <ul className="list-disc pl-5 print:pl-4 print:mt-1 print:list-none relative">
       {team.players
@@ -162,9 +171,14 @@ const PlayerList = ({ team, teamIndex, handleDragStart, handleDragEnd }) => {
               handleDragStart(e, teamIndex, playerIndex, player._id)
             }
             onDragEnd={handleDragEnd}
-            className="list-disc ml-4 border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => handleMouseEnter(player)}
+            onMouseLeave={handleMouseLeave}
+            className="list-disc ml-4 border-[2.5px] border-transparent hover:border-indigo-300 max-w-[190px] rounded px-1 print:border-0 print:max-w-none print:text-xl cursor-grab active:cursor-grabbing relative"
           >
             {player.name}
+            {hoveredPlayer && hoveredPlayer === player && (
+              <HoverPlayerStats hoveredPlayer={hoveredPlayer} />
+            )}
           </li>
         ))}
     </ul>
@@ -204,6 +218,32 @@ const Teams = ({
   totalPlayers,
   selectedGameInfo,
 }) => {
+  const [hoveredPlayer, setHoveredPlayer] = useState(null)
+  const hoverTimeoutRef = useRef(null)
+
+  const handleMouseEnter = player => {
+    // Clear any existing timeout
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+
+    // Set a new timeout to show the player stats after 0.5 seconds
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredPlayer(player)
+    }, 500)
+  }
+
+  const handleMouseLeave = () => {
+    // Clear the timeout if mouse leaves before 0.5 seconds
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = null
+    }
+
+    // Hide the player stats immediately
+    setHoveredPlayer(null)
+  }
+
   const {
     handleDragStart,
     handleDragEnd,
@@ -286,6 +326,9 @@ const Teams = ({
                   teamIndex={actualIndex}
                   handleDragStart={handleDragStart}
                   handleDragEnd={handleDragEnd}
+                  hoveredPlayer={hoveredPlayer}
+                  handleMouseEnter={handleMouseEnter}
+                  handleMouseLeave={handleMouseLeave}
                 />
               </div>
             )

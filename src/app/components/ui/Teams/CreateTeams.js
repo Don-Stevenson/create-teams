@@ -373,7 +373,6 @@ export default function CreateTeams() {
       <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown mt-6">
         Create Teams
       </h2>
-
       <GameSelector
         upcomingGames={upcomingGames}
         selectedGameId={selectedGameId}
@@ -383,12 +382,10 @@ export default function CreateTeams() {
         onGameSelect={handleGameSelect}
         normalizeName={normalizeName}
       />
-
       <div className="flex flex-col rounded pt-6 pb-8 mb-4 print:pt-0 print:mb-0 print:px-0 print:pb-0">
         {error && (
           <p className="text-center text-red-500 text-sm mt-2">{error}</p>
         )}
-
         <PlayerListManager
           players={players}
           selectedPlayerCount={selectedPlayerCount}
@@ -401,7 +398,6 @@ export default function CreateTeams() {
           onSelectAll={handleSelectAll}
           onTogglePlayerList={handleTogglePlayerList}
         />
-
         <TeamGenerator
           numTeams={numTeams}
           isLoading={isLoading}
@@ -409,7 +405,6 @@ export default function CreateTeams() {
           onNumTeamsChange={setNumTeams}
           onBalanceTeams={handleBalanceTeams}
         />
-
         {balancedTeams && (
           <Teams
             players={players}

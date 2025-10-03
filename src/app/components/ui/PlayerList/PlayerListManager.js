@@ -18,7 +18,7 @@ export default function PlayerListManager({
   return (
     <div className="print:hidden">
       <div className="flex-col flex-wrap">
-        <h2 className="text-3xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
+        <h2 className="text-2xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
           Player List
         </h2>
         <p className="flex text-center md:justify-center mb-4 print:hidden">

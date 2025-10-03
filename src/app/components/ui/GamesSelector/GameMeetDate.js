@@ -4,7 +4,10 @@ const dateFormatOptions = {
   month: 'long',
   day: 'numeric',
 }
-const todaysDate = new Date().toLocaleDateString('en-US', dateFormatOptions)
+export const todaysDate = new Date().toLocaleDateString(
+  'en-US',
+  dateFormatOptions
+)
 
 export const getMeetDate = meetdate => {
   // If no meetdate is provided, show today's date

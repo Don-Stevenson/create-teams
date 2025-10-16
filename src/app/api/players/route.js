@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { body, validationResult } from 'express-validator'
 import connectDB from '../../../lib/db/connectDB'
 import Player from '../../../lib/models/Player'
 import jwt from 'jsonwebtoken'

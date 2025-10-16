@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npm run test:FE",
-    "test:FE": "jest --updateSnapshot",
-    "test:FE:watch": "jest --watch --updateSnapshot",
-    "test:FE:coverage": "npm run test:FE -- --coverage --updateSnapshot"
+    "test": "npm run test",
+    "test:snapshot": "jest --updateSnapshot",
+    "test:watch": "jest --watch --updateSnapshot",
+    "test:coverage": "jest --coverage --updateSnapshot"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.6.1",

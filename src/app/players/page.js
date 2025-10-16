@@ -15,6 +15,7 @@ import {
   useUpdatePlayer,
   useDeletePlayer,
 } from '../hooks/useApi.js'
+import { Button } from '../components/ui/Button/Button.js'
 
 function Players() {
   // React Query hooks working silently in background for caching
@@ -262,12 +263,12 @@ function Players() {
           Manage Players
         </h1>
         <div>
-          <button
+          <Button
+            variant="primary"
             className="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center"
             onClick={() => setIsAddPlayerModalOpen(true)}
-          >
-            Add A New Player
-          </button>
+            text="Add A New Player"
+          />
           <AddPlayerModal
             isOpen={isAddPlayerModalOpen}
             onAddPlayer={addPlayer}

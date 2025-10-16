@@ -1,3 +1,4 @@
+import { Button } from '../Button/Button'
 import PlayerListToggleIsPlaying from './PlayerListToggleIsPlaying'
 import { lazy, Suspense } from 'react'
 
@@ -27,12 +28,12 @@ export default function PlayerListManager({
           </span>
         </p>
         <div className="flex justify-center items-center mb-2">
-          <button
+          <Button
+            variant="primary"
             onClick={onTogglePlayerList}
-            className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-red-900 mb-2 text-lg font-bold border-2  rounded-md px-2 py-1"
-          >
-            {openPlayerList ? 'Hide Player List' : 'Show Player List'}
-          </button>
+            text={openPlayerList ? 'Hide Player List' : 'Show Player List'}
+            testId="toggle-player-list-button"
+          />
         </div>
         {openPlayerList && (
           <>

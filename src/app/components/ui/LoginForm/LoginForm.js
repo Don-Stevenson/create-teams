@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import LoonsBadge from '../../../assets/img/TWSC.webp'
 import Image from 'next/image'
 import { useLogin } from '../../../hooks/useApi'
+import { Button } from '../Button/Button'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')
@@ -74,13 +75,13 @@ export default function LoginForm() {
           />
         </div>
         <div className="flex justify-center items-center">
-          <button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="border border-gray-400 rounded w-36 h-8 bg-gray-200 hover:bg-gray-300 transition-colors disabled:opacity-50"
-          >
-            {loginMutation.isPending ? 'Logging in...' : 'Login'}
-          </button>
+          <Button
+            variant="secondary"
+            text="Login"
+            loadingMessage="Logging in"
+            isLoading={loginMutation.isPending}
+            testId="login-button"
+          />
         </div>
       </div>
       <div className="flex justify-center text-center items-center text-loonsRed h-10">

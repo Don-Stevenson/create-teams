@@ -265,7 +265,6 @@ function Players() {
         <div>
           <Button
             variant="primary"
-            className="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center"
             onClick={() => setIsAddPlayerModalOpen(true)}
             text="Add A New Player"
           />

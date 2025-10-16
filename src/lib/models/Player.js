@@ -46,7 +46,7 @@ const PlayerSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      required: [true, 'Please specify gender'],
+      required: [true, 'Please specify a gender'],
       enum: ['male', 'female', 'nonBinary'],
     },
     isPlayingThisWeek: {

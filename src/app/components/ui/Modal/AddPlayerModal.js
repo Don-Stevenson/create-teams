@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Select from 'react-select'
+import { Button } from '../Button/Button'
 
 export default function AddPlayerModal({
   onAddPlayer,
@@ -61,11 +62,13 @@ export default function AddPlayerModal({
       <div className="flex items-center justify-center pt-5 pb-8 md:pt-4 md:pb-4">
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded px-8 pt-4 pb-4 mt-4 lg:mt-5 lg:mb-5 w-70 sm:w-96 h-[35rem] md:h-[43rem] lg:w-96 overflow-visible gap-2"
+          className="bg-white rounded px-8 pt-4 pb-4 mt-4 lg:mt-5 lg:mb-5 w-70 sm:w-96 h-[36.5rem] md:h-[43rem] lg:w-96 overflow-visible gap-2"
           data-testid="add-player-form"
         >
           <div className="flex-col gap-2 mb-2 md:gap-3 md:mb-3">
-            <h2 className="text-2xl font-semibold text-black">Add Player</h2>
+            <h2 className="text-2xl font-semibold text-black mb-2 sm:mb-4">
+              Add Player
+            </h2>
             {error && !playerAdded && (
               <p className="text-red-500 text-xs italic mt-4">{error}</p>
             )}
@@ -221,20 +224,21 @@ export default function AddPlayerModal({
               required
             />
           </div>
-          <div className="flex items-center justify-between gap-2 mt-6 md:mt-8">
-            <button
-              className="bg-white text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-gray-700 text-xs sm:text-sm"
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-6 md:mt-8">
+            <Button
               type="submit"
               onClick={onClose}
-            >
-              cancel
-            </button>
-            <button
-              className="bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs sm:text-sm"
+              text="Cancel"
+              variant="secondary"
+              testId="cancel-button"
+              classes="text-sm bg-white"
+            />
+            <Button
               type="submit"
-            >
-              Add Player
-            </button>
+              text="Add Player"
+              variant="primary"
+              testId="add-player-button"
+            />
           </div>
         </form>
       </div>

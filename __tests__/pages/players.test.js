@@ -182,7 +182,7 @@ describe('Players Page', () => {
       expect(screen.getByTestId('add-player-form')).toBeInTheDocument()
 
       await act(async () => {
-        await user.click(screen.getByText('cancel'))
+        await user.click(screen.getByTestId('cancel-button'))
       })
 
       expect(screen.queryByTestId('add-player-form')).not.toBeInTheDocument()

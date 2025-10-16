@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npm run test",
+    "test": "jest",
     "test:snapshot": "jest --updateSnapshot",
-    "test:watch": "jest --watch --updateSnapshot",
+    "test:watch": "jest --watch-All --updateSnapshot",
     "test:coverage": "jest --coverage --updateSnapshot"
   },
   "dependencies": {

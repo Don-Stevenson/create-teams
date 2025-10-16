@@ -29,6 +29,7 @@ export default function Logout() {
       text="Logout"
       loadingMessage="Logging out"
       testId="logout-button"
+      classes="font-semibold w-full"
     />
   )
 }

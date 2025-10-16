@@ -40,13 +40,13 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
       <div className="flex gap-1 items-center justify-center pt-3.5 flex-shrink-0">
         <Button
           onClick={() => onEditPlayer(player._id)}
-          variant="edit"
+          variant="quaternary"
           testId="edit-player"
           text="Edit"
         />
         <Button
           onClick={() => onDeletePlayer(player._id)}
-          variant="delete"
+          variant="tertiary"
           testId="delete-player"
           text="Delete"
         />

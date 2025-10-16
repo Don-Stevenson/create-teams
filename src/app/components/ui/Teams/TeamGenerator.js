@@ -1,4 +1,4 @@
-import { PulseLoader } from 'react-spinners'
+import { Button } from '../Button/Button'
 
 export default function TeamGenerator({
   numTeams,
@@ -26,21 +26,15 @@ export default function TeamGenerator({
           onChange={e => onNumTeamsChange(e.target.value)}
         />
       </div>
-      <div className="flex items-center justify-between print:hidden">
-        <button
-          className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline print:hidden mb-4"
+      <div className="flex items-center justify-between print:hidden mt-4 mb-4">
+        <Button
+          variant="primary"
           onClick={onBalanceTeams}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <div className="flex justify-center items-center gap-2 text-loonsBeige">
-              Creating teams
-              <PulseLoader color="#C4B098" size={6} />
-            </div>
-          ) : (
-            'Create Balanced Teams'
-          )}
-        </button>
+          text="Create Balanced Teams"
+          isLoading={isLoading}
+          loadingMessage="Creating teams"
+          testId="create-balanced-teams-button"
+        />
       </div>
       {error && <p className="text-red-500 text-xs italic mt-4">{error}</p>}
     </div>

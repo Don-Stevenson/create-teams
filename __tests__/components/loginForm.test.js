@@ -279,7 +279,7 @@ describe('LoginForm', () => {
 
     // The button should be disabled during loading
     expect(submitButton).toBeDisabled()
-    expect(submitButton).toHaveTextContent('Logging in...')
+    expect(submitButton).toHaveTextContent('Logging in')
 
     // Inputs should also be disabled
     expect(usernameInput).toBeDisabled()

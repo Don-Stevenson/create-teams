@@ -1,5 +1,5 @@
 import React from 'react'
-import { ActionButton } from '../Button/ActionButton'
+import { Button } from '../Button/Button'
 
 const ScoreItem = ({ label, value }) => (
   <div className="flex justify-between items-baseline bg-gray-100 rounded gap-1">
@@ -38,20 +38,18 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
         </div>
       </div>
       <div className="flex gap-1 items-center justify-center pt-3.5 flex-shrink-0">
-        <ActionButton
+        <Button
           onClick={() => onEditPlayer(player._id)}
           variant="edit"
           testId="edit-player"
-        >
-          Edit
-        </ActionButton>
-        <ActionButton
+          text="Edit"
+        />
+        <Button
           onClick={() => onDeletePlayer(player._id)}
           variant="delete"
           testId="delete-player"
-        >
-          Delete
-        </ActionButton>
+          text="Delete"
+        />
       </div>
     </div>
   )

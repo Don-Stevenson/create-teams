@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { logout } from '../../../../../utils/FEapi'
 import { Button } from '../Button/Button'
 
-export default function Logout() {
+export default function Logout({ variant }) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -23,11 +23,9 @@ export default function Logout() {
 
   return (
     <Button
-      variant="primary"
+      variant={variant}
       onClick={handleLogout}
-      isLoading={isLoading}
       text="Logout"
-      loadingMessage="Logging out"
       testId="logout-button"
     />
   )

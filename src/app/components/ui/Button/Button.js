@@ -11,6 +11,8 @@ const editStyles =
 
 const deleteStyles =
   'border border-gray-300 text-black flex items-center justify-center text-[0.62rem] font-medium p-[0.15rem] rounded h-[2.5rem] w-[2.50rem] bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900'
+const logoutStyles =
+  'bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 font-semibold py-2 px-3 rounded text-center whitespace-nowrap transition-colors text-lg md:text-sm'
 
 const getVariantStyles = variant => {
   if (variant === 'primary') {
@@ -21,6 +23,8 @@ const getVariantStyles = variant => {
     return deleteStyles
   } else if (variant === 'edit') {
     return editStyles
+  } else if (variant === 'logout') {
+    return logoutStyles
   }
 }
 

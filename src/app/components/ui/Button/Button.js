@@ -19,10 +19,10 @@ const getVariantStyles = variant => {
     return primaryStyles
   } else if (variant === 'secondary') {
     return secondaryStyles
-  } else if (variant === 'delete') {
-    return deleteStyles
-  } else if (variant === 'edit') {
-    return editStyles
+  } else if (variant === 'tertiary') {
+    return tertiaryStyles
+  } else if (variant === 'quaternary') {
+    return quaternaryStyles
   } else if (variant === 'logout') {
     return logoutStyles
   }

@@ -1,36 +1,6 @@
 import React from 'react'
-
-const ScoreItem = ({ label, value }) => (
-  <div className="flex justify-between items-baseline bg-gray-100 rounded gap-1">
-    <span className="text-[0.75rem] text-gray-400">{label}:</span>
-    <span className="text-[0.75rem] text-black font-medium">{value}</span>
-  </div>
-)
-
-const ActionButton = ({ onClick, variant = 'default', children, testId }) => {
-  const baseStyles =
-    'flex items-center justify-center text-[0.62rem] font-medium p-[0.15rem] rounded h-[2.5rem] w-[2.50rem]'
-
-  let variantStyles = 'border border-gray-300 text-black' // default style
-
-  if (variant === 'delete') {
-    variantStyles =
-      'bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900'
-  } else if (variant === 'edit') {
-    variantStyles =
-      'bg-white hover:bg-gray-200 text-black border border-gray-300'
-  }
-
-  return (
-    <button
-      onClick={onClick}
-      className={`${baseStyles} ${variantStyles}`}
-      data-testid={testId}
-    >
-      {children}
-    </button>
-  )
-}
+import { Button } from '../Button/Button'
+import { ScoreItem } from './ScoreItem'
 
 const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
   const scores = [
@@ -62,20 +32,18 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
         </div>
       </div>
       <div className="flex gap-1 items-center justify-center pt-3.5 flex-shrink-0">
-        <ActionButton
+        <Button
           onClick={() => onEditPlayer(player._id)}
-          variant="edit"
+          variant="quaternary"
           testId="edit-player"
-        >
-          Edit
-        </ActionButton>
-        <ActionButton
+          text="Edit"
+        />
+        <Button
           onClick={() => onDeletePlayer(player._id)}
-          variant="delete"
+          variant="tertiary"
           testId="delete-player"
-        >
-          Delete
-        </ActionButton>
+          text="Delete"
+        />
       </div>
     </div>
   )

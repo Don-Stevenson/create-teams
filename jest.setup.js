@@ -33,37 +33,13 @@ jest.mock('next/image', () => ({
   },
 }))
 
-// Suppress React Query and act() warnings during tests
+// Suppress all console warnings and errors during tests
 const originalError = console.error
 const originalWarn = console.warn
 
 beforeAll(() => {
-  console.error = (...args) => {
-    // Suppress act() warnings
-    if (
-      typeof args[0] === 'string' &&
-      (args[0].includes(
-        'Warning: The current testing environment is not configured to support act'
-      ) ||
-        args[0].includes('act(...)'))
-    ) {
-      return
-    }
-    originalError.call(console, ...args)
-  }
-
-  console.warn = (...args) => {
-    // Suppress React Query warnings that are expected during tests
-    if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Query data cannot be undefined') ||
-        args[0].includes('No QueryClient set') ||
-        args[0].includes('Missing queryFn'))
-    ) {
-      return
-    }
-    originalWarn.call(console, ...args)
-  }
+  console.error = jest.fn() // Suppress all errors
+  console.warn = jest.fn() // Suppress all warnings
 })
 
 afterAll(() => {

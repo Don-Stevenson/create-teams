@@ -1,12 +1,6 @@
 import React from 'react'
 import { Button } from '../Button/Button'
-
-const ScoreItem = ({ label, value }) => (
-  <div className="flex justify-between items-baseline bg-gray-100 rounded gap-1">
-    <span className="text-[0.75rem] text-gray-400">{label}:</span>
-    <span className="text-[0.75rem] text-black font-medium">{value}</span>
-  </div>
-)
+import { ScoreItem } from './ScoreItem'
 
 const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
   const scores = [
@@ -40,13 +34,13 @@ const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
       <div className="flex gap-1 items-center justify-center pt-3.5 flex-shrink-0">
         <Button
           onClick={() => onEditPlayer(player._id)}
-          variant="edit"
+          variant="quaternary"
           testId="edit-player"
           text="Edit"
         />
         <Button
           onClick={() => onDeletePlayer(player._id)}
-          variant="delete"
+          variant="tertiary"
           testId="delete-player"
           text="Delete"
         />

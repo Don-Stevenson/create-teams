@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from '../Button/Button'
 
 const DeleteConfirmationModal = ({
   isOpen,
@@ -13,19 +14,21 @@ const DeleteConfirmationModal = ({
       <div className="p-6 rounded-lg bg-white w-[260px] sm:w-[350px]">
         <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
         <p>Are you sure you want to delete {playerName}?</p>
-        <div className="flex sm:justify-end justify-between mt-4">
-          <button
+        <div className="flex flex-col sm:flex-row sm:justify-end justify-between mt-4 gap-2">
+          <Button
             onClick={onClose}
-            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
-          >
-            Cancel
-          </button>
-          <button
+            text="Cancel"
+            variant="secondary"
+            testId="cancel-button"
+            classes="text-sm bg-white"
+          />
+          <Button
+            text="Delete"
             onClick={onConfirm}
-            className="bg-loonsRed hover:bg-red-900 text-loonsBeige border-2 border-red-900 font-bold py-2 px-4 rounded"
-          >
-            Delete
-          </button>
+            variant="primary"
+            testId="delete-button"
+            classes="text-sm"
+          />
         </div>
       </div>
     </div>

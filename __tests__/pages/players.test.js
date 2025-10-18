@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import Players from '../../src/app/players/page'
 import { renderWithQuery } from '../utils/test-utils'
-import PlayerList from '../../src/app/components/PlayerList'
+import PlayerList from '../../src/app/components/ui/PlayerList/PlayerList'
 
 // Mock the API utility
 jest.mock('../../utils/FEapi', () => ({
@@ -16,7 +16,7 @@ jest.mock('../../utils/FEapi', () => ({
   },
 }))
 
-jest.mock('../../src/app/components/withAuth', () => {
+jest.mock('../../src/app/components/features/auth/withAuthWrapper', () => {
   return jest.fn(Component => {
     const WithAuthComponent = props => <Component {...props} />
     WithAuthComponent.displayName = `WithAuth(${
@@ -26,7 +26,7 @@ jest.mock('../../src/app/components/withAuth', () => {
   })
 })
 
-jest.mock('../../src/app/components/Layout', () => {
+jest.mock('../../src/app/components/layout/ClientLayout', () => {
   return jest.fn(({ children }) => (
     <div data-testid="mock-layout">{children}</div>
   ))
@@ -182,7 +182,7 @@ describe('Players Page', () => {
       expect(screen.getByTestId('add-player-form')).toBeInTheDocument()
 
       await act(async () => {
-        await user.click(screen.getByText('cancel'))
+        await user.click(screen.getByTestId('cancel-button'))
       })
 
       expect(screen.queryByTestId('add-player-form')).not.toBeInTheDocument()

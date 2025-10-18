@@ -1,6 +1,6 @@
 import { screen, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import BalanceTeamsPage from '../../src/app/page'
+import BalanceTeamsPage from '../../src/app/components/features/auth/AuthRedirect'
 import { checkAuth } from '../../utils/FEapi'
 import { renderWithQuery } from '../utils/test-utils'
 

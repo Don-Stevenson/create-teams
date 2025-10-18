@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import PlayerList from '../components/PlayerList.js'
-import EditPlayerModal from '../components/EditPlayerModal.js'
+import PlayerList from '../components/ui/PlayerList/PlayerList.js'
+import EditPlayerModal from '../components/ui/Modal/EditPlayerModal.js'
 import api from '../../../utils/FEapi.js'
-import withAuth from '../components/withAuth.js'
-import DeleteConfirmationModal from '../components/DeleteConfirmationModal.js'
-import AddPlayerModal from '../components/AddPlayerModal.js'
+import withAuth from '../components/features/auth/withAuthWrapper.js'
+import DeleteConfirmationModal from '../components/ui/Modal/DeleteConfirmationModal.js'
+import AddPlayerModal from '../components/ui/Modal/AddPlayerModal.js'
 import { PulseLoader } from 'react-spinners'
 // React Query hooks for background caching only
 import {
@@ -15,6 +15,7 @@ import {
   useUpdatePlayer,
   useDeletePlayer,
 } from '../hooks/useApi.js'
+import { Button } from '../components/ui/Button/Button.js'
 
 function Players() {
   // React Query hooks working silently in background for caching
@@ -262,12 +263,11 @@ function Players() {
           Manage Players
         </h1>
         <div>
-          <button
-            className="text-lg font-semibold mb-4 rounded bg-loonsRed hover:bg-red-900 text-loonsBeige border border-red-900 w-[200px] h-18 p-3 text-center"
+          <Button
+            variant="primary"
             onClick={() => setIsAddPlayerModalOpen(true)}
-          >
-            Add A New Player
-          </button>
+            text="Add A New Player"
+          />
           <AddPlayerModal
             isOpen={isAddPlayerModalOpen}
             onAddPlayer={addPlayer}
@@ -284,8 +284,8 @@ function Players() {
             List of Players
           </h2>
           <div className="flex-col text-black mb-4 gap-1">
-            <p className="text-sm">Legend:</p>
             <p className="text-sm">
+              Legend: <br />
               K: Game Knowledge, Sc: Goal Scoring, A: Attack, Md: Midfield, D:
               Defense, M/S: Mobility/Stamina
             </p>

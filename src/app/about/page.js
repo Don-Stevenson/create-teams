@@ -2,8 +2,12 @@
 
 import Image from 'next/image'
 import LoonsBadge from '../../../public/TWSC_Badge.webp'
+<<<<<<< HEAD
 import Link from 'next/link'
 import { useAuthCheck } from '../hooks/useApi'
+=======
+import withAuth from '../components/features/auth/withAuthWrapper'
+>>>>>>> dev
 
 function AboutPage() {
   const { data: authResult } = useAuthCheck()

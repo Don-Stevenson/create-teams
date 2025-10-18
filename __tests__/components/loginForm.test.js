@@ -1,7 +1,7 @@
 import { screen, fireEvent, waitFor, createEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { useRouter } from 'next/navigation'
-import LoginForm from '../../src/app/components/LoginForm'
+import LoginForm from '../../src/app/components/ui/LoginForm/LoginForm'
 import { apiService } from '../../utils/FEapi'
 import { renderWithQuery } from '../utils/test-utils'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -279,7 +279,7 @@ describe('LoginForm', () => {
 
     // The button should be disabled during loading
     expect(submitButton).toBeDisabled()
-    expect(submitButton).toHaveTextContent('Logging in...')
+    expect(submitButton).toHaveTextContent('Logging in')
 
     // Inputs should also be disabled
     expect(usernameInput).toBeDisabled()

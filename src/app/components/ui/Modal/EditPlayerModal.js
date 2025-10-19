@@ -171,7 +171,7 @@ const EditPlayerModal = ({ player, onUpdatePlayer, onClose }) => {
               text="Cancel"
               variant="secondary"
               testId="cancel-button"
-              classes="text-sm"
+              classes="text-sm bg-white"
             />
             <Button
               type="submit"

@@ -7,6 +7,7 @@ import LoonsBadge from '../../../assets/img/TWSC.webp'
 import Image from 'next/image'
 import { useLogin } from '../../../hooks/useApi'
 import { Button } from '../Button/Button'
+import Link from 'next/link'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')

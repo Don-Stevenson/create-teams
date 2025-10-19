@@ -3,7 +3,9 @@ import { useRouter } from 'next/navigation'
 import { PulseLoader } from 'react-spinners'
 import { useAuthCheck } from '../../../hooks/useApi'
 
-export default function withAuth(WrappedComponent) {
+export default function withAuth(WrappedComponent, options = {}) {
+  const { requireAuth = true } = options
+
   return function AuthenticatedComponent(props) {
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -48,19 +50,19 @@ export default function withAuth(WrappedComponent) {
           if (typeof window !== 'undefined') {
             localStorage.setItem('lastServerAccess', Date.now().toString())
           }
-        } else {
+        } else if (requireAuth) {
           router.push('/login')
         }
       }
-    }, [authResult, queryLoading, error, router, hasMounted])
+    }, [authResult, queryLoading, error, router, hasMounted, requireAuth])
 
     // Handle error case
     useEffect(() => {
-      if (error && !queryLoading) {
+      if (error && !queryLoading && requireAuth) {
         console.error('Auth check failed:', error)
         router.push('/login')
       }
-    }, [error, queryLoading, router])
+    }, [error, queryLoading, router, requireAuth])
 
     if (isLoading || !hasMounted) {
       return (
@@ -73,10 +75,12 @@ export default function withAuth(WrappedComponent) {
       )
     }
 
-    if (!isAuthenticated) {
+    if (requireAuth && !isAuthenticated) {
       return null
     }
 
-    return <WrappedComponent {...props} />
+    // Only pass loggedIn prop when requireAuth is false (for pages that need to know auth state but don't require it)
+    const additionalProps = requireAuth ? {} : { loggedIn: isAuthenticated }
+    return <WrappedComponent {...props} {...additionalProps} />
   }
 }

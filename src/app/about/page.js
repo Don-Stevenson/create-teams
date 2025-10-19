@@ -2,24 +2,19 @@
 
 import Image from 'next/image'
 import LoonsBadge from '../../../public/TWSC_Badge.webp'
-<<<<<<< HEAD
+import withAuth from '../components/features/auth/withAuthWrapper'
 import Link from 'next/link'
 import { useAuthCheck } from '../hooks/useApi'
-=======
-import withAuth from '../components/features/auth/withAuthWrapper'
->>>>>>> dev
 
 function AboutPage() {
   const { data: authResult } = useAuthCheck()
   const loggedIn = authResult
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-loonsBrown">
-            About Loons Team Balancer
-          </h1>
           <div className="flex justify-center mb-6">
             <div className="relative">
               <Image
@@ -131,9 +126,18 @@ function AboutPage() {
             </div>
           </div>
         </div>
+
         {!loggedIn && (
           <Link
-            href={'/'}
+            href={'/login'}
+            className="flex justify-center text-center items-center text-loonsRed h-10"
+          >
+            <div>Home</div>
+          </Link>
+        )}
+        {loggedIn && (
+          <Link
+            href={'/create-teams'}
             className="flex justify-center text-center items-center text-loonsRed h-10"
           >
             <div>Home</div>

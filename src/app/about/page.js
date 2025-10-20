@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import LoonsBadge from '../../../public/TWSC_Badge.webp'
-import withAuth from '../components/features/auth/withAuthWrapper'
 import Link from 'next/link'
 import { useAuthCheck } from '../hooks/useApi'
 
@@ -106,43 +105,65 @@ function AboutPage() {
             </div>
 
             {/* Usage Section */}
-            <div>
+            <div className="mb-8 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-loonsBrown">
                 Getting Started
               </h2>
               <div className="bg-green-50 rounded-xl p-6 sm:p-8 border-l-4 border-green-500">
                 <p className="text-base sm:text-lg leading-relaxed text-gray-700">
                   Simply select who's playing and choose how many teams you'd
-                  like to create. If you're not quite happy with the results,
-                  you can click
+                  like to create. You can use the upcoming games dropdown button
+                  to automatically select the players depending on their RSVPs
+                  on Heja's attendance tracking app. If you're not quite happy
+                  with the results, you can manually drag and drop players, and
+                  or you can click
                   <code className="bg-gray-200 px-2 py-1 rounded text-sm font-mono">
                     create teams
                   </code>{' '}
-                  again to re-generate the teams or manually drag and drop
-                  players. When you're happy with the teams, you can print the
-                  teams in the default, printer-friendly format.
+                  again to re-generate the teams. When you're happy with the
+                  teams, you can print the teams in the default,
+                  printer-friendly format.
+                </p>
+              </div>
+            </div>
+
+            {/* Usage Section */}
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-loonsBrown">
+                Site Info
+              </h2>
+              <div className="bg-orange-50 rounded-xl p-6 sm:p-8 border-l-4 border-orange-500">
+                <p className="text-base sm:text-lg leading-relaxed text-gray-700">
+                  Loons Team Balancer is created and maintained by{' '}
+                  <a
+                    href="https://www.linkedin.com/in/don-stevenson416/"
+                    className="text-loonsRed hover:text-[#f38686] transition-colors duration-300 font-bold"
+                  >
+                    Don Stevenson
+                  </a>
+                  . Please feel free to reach out with any questions or
+                  feedback.
                 </p>
               </div>
             </div>
           </div>
+          {!loggedIn && (
+            <Link
+              href={'/login'}
+              className="flex justify-center text-center items-center text-loonsRed h-10"
+            >
+              <div>Home</div>
+            </Link>
+          )}
+          {loggedIn && (
+            <Link
+              href={'/create-teams'}
+              className="flex justify-center text-center items-center text-loonsRed h-10"
+            >
+              <div>Home</div>
+            </Link>
+          )}
         </div>
-
-        {!loggedIn && (
-          <Link
-            href={'/login'}
-            className="flex justify-center text-center items-center text-loonsRed h-10"
-          >
-            <div>Home</div>
-          </Link>
-        )}
-        {loggedIn && (
-          <Link
-            href={'/create-teams'}
-            className="flex justify-center text-center items-center text-loonsRed h-10"
-          >
-            <div>Home</div>
-          </Link>
-        )}
       </div>
     </div>
   )

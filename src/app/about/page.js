@@ -1,9 +1,9 @@
 'use client'
 
-import Image from 'next/image'
-import LoonsBadge from '../../../public/TWSC_Badge.webp'
 import Link from 'next/link'
 import { useAuthCheck } from '../hooks/useApi'
+import { Logo } from '../components/ui/Logo/Logo'
+import { BackArrow } from '../components/ui/BackArrow/BackArrow'
 
 function AboutPage() {
   const { data: authResult } = useAuthCheck()
@@ -13,18 +13,7 @@ function AboutPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Header Section */}
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <Image
-                src={LoonsBadge}
-                width={130}
-                height={130}
-                alt="Loons Badge"
-              />
-            </div>
-          </div>
-        </div>
+        <Logo />
 
         {/* Content Section */}
         <div className="max-w-4xl mx-auto">
@@ -150,17 +139,19 @@ function AboutPage() {
           {!loggedIn && (
             <Link
               href={'/login'}
-              className="flex justify-center text-center items-center text-loonsRed h-10"
+              className="flex gap-2 justify-center text-center items-center text-loonsRed h-10"
             >
-              <div>Home</div>
+              <BackArrow />
+              <p>Return to Login</p>
             </Link>
           )}
           {loggedIn && (
             <Link
               href={'/create-teams'}
-              className="flex justify-center text-center items-center text-loonsRed h-10"
+              className="flex gap-2 justify-center text-center items-center text-loonsRed h-10"
             >
-              <div>Home</div>
+              <BackArrow />
+              <p>return to Create Teams</p>
             </Link>
           )}
         </div>

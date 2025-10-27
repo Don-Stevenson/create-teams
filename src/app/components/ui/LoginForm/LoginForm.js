@@ -1,13 +1,10 @@
 'use client'
 
-// components/LoginForm.js
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import LoonsBadge from '../../../assets/img/TWSC.webp'
-import Image from 'next/image'
 import { useLogin } from '../../../hooks/useApi'
 import { Button } from '../Button/Button'
-import Link from 'next/link'
+import { Logo } from '../Logo/Logo'
 
 export default function LoginForm() {
   const [username, setUsername] = useState('')
@@ -39,18 +36,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} data-testid="login-form">
       <div className="flex flex-col items-center justify-center mt-20 gap-2">
-        <div className="relative z-10 w-[6.25rem] h-[7.8125rem] top-[1.75rem]">
-          <Image
-            src={LoonsBadge}
-            alt="Toronto Walking Soccer Loons Club Logo"
-            priority
-          />
-        </div>
-        <div className="flex bg-loonsDarkBrown z-0 w-[17.8125rem] justify-center h-[4.375rem] items-center mb-4">
-          <div className="flex items-center justify-center text-2xl border-[0.3125rem] border-loonsRed bg-loonsBrown w-[17.3125rem] text-loonsBeige text-center h-[3.875rem] z-10 font-oswald font-[400] uppercase tracking-wider">
-            Loons Team Balancer
-          </div>
-        </div>
+        <Logo />
         <div className="flex flex-col justify-center xs:flex-row gap-3 mb-3">
           <input
             type="text"

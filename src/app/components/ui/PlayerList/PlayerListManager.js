@@ -9,7 +9,6 @@ export default function PlayerListManager({
   selectedPlayerCount,
   selectAll,
   openPlayerList,
-  showLoadingMessage,
   queryRsvpsForGame,
   bulkUpdateMutation,
   onTogglePlayingThisWeek,
@@ -19,14 +18,16 @@ export default function PlayerListManager({
   return (
     <div className="print:hidden">
       <div className="flex-col flex-wrap">
-        <h2 className="text-2xl font-semibold mb-4 print:hidden md:justify-center text-loonsDarkBrown">
+        <h2 className="text-2xl font-semibold mb-4 print:hidden text-loonsDarkBrown">
           Player List
         </h2>
-        <p className="flex text-center md:justify-center mb-4 print:hidden">
-          <span className="font-bold text-xl text-gray-800 ">
-            {`Total Players Selected: ${selectedPlayerCount}`}
+        <div className="flex mb-4 print:hidden sticky top-0 z-10 justify-center">
+          <span className="font-bold text-xl bg-white p-2 rounded-lg opacity-70 relative">
+            <p clasname=" text-gray-800">
+              {`Total Players Selected: ${selectedPlayerCount}`}
+            </p>
           </span>
-        </p>
+        </div>
         <div className="flex justify-center items-center mb-2">
           <Button
             variant="primary"

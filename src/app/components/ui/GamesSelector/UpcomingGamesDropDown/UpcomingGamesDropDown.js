@@ -43,7 +43,7 @@ const UpcomingGamesDropDown = ({ upcomingGames, onSelect }) => {
         <ChevronDownIcon />
       </button>
       {isOpen && (
-        <ul className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white border border-black rounded-md shadow-lg w-[80%] md:w-[60%] lg:w-[40%]">
+        <ul className="absolute left-1/2 -translate-x-1/2 mt-1 bg-white border border-black rounded-md shadow-lg w-[80%] md:w-[60%] lg:w-[40%] z-50">
           {upcomingGames.map(game => (
             <li
               className="border-2 border-white hover:border-2 hover:bg-[#cedaf0] rounded-md px-2 list-disc list-inside cursor-pointer"

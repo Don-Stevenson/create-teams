@@ -13,81 +13,81 @@ export async function OPTIONS(request) {
   })
 }
 
-export async function POST(request) {
-  const origin = request.headers.get('origin')
+// export async function POST(request) {
+//   const origin = request.headers.get('origin')
 
-  try {
-    await connectDB()
+//   try {
+//     await connectDB()
 
-    const { username, password } = await request.json()
+//     const { username, password } = await request.json()
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ username })
-    if (existingUser) {
-      const response = NextResponse.json(
-        { message: 'Username already exists' },
-        { status: 409 }
-      )
+//     // Check if user already exists
+//     const existingUser = await User.findOne({ username })
+//     if (existingUser) {
+//       const response = NextResponse.json(
+//         { message: 'Username already exists' },
+//         { status: 409 }
+//       )
 
-      const headers = corsHeaders(origin)
-      Object.entries(headers).forEach(([key, value]) => {
-        response.headers.set(key, value)
-      })
+//       const headers = corsHeaders(origin)
+//       Object.entries(headers).forEach(([key, value]) => {
+//         response.headers.set(key, value)
+//       })
 
-      return response
-    }
+//       return response
+//     }
 
-    // Create new user (password will be hashed by the model's pre-save hook)
-    const newUser = new User({
-      username,
-      password, // Don't hash here - let the model's pre-save hook handle it
-    })
+//     // Create new user (password will be hashed by the model's pre-save hook)
+//     const newUser = new User({
+//       username,
+//       password, // Don't hash here - let the model's pre-save hook handle it
+//     })
 
-    await newUser.save()
+//     await newUser.save()
 
-    // Generate token and auto-login the user
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    })
+//     // Generate token and auto-login the user
+//     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+//       expiresIn: '1h',
+//     })
 
-    // Create session
-    createSession(newUser._id, token)
+//     // Create session
+//     createSession(newUser._id, token)
 
-    const isProduction = process.env.NODE_ENV === 'production'
+//     const isProduction = process.env.NODE_ENV === 'production'
 
-    const response = NextResponse.json({
-      success: true,
-      message: 'User registered successfully',
-      userId: newUser._id,
-    })
+//     const response = NextResponse.json({
+//       success: true,
+//       message: 'User registered successfully',
+//       userId: newUser._id,
+//     })
 
-    // Add CORS headers
-    const headers = corsHeaders(origin)
-    Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value)
-    })
+//     // Add CORS headers
+//     const headers = corsHeaders(origin)
+//     Object.entries(headers).forEach(([key, value]) => {
+//       response.headers.set(key, value)
+//     })
 
-    response.cookies.set('token', token, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax', // Use 'lax' for better compatibility
-      maxAge: 3600000, // 1 hour
-      path: '/',
-    })
+//     response.cookies.set('token', token, {
+//       httpOnly: true,
+//       secure: isProduction,
+//       sameSite: 'lax', // Use 'lax' for better compatibility
+//       maxAge: 3600000, // 1 hour
+//       path: '/',
+//     })
 
-    return response
-  } catch (error) {
-    console.error('Registration error:', error)
-    const response = NextResponse.json(
-      { success: false, error: error.message },
-      { status: 400 }
-    )
+//     return response
+//   } catch (error) {
+//     console.error('Registration error:', error)
+//     const response = NextResponse.json(
+//       { success: false, error: error.message },
+//       { status: 400 }
+//     )
 
-    const headers = corsHeaders(origin)
-    Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value)
-    })
+//     const headers = corsHeaders(origin)
+//     Object.entries(headers).forEach(([key, value]) => {
+//       response.headers.set(key, value)
+//     })
 
-    return response
-  }
-}
+//     return response
+//   }
+// }

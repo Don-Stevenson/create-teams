@@ -69,6 +69,7 @@ export async function DELETE(request) {
     // Get password and optional username from request body
     const { password, username } = await request.json()
 
+    // admin password required to delete user
     if (!password) {
       const response = NextResponse.json(
         { message: 'Password is required to delete account' },

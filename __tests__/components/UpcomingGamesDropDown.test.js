@@ -141,4 +141,152 @@ describe('UpcomingGamesDropDown', () => {
     // Should call onSelect with the correct value
     expect(mockOnSelect).toHaveBeenCalledWith('game2')
   })
+
+  describe('Heja Error Handling', () => {
+    it('displays error message when gamesError is true', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={[]}
+          onSelect={mockOnSelect}
+          gamesError={true}
+          gamesErrorMessage="Heja is currently unavailable. Please try again later."
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Should display error message
+      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
+      expect(
+        screen.getByText('Heja is currently unavailable. Please try again later.')
+      ).toBeInTheDocument()
+    })
+
+    it('displays default error message when gamesError is true but no message provided', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={[]}
+          onSelect={mockOnSelect}
+          gamesError={true}
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Should display default error message
+      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
+      expect(
+        screen.getByText('Heja is currently unavailable. Please try again later.')
+      ).toBeInTheDocument()
+    })
+
+    it('shows error message instead of games list when error occurs', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={mockUpcomingGames}
+          onSelect={mockOnSelect}
+          gamesError={true}
+          gamesErrorMessage="Service error occurred"
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Should show error, not games
+      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
+      expect(screen.getByText('Service error occurred')).toBeInTheDocument()
+      expect(screen.queryByText('Game 1')).not.toBeInTheDocument()
+      expect(screen.queryByText('Game 2')).not.toBeInTheDocument()
+    })
+
+    it('does not allow selecting games when error is shown', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={[]}
+          onSelect={mockOnSelect}
+          gamesError={true}
+          gamesErrorMessage="Error message"
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Error message is not clickable (it's in an <li> but shouldn't trigger selection)
+      const errorElement = screen.getByText('⚠️ Heja Service Unavailable')
+      fireEvent.click(errorElement)
+
+      // onSelect should not be called
+      expect(mockOnSelect).not.toHaveBeenCalled()
+    })
+
+    it('shows "No upcoming games available" when no error and empty games list', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={[]}
+          onSelect={mockOnSelect}
+          gamesError={false}
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Should show empty state message, not error
+      expect(screen.getByText('No upcoming games available')).toBeInTheDocument()
+      expect(
+        screen.queryByText('⚠️ Heja Service Unavailable')
+      ).not.toBeInTheDocument()
+    })
+
+    it('prioritizes error display over empty games list', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={[]}
+          onSelect={mockOnSelect}
+          gamesError={true}
+          gamesErrorMessage="API is down"
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Should show error, not empty state
+      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
+      expect(screen.getByText('API is down')).toBeInTheDocument()
+      expect(
+        screen.queryByText('No upcoming games available')
+      ).not.toBeInTheDocument()
+    })
+
+    it('applies correct styling to error message', () => {
+      render(
+        <UpcomingGamesDropDown
+          upcomingGames={[]}
+          onSelect={mockOnSelect}
+          gamesError={true}
+        />
+      )
+
+      // Open dropdown
+      const trigger = screen.getByText('Select an upcoming game')
+      fireEvent.click(trigger)
+
+      // Check if error message has the correct classes
+      const errorContainer = screen
+        .getByText('⚠️ Heja Service Unavailable')
+        .closest('li')
+      expect(errorContainer).toHaveClass('px-4', 'py-3', 'text-red-600', 'bg-red-50')
+    })
+  })
 })

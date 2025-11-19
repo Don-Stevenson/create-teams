@@ -259,6 +259,112 @@ describe('API Utils', () => {
         expect(result).toEqual({ id: '1' })
       })
     })
+
+    describe('Games Service', () => {
+      it('should fetch upcoming games as array', async () => {
+        const mockInstance = axios.mockInstance
+        const mockGames = [
+          { _id: 'game1', title: 'Game 1', meetdate: '2024-01-01' },
+          { _id: 'game2', title: 'Game 2', meetdate: '2024-01-02' },
+        ]
+        mockInstance.get.mockResolvedValue({ data: mockGames })
+
+        const result = await apiService.games.getUpcoming()
+        expect(mockInstance.get).toHaveBeenCalledWith('/upcoming-games')
+        expect(result).toEqual(mockGames)
+      })
+
+      it('should fetch upcoming games when response has games property', async () => {
+        const mockInstance = axios.mockInstance
+        const mockGames = [
+          { _id: 'game1', title: 'Game 1', meetdate: '2024-01-01' },
+        ]
+        mockInstance.get.mockResolvedValue({
+          data: {
+            games: mockGames,
+          },
+        })
+
+        const result = await apiService.games.getUpcoming()
+        expect(mockInstance.get).toHaveBeenCalledWith('/upcoming-games')
+        expect(result).toEqual(mockGames)
+      })
+
+      it('should handle Heja error response correctly', async () => {
+        const mockInstance = axios.mockInstance
+        const errorResponse = {
+          error: true,
+          message: 'Heja is currently unavailable. Please try again later.',
+          games: [],
+        }
+        mockInstance.get.mockResolvedValue({ data: errorResponse })
+
+        const result = await apiService.games.getUpcoming()
+        expect(mockInstance.get).toHaveBeenCalledWith('/upcoming-games')
+        expect(result).toEqual(errorResponse)
+        expect(result.error).toBe(true)
+        expect(result.message).toBe(
+          'Heja is currently unavailable. Please try again later.'
+        )
+        expect(result.games).toEqual([])
+      })
+
+      it('should return full error object when error flag is present', async () => {
+        const mockInstance = axios.mockInstance
+        const errorResponse = {
+          error: true,
+          message: 'Service temporarily unavailable',
+          games: [],
+        }
+        mockInstance.get.mockResolvedValue({ data: errorResponse })
+
+        const result = await apiService.games.getUpcoming()
+        expect(result).toHaveProperty('error')
+        expect(result).toHaveProperty('message')
+        expect(result).toHaveProperty('games')
+      })
+
+      it('should return empty array for non-array, non-object responses', async () => {
+        const mockInstance = axios.mockInstance
+        mockInstance.get.mockResolvedValue({ data: null })
+
+        const result = await apiService.games.getUpcoming()
+        expect(result).toEqual([])
+      })
+
+      it('should fetch RSVPs for a specific game', async () => {
+        const mockInstance = axios.mockInstance
+        const mockRsvps = ['Player 1', 'Player 2', 'Player 3']
+        mockInstance.get.mockResolvedValue({ data: mockRsvps })
+
+        const result = await apiService.games.getRsvps('game1')
+        expect(mockInstance.get).toHaveBeenCalledWith('/rsvps-for-game/game1')
+        expect(result).toEqual(mockRsvps)
+      })
+    })
+
+    describe('Teams Service', () => {
+      it('should balance teams', async () => {
+        const mockInstance = axios.mockInstance
+        const mockBalancedTeams = {
+          teams: [
+            { name: 'Team 1', players: ['Player 1', 'Player 2'] },
+            { name: 'Team 2', players: ['Player 3', 'Player 4'] },
+          ],
+        }
+        mockInstance.post.mockResolvedValue({ data: mockBalancedTeams })
+
+        const result = await apiService.teams.balance({
+          numTeams: 2,
+          players: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
+        })
+        expect(mockInstance.post).toHaveBeenCalledWith('/balance-teams', {
+          numTeams: 2,
+          players: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
+        })
+        expect(result).toEqual(mockBalancedTeams)
+      })
+    })
   })
 
   describe('API Interceptors', () => {

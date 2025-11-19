@@ -36,6 +36,13 @@ export default function CreateTeams() {
   } = usePlayers()
   const { data: queryUpcomingGames = [], isLoading: gamesLoading } =
     useUpcomingGames()
+
+  const gamesError = queryUpcomingGames?.error
+  const gamesErrorMessage = queryUpcomingGames?.message
+  const upcomingGamesData =
+    queryUpcomingGames?.games ||
+    (Array.isArray(queryUpcomingGames) ? queryUpcomingGames : [])
+
   const { data: queryRsvpsForGame = [], isLoading: rsvpsLoading } =
     useGameRsvps(selectedGameId, {
       enabled: !!selectedGameId,
@@ -49,10 +56,12 @@ export default function CreateTeams() {
 
   // Sync React Query data with local state
   useEffect(() => {
-    if (queryUpcomingGames.length > 0) {
-      setUpcomingGames(queryUpcomingGames)
+    if (upcomingGamesData.length > 0) {
+      setUpcomingGames(upcomingGamesData)
+    } else if (gamesError) {
+      setUpcomingGames([])
     }
-  }, [queryUpcomingGames])
+  }, [upcomingGamesData, gamesError])
 
   useEffect(() => {
     if (queryPlayers.length > 0 || !playersLoading) {
@@ -375,6 +384,8 @@ export default function CreateTeams() {
       </h2>
       <GameSelector
         upcomingGames={upcomingGames}
+        gamesError={gamesError}
+        gamesErrorMessage={gamesErrorMessage}
         selectedGameId={selectedGameId}
         queryRsvpsForGame={queryRsvpsForGame}
         rsvpsLoading={rsvpsLoading}

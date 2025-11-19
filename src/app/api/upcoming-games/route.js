@@ -79,7 +79,8 @@ export async function GET(request) {
     } catch (gamesError) {
       console.error('Games API error:', gamesError)
       return NextResponse.json({
-        message: 'Games feature temporarily unavailable',
+        error: true,
+        message: 'Heja is currently unavailable. Please try again later.',
         games: [],
       })
     }

@@ -170,7 +170,14 @@ export const apiService = {
   games: {
     getUpcoming: async () => {
       const response = await api.get('/upcoming-games')
-      return response.data
+      // If the response includes an error flag, return the full object
+      if (response.data && response.data.error) {
+        return response.data
+      }
+      // Otherwise return just the games array for backward compatibility
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data?.games || []
     },
 
     getRsvps: async gameId => {

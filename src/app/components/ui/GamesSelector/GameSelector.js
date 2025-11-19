@@ -9,6 +9,8 @@ export default function GameSelector({
   players,
   onGameSelect,
   normalizeName,
+  gamesError,
+  gamesErrorMessage,
 }) {
   const handleGameSelect = gameId => {
     onGameSelect(gameId)
@@ -29,6 +31,8 @@ export default function GameSelector({
             ).toLocaleDateString()}`,
           }))}
           onSelect={handleGameSelect}
+          gamesError={gamesError}
+          gamesErrorMessage={gamesErrorMessage}
         />
         {selectedGameId && (
           <div className="mt-4 items-center justify-center">

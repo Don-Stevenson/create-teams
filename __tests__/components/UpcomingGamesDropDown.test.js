@@ -158,9 +158,13 @@ describe('UpcomingGamesDropDown', () => {
       fireEvent.click(trigger)
 
       // Should display error message
-      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
       expect(
-        screen.getByText('Heja is currently unavailable. Please try again later.')
+        screen.getByText('⚠️ Heja Service Unavailable')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Heja is currently unavailable. Please try again later.'
+        )
       ).toBeInTheDocument()
     })
 
@@ -178,9 +182,13 @@ describe('UpcomingGamesDropDown', () => {
       fireEvent.click(trigger)
 
       // Should display default error message
-      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
       expect(
-        screen.getByText('Heja is currently unavailable. Please try again later.')
+        screen.getByText('⚠️ Heja Service Unavailable')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Heja is currently unavailable. Please try again later.'
+        )
       ).toBeInTheDocument()
     })
 
@@ -199,7 +207,9 @@ describe('UpcomingGamesDropDown', () => {
       fireEvent.click(trigger)
 
       // Should show error, not games
-      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
+      expect(
+        screen.getByText('⚠️ Heja Service Unavailable')
+      ).toBeInTheDocument()
       expect(screen.getByText('Service error occurred')).toBeInTheDocument()
       expect(screen.queryByText('Game 1')).not.toBeInTheDocument()
       expect(screen.queryByText('Game 2')).not.toBeInTheDocument()
@@ -241,7 +251,9 @@ describe('UpcomingGamesDropDown', () => {
       fireEvent.click(trigger)
 
       // Should show empty state message, not error
-      expect(screen.getByText('No upcoming games available')).toBeInTheDocument()
+      expect(
+        screen.getByText('No upcoming games available')
+      ).toBeInTheDocument()
       expect(
         screen.queryByText('⚠️ Heja Service Unavailable')
       ).not.toBeInTheDocument()
@@ -262,7 +274,9 @@ describe('UpcomingGamesDropDown', () => {
       fireEvent.click(trigger)
 
       // Should show error, not empty state
-      expect(screen.getByText('⚠️ Heja Service Unavailable')).toBeInTheDocument()
+      expect(
+        screen.getByText('⚠️ Heja Service Unavailable')
+      ).toBeInTheDocument()
       expect(screen.getByText('API is down')).toBeInTheDocument()
       expect(
         screen.queryByText('No upcoming games available')
@@ -286,7 +300,12 @@ describe('UpcomingGamesDropDown', () => {
       const errorContainer = screen
         .getByText('⚠️ Heja Service Unavailable')
         .closest('li')
-      expect(errorContainer).toHaveClass('px-4', 'py-3', 'text-red-600', 'bg-red-50')
+      expect(errorContainer).toHaveClass(
+        'px-4',
+        'py-3',
+        'text-red-600',
+        'bg-red-50'
+      )
     })
   })
 })

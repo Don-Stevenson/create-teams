@@ -1,4 +1,29 @@
-import { NextResponse } from 'next/server'
+// Mock NextResponse before importing
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: (data, init = {}) => {
+      const response = new Response(JSON.stringify(data), {
+        ...init,
+        headers: {
+          'content-type': 'application/json',
+          ...init.headers,
+        },
+      })
+      response._jsonData = data
+      // Make headers.set chainable and store headers properly
+      const headersMap = new Map()
+      response.headers = {
+        get: name => headersMap.get(name.toLowerCase()),
+        set: (name, value) => {
+          headersMap.set(name.toLowerCase(), value)
+          return response.headers
+        },
+        has: name => headersMap.has(name.toLowerCase()),
+      }
+      return response
+    },
+  },
+}))
 
 // Mock the dependencies
 jest.mock('next/headers', () => ({
@@ -205,4 +230,3 @@ describe('Upcoming Games API Route', () => {
     })
   })
 })
-

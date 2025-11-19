@@ -141,3 +141,61 @@ const sessionStorageMock = {
   clear: jest.fn(),
 }
 global.sessionStorage = sessionStorageMock
+
+// Mock Request and Response for Next.js server components
+global.Request = class Request {
+  constructor(input, init) {
+    this.url = input
+    this.method = init?.method || 'GET'
+    this.headers = {
+      get: jest.fn(),
+      ...init?.headers,
+    }
+  }
+}
+
+global.Response = class Response {
+  constructor(body, init) {
+    this.body = body
+    this.status = init?.status || 200
+    this.statusText = init?.statusText || ''
+    this.headers = new Map(Object.entries(init?.headers || {}))
+  }
+
+  // Add json method to Response
+  async json() {
+    return typeof this.body === 'string' ? JSON.parse(this.body) : this.body
+  }
+
+  // Static json method for NextResponse
+  static json(data, init = {}) {
+    const response = new Response(JSON.stringify(data), {
+      ...init,
+      headers: {
+        'content-type': 'application/json',
+        ...init.headers,
+      },
+    })
+    response._jsonData = data
+    return response
+  }
+}
+
+// Mock Headers API
+global.Headers = class Headers extends Map {
+  constructor(init) {
+    super(Object.entries(init || {}))
+  }
+
+  get(name) {
+    return super.get(name.toLowerCase())
+  }
+
+  set(name, value) {
+    return super.set(name.toLowerCase(), value)
+  }
+
+  has(name) {
+    return super.has(name.toLowerCase())
+  }
+}

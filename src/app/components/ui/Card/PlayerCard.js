@@ -5,7 +5,7 @@ import { ScoreItem } from './ScoreItem'
 const PlayerCard = ({ player, onEditPlayer, onDeletePlayer }) => {
   const scores = [
     { label: 'K', value: player.gameKnowledgeScore },
-    { label: 'Sc', value: player.goalScoringScore },
+    { label: 'S', value: player.goalScoringScore },
     { label: 'A', value: player.attackScore },
     { label: 'Md', value: player.midfieldScore },
     { label: 'D', value: player.defenseScore },
